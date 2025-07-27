@@ -1,0 +1,10 @@
+These are placeholder files for Earth textures.
+In a production environment, you would use high-quality textures from sources like:
+- NASA Visible Earth (https://visibleearth.nasa.gov/)
+- Natural Earth Data (https://www.naturalearthdata.com/)
+- Solar System Scope (https://www.solarsystemscope.com/textures/)
+
+For development purposes, you can use these URLs in your code:
+- Earth day map: https://unpkg.com/three-globe@2.24.10/example/img/earth-day.jpg
+- Earth night map: https://unpkg.com/three-globe@2.24.10/example/img/earth-night.jpg
+- Earth clouds: https://unpkg.com/three-globe@2.24.10/example/img/earth-clouds.png
