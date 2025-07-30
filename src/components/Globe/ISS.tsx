@@ -129,26 +129,33 @@ const ISS: React.FC<ISSProps> = memo(({
           trajectoryRef.current.shift();
         }
         
-        // Update orientation with corner angle for better visibility
+        // Update orientation with top-down optimized rotation for better visibility
         if (trajectoryRef.current.length > 1) {
           const orientation = calculateOrientation(newPosition, trajectoryRef.current);
           
-          // Apply compound rotation for corner angle view
-          const xTiltAngle = Math.PI / 4; // 45 degrees - side profile
-          const zRotationAngle = Math.PI / 6; // 30 degrees - corner perspective
+          // Apply minimal rotations optimized for solar panel visibility
+          const xTiltAngle = Math.PI / 2; 
+          const yRotationAngle = Math.PI / 2;
+          const zRotationAngle = Math.PI / 90; // 2 degrees - very minimal perspective
           
           const xTiltQuaternion = new THREE.Quaternion().setFromAxisAngle(
-            new Vector3(1, 0, 0), // Tilt around X axis
+            new Vector3(1, 0, 0), // Gentle tilt around X axis
             xTiltAngle
           );
           
+          const yRotationQuaternion = new THREE.Quaternion().setFromAxisAngle(
+            new Vector3(0, 1, 0), // Slight rotation around Y axis to show T-shape
+            yRotationAngle
+          );
+          
           const zRotationQuaternion = new THREE.Quaternion().setFromAxisAngle(
-            new Vector3(0, 0, 1), // Rotate around Z axis
+            new Vector3(0, 0, 1), // Minimal rotation around Z axis
             zRotationAngle
           );
           
-          // Combine trajectory orientation with both rotations
+          // Combine trajectory orientation with subtle rotations
           orientation.multiply(xTiltQuaternion);
+          orientation.multiply(yRotationQuaternion);
           orientation.multiply(zRotationQuaternion);
           
           issRef.current.quaternion.copy(orientation);
@@ -165,269 +172,330 @@ const ISS: React.FC<ISSProps> = memo(({
   // References for solar panel groups
   const solarArrayRefs = useRef<(Group | null)[]>([null, null, null, null]);
 
-  // Realistic ISS model with simplified geometry for better visualization
+  // Rebuilt ISS model to match reference image - emphasizing key visual features
   const SatelliteModel = useMemo(() => {
-    const scale = ISS_SIZE * 0.3; // Adjusted for better visibility
+    const scale = ISS_SIZE * 0.4; // Slightly larger for better visibility
     
     return (
       <group scale={[scale, scale, scale]}>
-        {/* INTEGRATED TRUSS STRUCTURE - Main backbone */}
+        {/* INTEGRATED TRUSS STRUCTURE - Main silver backbone */}
         <group name="truss">
-          {/* Main truss beam */}
+          {/* Main horizontal truss beam - longer and more prominent */}
           <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[12, 0.3, 0.3]} />
+            <boxGeometry args={[16, 0.4, 0.4]} />
             <meshStandardMaterial 
-              color="#c0c0c0" 
-              metalness={0.9} 
-              roughness={0.2}
+              color="#c8c8c8" 
+              metalness={0.95} 
+              roughness={0.15}
             />
           </mesh>
           
-          {/* Truss segments for visual detail */}
-          {[-4, -2, 0, 2, 4].map((x, i) => (
-            <mesh key={`truss-segment-${i}`} position={[x, 0, 0]}>
-              <boxGeometry args={[0.2, 0.4, 0.4]} />
-              <meshStandardMaterial 
-                color="#a0a0a0" 
-                metalness={0.8} 
-                roughness={0.3}
-              />
-            </mesh>
+          {/* Truss framework details with cross-bracing */}
+          {[-6, -4, -2, 0, 2, 4, 6].map((x, i) => (
+            <group key={`truss-section-${i}`} position={[x, 0, 0]}>
+              {/* Vertical supports */}
+              <mesh position={[0, 0.3, 0]}>
+                <boxGeometry args={[0.15, 0.6, 0.15]} />
+                <meshStandardMaterial 
+                  color="#b0b0b0" 
+                  metalness={0.9} 
+                  roughness={0.2}
+                />
+              </mesh>
+              <mesh position={[0, -0.3, 0]}>
+                <boxGeometry args={[0.15, 0.6, 0.15]} />
+                <meshStandardMaterial 
+                  color="#b0b0b0" 
+                  metalness={0.9} 
+                  roughness={0.2}
+                />
+              </mesh>
+              {/* Cross bracing */}
+              <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 4]}>
+                <boxGeometry args={[0.8, 0.08, 0.08]} />
+                <meshStandardMaterial 
+                  color="#a8a8a8" 
+                  metalness={0.85} 
+                  roughness={0.25}
+                />
+              </mesh>
+            </group>
           ))}
         </group>
 
-        {/* SOLAR ARRAY WINGS - 8 panels in 4 pairs */}
+        {/* SOLAR ARRAY WINGS - 8 large panels in 4 pairs (DOMINANT FEATURE) */}
         <group name="solar-arrays">
-          {/* Port side arrays */}
-          <group ref={(el) => (solarArrayRefs.current[0] = el)} position={[-5, 0, 0]}>
-            <mesh position={[0, 3.5, 0]} rotation={[0, 0, Math.PI / 24]}>
-              <boxGeometry args={[0.05, 6, 2.5]} />
+          {/* Port side arrays - Far left */}
+          <group ref={(el) => (solarArrayRefs.current[0] = el)} position={[-7, 0, 0]}>
+            {/* Upper panel */}
+            <mesh position={[0, 5, 0]}>
+              <boxGeometry args={[0.08, 8, 3.5]} />
               <meshStandardMaterial 
-                color="#0a0a2e" 
-                metalness={0.35} 
-                roughness={0.6}
-                emissive="#001166"
-                emissiveIntensity={0.3}
+                color="#0a0a2a" 
+                metalness={0.2} 
+                roughness={0.8}
+                emissive="#000044"
+                emissiveIntensity={0.15}
               />
             </mesh>
-            <mesh position={[0, -3.5, 0]} rotation={[0, 0, -Math.PI / 24]}>
-              <boxGeometry args={[0.05, 6, 2.5]} />
+            {/* Lower panel */}
+            <mesh position={[0, -5, 0]}>
+              <boxGeometry args={[0.08, 8, 3.5]} />
               <meshStandardMaterial 
-                color="#0a0a2e" 
-                metalness={0.35} 
-                roughness={0.6}
-                emissive="#001166"
-                emissiveIntensity={0.3}
+                color="#0a0a2a" 
+                metalness={0.2} 
+                roughness={0.8}
+                emissive="#000044"
+                emissiveIntensity={0.15}
               />
             </mesh>
+            {/* Panel grid lines for detail */}
+            {[-3, -1, 1, 3].map((y, i) => (
+              <mesh key={`grid-port-far-${i}`} position={[0.05, y, 0]}>
+                <boxGeometry args={[0.02, 0.05, 3.6]} />
+                <meshStandardMaterial color="#1a1a3a" />
+              </mesh>
+            ))}
           </group>
           
-          <group ref={(el) => (solarArrayRefs.current[1] = el)} position={[-2.5, 0, 0]}>
-            <mesh position={[0, 3.5, 0]} rotation={[0, 0, -Math.PI / 36]}>
-              <boxGeometry args={[0.05, 6, 2.5]} />
+          {/* Port side arrays - Near left */}
+          <group ref={(el) => (solarArrayRefs.current[1] = el)} position={[-3.5, 0, 0]}>
+            {/* Upper panel */}
+            <mesh position={[0, 5, 0]}>
+              <boxGeometry args={[0.08, 8, 3.5]} />
               <meshStandardMaterial 
-                color="#0a0a2e" 
-                metalness={0.35} 
-                roughness={0.6}
-                emissive="#001166"
-                emissiveIntensity={0.3}
+                color="#0a0a2a" 
+                metalness={0.2} 
+                roughness={0.8}
+                emissive="#000044"
+                emissiveIntensity={0.15}
               />
             </mesh>
-            <mesh position={[0, -3.5, 0]} rotation={[0, 0, Math.PI / 36]}>
-              <boxGeometry args={[0.05, 6, 2.5]} />
+            {/* Lower panel */}
+            <mesh position={[0, -5, 0]}>
+              <boxGeometry args={[0.08, 8, 3.5]} />
               <meshStandardMaterial 
-                color="#0a0a2e" 
-                metalness={0.35} 
-                roughness={0.6}
-                emissive="#001166"
-                emissiveIntensity={0.3}
+                color="#0a0a2a" 
+                metalness={0.2} 
+                roughness={0.8}
+                emissive="#000044"
+                emissiveIntensity={0.15}
               />
             </mesh>
+            {/* Panel grid lines */}
+            {[-3, -1, 1, 3].map((y, i) => (
+              <mesh key={`grid-port-near-${i}`} position={[0.05, y, 0]}>
+                <boxGeometry args={[0.02, 0.05, 3.6]} />
+                <meshStandardMaterial color="#1a1a3a" />
+              </mesh>
+            ))}
           </group>
 
-          {/* Starboard side arrays */}
-          <group ref={(el) => (solarArrayRefs.current[2] = el)} position={[2.5, 0, 0]}>
-            <mesh position={[0, 3.5, 0]} rotation={[0, 0, Math.PI / 36]}>
-              <boxGeometry args={[0.05, 6, 2.5]} />
+          {/* Starboard side arrays - Near right */}
+          <group ref={(el) => (solarArrayRefs.current[2] = el)} position={[3.5, 0, 0]}>
+            {/* Upper panel */}
+            <mesh position={[0, 5, 0]}>
+              <boxGeometry args={[0.08, 8, 3.5]} />
               <meshStandardMaterial 
-                color="#0a0a2e" 
-                metalness={0.35} 
-                roughness={0.6}
-                emissive="#001166"
-                emissiveIntensity={0.3}
+                color="#0a0a2a" 
+                metalness={0.2} 
+                roughness={0.8}
+                emissive="#000044"
+                emissiveIntensity={0.15}
               />
             </mesh>
-            <mesh position={[0, -3.5, 0]} rotation={[0, 0, -Math.PI / 36]}>
-              <boxGeometry args={[0.05, 6, 2.5]} />
+            {/* Lower panel */}
+            <mesh position={[0, -5, 0]}>
+              <boxGeometry args={[0.08, 8, 3.5]} />
               <meshStandardMaterial 
-                color="#0a0a2e" 
-                metalness={0.35} 
-                roughness={0.6}
-                emissive="#001166"
-                emissiveIntensity={0.3}
+                color="#0a0a2a" 
+                metalness={0.2} 
+                roughness={0.8}
+                emissive="#000044"
+                emissiveIntensity={0.15}
               />
             </mesh>
+            {/* Panel grid lines */}
+            {[-3, -1, 1, 3].map((y, i) => (
+              <mesh key={`grid-star-near-${i}`} position={[-0.05, y, 0]}>
+                <boxGeometry args={[0.02, 0.05, 3.6]} />
+                <meshStandardMaterial color="#1a1a3a" />
+              </mesh>
+            ))}
           </group>
           
-          <group ref={(el) => (solarArrayRefs.current[3] = el)} position={[5, 0, 0]}>
-            <mesh position={[0, 3.5, 0]} rotation={[0, 0, -Math.PI / 24]}>
-              <boxGeometry args={[0.05, 6, 2.5]} />
+          {/* Starboard side arrays - Far right */}
+          <group ref={(el) => (solarArrayRefs.current[3] = el)} position={[7, 0, 0]}>
+            {/* Upper panel */}
+            <mesh position={[0, 5, 0]}>
+              <boxGeometry args={[0.08, 8, 3.5]} />
               <meshStandardMaterial 
-                color="#0a0a2e" 
-                metalness={0.35} 
-                roughness={0.6}
-                emissive="#001166"
-                emissiveIntensity={0.3}
+                color="#0a0a2a" 
+                metalness={0.2} 
+                roughness={0.8}
+                emissive="#000044"
+                emissiveIntensity={0.15}
               />
             </mesh>
-            <mesh position={[0, -3.5, 0]} rotation={[0, 0, Math.PI / 24]}>
-              <boxGeometry args={[0.05, 6, 2.5]} />
+            {/* Lower panel */}
+            <mesh position={[0, -5, 0]}>
+              <boxGeometry args={[0.08, 8, 3.5]} />
               <meshStandardMaterial 
-                color="#0a0a2e" 
-                metalness={0.35} 
-                roughness={0.6}
-                emissive="#001166"
-                emissiveIntensity={0.3}
+                color="#0a0a2a" 
+                metalness={0.2} 
+                roughness={0.8}
+                emissive="#000044"
+                emissiveIntensity={0.15}
               />
             </mesh>
+            {/* Panel grid lines */}
+            {[-3, -1, 1, 3].map((y, i) => (
+              <mesh key={`grid-star-far-${i}`} position={[-0.05, y, 0]}>
+                <boxGeometry args={[0.02, 0.05, 3.6]} />
+                <meshStandardMaterial color="#1a1a3a" />
+              </mesh>
+            ))}
           </group>
         </group>
 
-        {/* PRESSURIZED MODULES - Central living/working spaces */}
+        {/* CENTRAL MODULE CLUSTER - White/off-white cylindrical modules */}
         <group name="modules" position={[0, 0, 0]}>
-          {/* Russian Segment - Zvezda/Zarya */}
-          <mesh position={[-1.5, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[0.4, 0.4, 2.5, 12]} />
-            <meshStandardMaterial 
-              color="#f0f0f0" 
-              metalness={0.6} 
-              roughness={0.3}
-            />
-          </mesh>
-          
-          {/* Unity Node */}
+          {/* Main central hub - Unity Node */}
           <mesh position={[0, 0, 0]}>
-            <sphereGeometry args={[0.5, 12, 8]} />
+            <cylinderGeometry args={[0.6, 0.6, 1.2, 16]} />
             <meshStandardMaterial 
-              color="#e8e8e8" 
+              color="#f8f8f8" 
               metalness={0.7} 
               roughness={0.2}
             />
           </mesh>
           
-          {/* US Lab - Destiny */}
-          <mesh position={[1.5, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[0.4, 0.4, 2.5, 12]} />
+          {/* Russian Segment - Zvezda/Zarya */}
+          <mesh position={[-2, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.5, 0.5, 3, 16]} />
             <meshStandardMaterial 
-              color="#f5f5f5" 
-              metalness={0.6} 
-              roughness={0.3}
+              color="#f0f0f0" 
+              metalness={0.65} 
+              roughness={0.25}
             />
           </mesh>
           
-          {/* Columbus Laboratory */}
-          <mesh position={[0, 0, 1]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.35, 0.35, 1.8, 12]} />
+          {/* US Lab - Destiny */}
+          <mesh position={[2, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.5, 0.5, 3, 16]} />
+            <meshStandardMaterial 
+              color="#f5f5f5" 
+              metalness={0.65} 
+              roughness={0.25}
+            />
+          </mesh>
+          
+          {/* Columbus Laboratory - European module */}
+          <mesh position={[0, 0, 1.8]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.45, 0.45, 2.2, 16]} />
             <meshStandardMaterial 
               color="#f8f8f8" 
-              metalness={0.6} 
-              roughness={0.3}
+              metalness={0.65} 
+              roughness={0.25}
             />
           </mesh>
           
           {/* Japanese Kibo Module */}
-          <mesh position={[0, 0.8, 0]} rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[0.35, 0.35, 1.5, 12]} />
+          <mesh position={[0, 1.2, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.4, 0.4, 2, 16]} />
             <meshStandardMaterial 
               color="#f0f0f0" 
-              metalness={0.6} 
-              roughness={0.3}
+              metalness={0.65} 
+              roughness={0.25}
             />
           </mesh>
           
           {/* Cupola observation module */}
-          <mesh position={[0, -0.7, 0]}>
-            <sphereGeometry args={[0.3, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
+          <mesh position={[0, -0.8, 0]}>
+            <sphereGeometry args={[0.35, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
             <meshStandardMaterial 
-              color="#e0e0e0" 
+              color="#e8e8e8" 
               metalness={0.8} 
-              roughness={0.1}
-              emissive="#0066cc"
-              emissiveIntensity={0.1}
+              roughness={0.15}
+              emissive="#004488"
+              emissiveIntensity={0.05}
             />
           </mesh>
         </group>
 
-        {/* RADIATOR PANELS */}
+        {/* RADIATOR PANELS - Large white rectangular panels */}
         <group name="radiators">
-          <mesh position={[-3, 0, 1.2]} rotation={[Math.PI / 2, 0, 0]}>
-            <boxGeometry args={[2, 0.02, 1]} />
+          {/* Port side radiators */}
+          <mesh position={[-5.5, 0, 2]} rotation={[Math.PI / 2, 0, 0]}>
+            <boxGeometry args={[3, 0.05, 1.5]} />
             <meshStandardMaterial 
               color="#ffffff" 
-              metalness={0.5} 
-              roughness={0.2}
+              metalness={0.6} 
+              roughness={0.1}
             />
           </mesh>
-          <mesh position={[-3, 0, -1.2]} rotation={[Math.PI / 2, 0, 0]}>
-            <boxGeometry args={[2, 0.02, 1]} />
+          <mesh position={[-5.5, 0, -2]} rotation={[Math.PI / 2, 0, 0]}>
+            <boxGeometry args={[3, 0.05, 1.5]} />
             <meshStandardMaterial 
               color="#ffffff" 
-              metalness={0.5} 
-              roughness={0.2}
+              metalness={0.6} 
+              roughness={0.1}
             />
           </mesh>
-          <mesh position={[3, 0, 1.2]} rotation={[Math.PI / 2, 0, 0]}>
-            <boxGeometry args={[2, 0.02, 1]} />
+          
+          {/* Starboard side radiators */}
+          <mesh position={[5.5, 0, 2]} rotation={[Math.PI / 2, 0, 0]}>
+            <boxGeometry args={[3, 0.05, 1.5]} />
             <meshStandardMaterial 
               color="#ffffff" 
-              metalness={0.5} 
-              roughness={0.2}
+              metalness={0.6} 
+              roughness={0.1}
             />
           </mesh>
-          <mesh position={[3, 0, -1.2]} rotation={[Math.PI / 2, 0, 0]}>
-            <boxGeometry args={[2, 0.02, 1]} />
+          <mesh position={[5.5, 0, -2]} rotation={[Math.PI / 2, 0, 0]}>
+            <boxGeometry args={[3, 0.05, 1.5]} />
             <meshStandardMaterial 
               color="#ffffff" 
-              metalness={0.5} 
-              roughness={0.2}
+              metalness={0.6} 
+              roughness={0.1}
             />
           </mesh>
         </group>
 
-        {/* ROBOTIC ARM - Simplified Canadarm2 */}
-        <group name="robotic-arm" position={[0.5, 0.5, 0]}>
-          <mesh rotation={[0, 0, Math.PI / 4]}>
-            <cylinderGeometry args={[0.05, 0.05, 1, 8]} />
+        {/* ROBOTIC ARM - Canadarm2 */}
+        <group name="robotic-arm" position={[1, 0.6, 0]}>
+          <mesh rotation={[0, 0, Math.PI / 3]}>
+            <cylinderGeometry args={[0.06, 0.06, 1.5, 12]} />
             <meshStandardMaterial 
-              color="#d0d0d0" 
-              metalness={0.8} 
-              roughness={0.2}
+              color="#d8d8d8" 
+              metalness={0.85} 
+              roughness={0.15}
             />
           </mesh>
-          <mesh position={[0.35, 0.35, 0]} rotation={[0, 0, -Math.PI / 6]}>
-            <cylinderGeometry args={[0.04, 0.04, 0.8, 8]} />
+          <mesh position={[0.6, 0.6, 0]} rotation={[0, 0, -Math.PI / 4]}>
+            <cylinderGeometry args={[0.05, 0.05, 1.2, 12]} />
             <meshStandardMaterial 
-              color="#d0d0d0" 
-              metalness={0.8} 
-              roughness={0.2}
+              color="#d8d8d8" 
+              metalness={0.85} 
+              roughness={0.15}
             />
           </mesh>
         </group>
 
         {/* DOCKING PORTS */}
         <group name="docking-ports">
-          <mesh position={[3, 0, 0]}>
-            <cylinderGeometry args={[0.2, 0.2, 0.1, 12]} />
+          <mesh position={[4, 0, 0]}>
+            <cylinderGeometry args={[0.25, 0.25, 0.15, 16]} />
             <meshStandardMaterial 
-              color="#808080" 
+              color="#888888" 
               metalness={0.9} 
               roughness={0.1}
             />
           </mesh>
-          <mesh position={[-3, 0, 0]}>
-            <cylinderGeometry args={[0.2, 0.2, 0.1, 12]} />
+          <mesh position={[-4, 0, 0]}>
+            <cylinderGeometry args={[0.25, 0.25, 0.15, 16]} />
             <meshStandardMaterial 
-              color="#808080" 
+              color="#888888" 
               metalness={0.9} 
               roughness={0.1}
             />
@@ -436,16 +504,16 @@ const ISS: React.FC<ISSProps> = memo(({
 
         {/* COMMUNICATION ANTENNAS */}
         <group name="antennas">
-          <mesh position={[0, 0, 1.5]}>
-            <sphereGeometry args={[0.15, 12, 8]} />
+          <mesh position={[0, 0, 2.5]}>
+            <sphereGeometry args={[0.2, 16, 12]} />
             <meshStandardMaterial 
               color="#ffffff" 
               metalness={0.9} 
-              roughness={0.1}
+              roughness={0.05}
             />
           </mesh>
-          <mesh position={[0, 0, 1.5]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.02, 0.02, 0.6, 8]} />
+          <mesh position={[0, 0, 2.8]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.025, 0.025, 0.8, 12]} />
             <meshStandardMaterial 
               color="#ffaa00" 
               metalness={0.9} 
@@ -457,24 +525,24 @@ const ISS: React.FC<ISSProps> = memo(({
         </group>
 
         {/* STATUS LIGHTS */}
-        <mesh position={[0, 0, -1.5]}>
-          <sphereGeometry args={[0.03, 8, 8]} />
+        <mesh position={[0, 0, -2]}>
+          <sphereGeometry args={[0.04, 12, 8]} />
           <meshStandardMaterial 
             color="#00ff00" 
             emissive="#00ff00"
             emissiveIntensity={0.8 + Math.sin(animationTimeRef.current * 3) * 0.2}
           />
         </mesh>
-        <mesh position={[0.1, 0, -1.5]}>
-          <sphereGeometry args={[0.02, 8, 8]} />
+        <mesh position={[0.15, 0, -2]}>
+          <sphereGeometry args={[0.03, 12, 8]} />
           <meshStandardMaterial 
             color="#ff0000" 
             emissive="#ff0000"
             emissiveIntensity={0.6 + Math.sin(animationTimeRef.current * 2 + Math.PI) * 0.2}
           />
         </mesh>
-        <mesh position={[-0.1, 0, -1.5]}>
-          <sphereGeometry args={[0.02, 8, 8]} />
+        <mesh position={[-0.15, 0, -2]}>
+          <sphereGeometry args={[0.03, 12, 8]} />
           <meshStandardMaterial 
             color="#0088ff" 
             emissive="#0088ff"
