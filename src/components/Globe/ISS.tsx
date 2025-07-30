@@ -135,7 +135,7 @@ const ISS: React.FC<ISSProps> = memo(({
           
           // Apply minimal rotations optimized for solar panel visibility
           const xTiltAngle = Math.PI / 2; 
-          const yRotationAngle = Math.PI / 2;
+          const yRotationAngle = Math.PI / 4;
           const zRotationAngle = Math.PI / 90; // 2 degrees - very minimal perspective
           
           const xTiltQuaternion = new THREE.Quaternion().setFromAxisAngle(
@@ -227,134 +227,480 @@ const ISS: React.FC<ISSProps> = memo(({
         <group name="solar-arrays">
           {/* Port side arrays - Far left */}
           <group ref={(el) => (solarArrayRefs.current[0] = el)} position={[-7, 0, 0]}>
-            {/* Upper panel */}
-            <mesh position={[0, 5, 0]}>
-              <boxGeometry args={[0.08, 8, 3.5]} />
-              <meshStandardMaterial 
-                color="#0a0a2a" 
-                metalness={0.2} 
-                roughness={0.8}
-                emissive="#000044"
-                emissiveIntensity={0.15}
-              />
-            </mesh>
-            {/* Lower panel */}
-            <mesh position={[0, -5, 0]}>
-              <boxGeometry args={[0.08, 8, 3.5]} />
-              <meshStandardMaterial 
-                color="#0a0a2a" 
-                metalness={0.2} 
-                roughness={0.8}
-                emissive="#000044"
-                emissiveIntensity={0.15}
-              />
-            </mesh>
-            {/* Panel grid lines for detail */}
-            {[-3, -1, 1, 3].map((y, i) => (
-              <mesh key={`grid-port-far-${i}`} position={[0.05, y, 0]}>
-                <boxGeometry args={[0.02, 0.05, 3.6]} />
-                <meshStandardMaterial color="#1a1a3a" />
+            {/* Upper panel with realistic solar cells */}
+            <group position={[0, 5, 0]}>
+              {/* Main panel base */}
+              <mesh>
+                <boxGeometry args={[0.12, 8, 3.5]} />
+                <meshStandardMaterial 
+                  color="#1a1a3a" 
+                  metalness={0.7} 
+                  roughness={0.3}
+                  emissive="#000066"
+                  emissiveIntensity={0.1}
+                />
               </mesh>
-            ))}
+              
+              {/* Photovoltaic cell grid */}
+              {Array.from({ length: 12 }, (_, row) => 
+                Array.from({ length: 6 }, (_, col) => (
+                  <mesh 
+                    key={`cell-port-far-upper-${row}-${col}`}
+                    position={[
+                      0.07,
+                      -3.5 + (row * 0.6),
+                      -1.5 + (col * 0.5)
+                    ]}
+                  >
+                    <boxGeometry args={[0.02, 0.5, 0.4]} />
+                    <meshStandardMaterial 
+                      color="#0f0f2f" 
+                      metalness={0.8} 
+                      roughness={0.2}
+                      emissive="#000088"
+                      emissiveIntensity={0.2}
+                    />
+                  </mesh>
+                ))
+              )}
+              
+              {/* Enhanced Panel framework */}
+              {/* Main frame borders - thicker and more prominent */}
+              <mesh position={[0.08, 0, 1.75]}>
+                <boxGeometry args={[0.06, 8.4, 0.08]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[0.08, 0, -1.75]}>
+                <boxGeometry args={[0.06, 8.4, 0.08]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[0.08, 4, 0]}>
+                <boxGeometry args={[0.06, 0.08, 3.7]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[0.08, -4, 0]}>
+                <boxGeometry args={[0.06, 0.08, 3.7]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+            </group>
+            
+            {/* Lower panel with realistic solar cells */}
+            <group position={[0, -5, 0]}>
+              {/* Main panel base */}
+              <mesh>
+                <boxGeometry args={[0.12, 8, 3.5]} />
+                <meshStandardMaterial 
+                  color="#1a1a3a" 
+                  metalness={0.7} 
+                  roughness={0.3}
+                  emissive="#000066"
+                  emissiveIntensity={0.1}
+                />
+              </mesh>
+              
+              {/* Photovoltaic cell grid */}
+              {Array.from({ length: 12 }, (_, row) => 
+                Array.from({ length: 6 }, (_, col) => (
+                  <mesh 
+                    key={`cell-port-far-lower-${row}-${col}`}
+                    position={[
+                      0.07,
+                      -3.5 + (row * 0.6),
+                      -1.5 + (col * 0.5)
+                    ]}
+                  >
+                    <boxGeometry args={[0.02, 0.5, 0.4]} />
+                    <meshStandardMaterial 
+                      color="#0f0f2f" 
+                      metalness={0.8} 
+                      roughness={0.2}
+                      emissive="#000088"
+                      emissiveIntensity={0.2}
+                    />
+                  </mesh>
+                ))
+              )}
+              
+              {/* Enhanced Panel framework */}
+              {/* Main frame borders - thicker and more prominent */}
+              <mesh position={[0.08, 0, 1.75]}>
+                <boxGeometry args={[0.06, 8.4, 0.08]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[0.08, 0, -1.75]}>
+                <boxGeometry args={[0.06, 8.4, 0.08]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[0.08, 4, 0]}>
+                <boxGeometry args={[0.06, 0.08, 3.7]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[0.08, -4, 0]}>
+                <boxGeometry args={[0.06, 0.08, 3.7]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+            </group>
+            
+            {/* Connection hardware */}
+            <mesh position={[0, 0, 0]}>
+              <cylinderGeometry args={[0.1, 0.1, 0.3, 8]} />
+              <meshStandardMaterial color="#888888" metalness={0.9} roughness={0.1} />
+            </mesh>
           </group>
           
           {/* Port side arrays - Near left */}
           <group ref={(el) => (solarArrayRefs.current[1] = el)} position={[-3.5, 0, 0]}>
-            {/* Upper panel */}
-            <mesh position={[0, 5, 0]}>
-              <boxGeometry args={[0.08, 8, 3.5]} />
-              <meshStandardMaterial 
-                color="#0a0a2a" 
-                metalness={0.2} 
-                roughness={0.8}
-                emissive="#000044"
-                emissiveIntensity={0.15}
-              />
-            </mesh>
-            {/* Lower panel */}
-            <mesh position={[0, -5, 0]}>
-              <boxGeometry args={[0.08, 8, 3.5]} />
-              <meshStandardMaterial 
-                color="#0a0a2a" 
-                metalness={0.2} 
-                roughness={0.8}
-                emissive="#000044"
-                emissiveIntensity={0.15}
-              />
-            </mesh>
-            {/* Panel grid lines */}
-            {[-3, -1, 1, 3].map((y, i) => (
-              <mesh key={`grid-port-near-${i}`} position={[0.05, y, 0]}>
-                <boxGeometry args={[0.02, 0.05, 3.6]} />
-                <meshStandardMaterial color="#1a1a3a" />
+            {/* Upper panel with realistic solar cells */}
+            <group position={[0, 5, 0]}>
+              {/* Main panel base */}
+              <mesh>
+                <boxGeometry args={[0.12, 8, 3.5]} />
+                <meshStandardMaterial 
+                  color="#1a1a3a" 
+                  metalness={0.7} 
+                  roughness={0.3}
+                  emissive="#000066"
+                  emissiveIntensity={0.1}
+                />
               </mesh>
-            ))}
+              
+              {/* Photovoltaic cell grid */}
+              {Array.from({ length: 12 }, (_, row) => 
+                Array.from({ length: 6 }, (_, col) => (
+                  <mesh 
+                    key={`cell-port-near-upper-${row}-${col}`}
+                    position={[
+                      0.07,
+                      -3.5 + (row * 0.6),
+                      -1.5 + (col * 0.5)
+                    ]}
+                  >
+                    <boxGeometry args={[0.02, 0.5, 0.4]} />
+                    <meshStandardMaterial 
+                      color="#0f0f2f" 
+                      metalness={0.8} 
+                      roughness={0.2}
+                      emissive="#000088"
+                      emissiveIntensity={0.2}
+                    />
+                  </mesh>
+                ))
+              )}
+              
+              {/* Enhanced Panel framework */}
+              {/* Main frame borders - thicker and more prominent */}
+              <mesh position={[0.08, 0, 1.75]}>
+                <boxGeometry args={[0.06, 8.4, 0.08]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[0.08, 0, -1.75]}>
+                <boxGeometry args={[0.06, 8.4, 0.08]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[0.08, 4, 0]}>
+                <boxGeometry args={[0.06, 0.08, 3.7]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[0.08, -4, 0]}>
+                <boxGeometry args={[0.06, 0.08, 3.7]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              
+            </group>
+            
+            {/* Lower panel with realistic solar cells */}
+            <group position={[0, -5, 0]}>
+              {/* Main panel base */}
+              <mesh>
+                <boxGeometry args={[0.12, 8, 3.5]} />
+                <meshStandardMaterial 
+                  color="#1a1a3a" 
+                  metalness={0.7} 
+                  roughness={0.3}
+                  emissive="#000066"
+                  emissiveIntensity={0.1}
+                />
+              </mesh>
+              
+              {/* Photovoltaic cell grid */}
+              {Array.from({ length: 12 }, (_, row) => 
+                Array.from({ length: 6 }, (_, col) => (
+                  <mesh 
+                    key={`cell-port-near-lower-${row}-${col}`}
+                    position={[
+                      0.07,
+                      -3.5 + (row * 0.6),
+                      -1.5 + (col * 0.5)
+                    ]}
+                  >
+                    <boxGeometry args={[0.02, 0.5, 0.4]} />
+                    <meshStandardMaterial 
+                      color="#0f0f2f" 
+                      metalness={0.8} 
+                      roughness={0.2}
+                      emissive="#000088"
+                      emissiveIntensity={0.2}
+                    />
+                  </mesh>
+                ))
+              )}
+              
+              {/* Enhanced Panel framework */}
+              {/* Main frame borders - thicker and more prominent */}
+              <mesh position={[0.08, 0, 1.75]}>
+                <boxGeometry args={[0.06, 8.4, 0.08]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[0.08, 0, -1.75]}>
+                <boxGeometry args={[0.06, 8.4, 0.08]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[0.08, 4, 0]}>
+                <boxGeometry args={[0.06, 0.08, 3.7]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[0.08, -4, 0]}>
+                <boxGeometry args={[0.06, 0.08, 3.7]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              
+            </group>
+            
+            {/* Connection hardware */}
+            <mesh position={[0, 0, 0]}>
+              <cylinderGeometry args={[0.1, 0.1, 0.3, 8]} />
+              <meshStandardMaterial color="#888888" metalness={0.9} roughness={0.1} />
+            </mesh>
           </group>
 
           {/* Starboard side arrays - Near right */}
           <group ref={(el) => (solarArrayRefs.current[2] = el)} position={[3.5, 0, 0]}>
-            {/* Upper panel */}
-            <mesh position={[0, 5, 0]}>
-              <boxGeometry args={[0.08, 8, 3.5]} />
-              <meshStandardMaterial 
-                color="#0a0a2a" 
-                metalness={0.2} 
-                roughness={0.8}
-                emissive="#000044"
-                emissiveIntensity={0.15}
-              />
-            </mesh>
-            {/* Lower panel */}
-            <mesh position={[0, -5, 0]}>
-              <boxGeometry args={[0.08, 8, 3.5]} />
-              <meshStandardMaterial 
-                color="#0a0a2a" 
-                metalness={0.2} 
-                roughness={0.8}
-                emissive="#000044"
-                emissiveIntensity={0.15}
-              />
-            </mesh>
-            {/* Panel grid lines */}
-            {[-3, -1, 1, 3].map((y, i) => (
-              <mesh key={`grid-star-near-${i}`} position={[-0.05, y, 0]}>
-                <boxGeometry args={[0.02, 0.05, 3.6]} />
-                <meshStandardMaterial color="#1a1a3a" />
+            {/* Upper panel with realistic solar cells */}
+            <group position={[0, 5, 0]}>
+              {/* Main panel base */}
+              <mesh>
+                <boxGeometry args={[0.12, 8, 3.5]} />
+                <meshStandardMaterial 
+                  color="#1a1a3a" 
+                  metalness={0.7} 
+                  roughness={0.3}
+                  emissive="#000066"
+                  emissiveIntensity={0.1}
+                />
               </mesh>
-            ))}
+              
+              {/* Photovoltaic cell grid */}
+              {Array.from({ length: 12 }, (_, row) => 
+                Array.from({ length: 6 }, (_, col) => (
+                  <mesh 
+                    key={`cell-star-near-upper-${row}-${col}`}
+                    position={[
+                      -0.07,
+                      -3.5 + (row * 0.6),
+                      -1.5 + (col * 0.5)
+                    ]}
+                  >
+                    <boxGeometry args={[0.02, 0.5, 0.4]} />
+                    <meshStandardMaterial 
+                      color="#0f0f2f" 
+                      metalness={0.8} 
+                      roughness={0.2}
+                      emissive="#000088"
+                      emissiveIntensity={0.2}
+                    />
+                  </mesh>
+                ))
+              )}
+              
+              {/* Enhanced Panel framework */}
+              {/* Main frame borders - thicker and more prominent */}
+              <mesh position={[-0.08, 0, 1.75]}>
+                <boxGeometry args={[0.06, 8.4, 0.08]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[-0.08, 0, -1.75]}>
+                <boxGeometry args={[0.06, 8.4, 0.08]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[-0.08, 4, 0]}>
+                <boxGeometry args={[0.06, 0.08, 3.7]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[-0.08, -4, 0]}>
+                <boxGeometry args={[0.06, 0.08, 3.7]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              
+            </group>
+            
+            {/* Lower panel with realistic solar cells */}
+            <group position={[0, -5, 0]}>
+              {/* Main panel base */}
+              <mesh>
+                <boxGeometry args={[0.12, 8, 3.5]} />
+                <meshStandardMaterial 
+                  color="#1a1a3a" 
+                  metalness={0.7} 
+                  roughness={0.3}
+                  emissive="#000066"
+                  emissiveIntensity={0.1}
+                />
+              </mesh>
+              
+              {/* Photovoltaic cell grid */}
+              {Array.from({ length: 12 }, (_, row) => 
+                Array.from({ length: 6 }, (_, col) => (
+                  <mesh 
+                    key={`cell-star-near-lower-${row}-${col}`}
+                    position={[
+                      -0.07,
+                      -3.5 + (row * 0.6),
+                      -1.5 + (col * 0.5)
+                    ]}
+                  >
+                    <boxGeometry args={[0.02, 0.5, 0.4]} />
+                    <meshStandardMaterial 
+                      color="#0f0f2f" 
+                      metalness={0.8} 
+                      roughness={0.2}
+                      emissive="#000088"
+                      emissiveIntensity={0.2}
+                    />
+                  </mesh>
+                ))
+              )}
+              
+              {/* Enhanced Panel framework */}
+              {/* Main frame borders - thicker and more prominent */}
+              <mesh position={[-0.08, 0, 1.75]}>
+                <boxGeometry args={[0.06, 8.4, 0.08]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[-0.08, 0, -1.75]}>
+                <boxGeometry args={[0.06, 8.4, 0.08]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[-0.08, 4, 0]}>
+                <boxGeometry args={[0.06, 0.08, 3.7]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              <mesh position={[-0.08, -4, 0]}>
+                <boxGeometry args={[0.06, 0.08, 3.7]} />
+                <meshStandardMaterial color="#e0e0e0" metalness={0.95} roughness={0.05} />
+              </mesh>
+              
+            </group>
+            
+            {/* Connection hardware */}
+            <mesh position={[0, 0, 0]}>
+              <cylinderGeometry args={[0.1, 0.1, 0.3, 8]} />
+              <meshStandardMaterial color="#888888" metalness={0.9} roughness={0.1} />
+            </mesh>
           </group>
           
           {/* Starboard side arrays - Far right */}
           <group ref={(el) => (solarArrayRefs.current[3] = el)} position={[7, 0, 0]}>
-            {/* Upper panel */}
-            <mesh position={[0, 5, 0]}>
-              <boxGeometry args={[0.08, 8, 3.5]} />
-              <meshStandardMaterial 
-                color="#0a0a2a" 
-                metalness={0.2} 
-                roughness={0.8}
-                emissive="#000044"
-                emissiveIntensity={0.15}
-              />
-            </mesh>
-            {/* Lower panel */}
-            <mesh position={[0, -5, 0]}>
-              <boxGeometry args={[0.08, 8, 3.5]} />
-              <meshStandardMaterial 
-                color="#0a0a2a" 
-                metalness={0.2} 
-                roughness={0.8}
-                emissive="#000044"
-                emissiveIntensity={0.15}
-              />
-            </mesh>
-            {/* Panel grid lines */}
-            {[-3, -1, 1, 3].map((y, i) => (
-              <mesh key={`grid-star-far-${i}`} position={[-0.05, y, 0]}>
-                <boxGeometry args={[0.02, 0.05, 3.6]} />
-                <meshStandardMaterial color="#1a1a3a" />
+            {/* Upper panel with realistic solar cells */}
+            <group position={[0, 5, 0]}>
+              {/* Main panel base */}
+              <mesh>
+                <boxGeometry args={[0.12, 8, 3.5]} />
+                <meshStandardMaterial 
+                  color="#1a1a3a" 
+                  metalness={0.7} 
+                  roughness={0.3}
+                  emissive="#000066"
+                  emissiveIntensity={0.1}
+                />
               </mesh>
-            ))}
+              
+              {/* Photovoltaic cell grid */}
+              {Array.from({ length: 12 }, (_, row) => 
+                Array.from({ length: 6 }, (_, col) => (
+                  <mesh 
+                    key={`cell-star-far-upper-${row}-${col}`}
+                    position={[
+                      -0.07,
+                      -3.5 + (row * 0.6),
+                      -1.5 + (col * 0.5)
+                    ]}
+                  >
+                    <boxGeometry args={[0.02, 0.5, 0.4]} />
+                    <meshStandardMaterial 
+                      color="#0f0f2f" 
+                      metalness={0.8} 
+                      roughness={0.2}
+                      emissive="#000088"
+                      emissiveIntensity={0.2}
+                    />
+                  </mesh>
+                ))
+              )}
+              
+              {/* Panel framework */}
+              <mesh position={[-0.08, 0, 0]}>
+                <boxGeometry args={[0.04, 8.2, 0.05]} />
+                <meshStandardMaterial color="#c0c0c0" metalness={0.9} roughness={0.1} />
+              </mesh>
+              <mesh position={[-0.08, 0, 0]}>
+                <boxGeometry args={[0.04, 0.05, 3.7]} />
+                <meshStandardMaterial color="#c0c0c0" metalness={0.9} roughness={0.1} />
+              </mesh>
+            </group>
+            
+            {/* Lower panel with realistic solar cells */}
+            <group position={[0, -5, 0]}>
+              {/* Main panel base */}
+              <mesh>
+                <boxGeometry args={[0.12, 8, 3.5]} />
+                <meshStandardMaterial 
+                  color="#1a1a3a" 
+                  metalness={0.7} 
+                  roughness={0.3}
+                  emissive="#000066"
+                  emissiveIntensity={0.1}
+                />
+              </mesh>
+              
+              {/* Photovoltaic cell grid */}
+              {Array.from({ length: 12 }, (_, row) => 
+                Array.from({ length: 6 }, (_, col) => (
+                  <mesh 
+                    key={`cell-star-far-lower-${row}-${col}`}
+                    position={[
+                      -0.07,
+                      -3.5 + (row * 0.6),
+                      -1.5 + (col * 0.5)
+                    ]}
+                  >
+                    <boxGeometry args={[0.02, 0.5, 0.4]} />
+                    <meshStandardMaterial 
+                      color="#0f0f2f" 
+                      metalness={0.8} 
+                      roughness={0.2}
+                      emissive="#000088"
+                      emissiveIntensity={0.2}
+                    />
+                  </mesh>
+                ))
+              )}
+              
+              {/* Panel framework */}
+              <mesh position={[-0.08, 0, 0]}>
+                <boxGeometry args={[0.04, 8.2, 0.05]} />
+                <meshStandardMaterial color="#c0c0c0" metalness={0.9} roughness={0.1} />
+              </mesh>
+              <mesh position={[-0.08, 0, 0]}>
+                <boxGeometry args={[0.04, 0.05, 3.7]} />
+                <meshStandardMaterial color="#c0c0c0" metalness={0.9} roughness={0.1} />
+              </mesh>
+            </group>
+            
+            {/* Connection hardware */}
+            <mesh position={[0, 0, 0]}>
+              <cylinderGeometry args={[0.1, 0.1, 0.3, 8]} />
+              <meshStandardMaterial color="#888888" metalness={0.9} roughness={0.1} />
+            </mesh>
           </group>
         </group>
 
