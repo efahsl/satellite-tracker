@@ -5,8 +5,10 @@ import { Vector3 } from 'three';
 import Earth from './Earth';
 import ISS from './ISS';
 import Sun from './Sun';
+import SolarLighting from './SolarLighting';
 import Controls from './Controls';
 import FPSMonitor from './FPSMonitor';
+import { PerformanceManager } from './PerformanceManager';
 import { 
   EARTH_DAY_MAP, 
   EARTH_NIGHT_MAP, 
@@ -29,6 +31,8 @@ const Globe: React.FC<GlobeProps> = memo(({
 }) => {
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
+  // Solar activity state for dynamic lighting intensity
+  const [solarActivity, setSolarActivity] = useState<number>(0.5);
 
   // Update sun position periodically
   useEffect(() => {
@@ -44,75 +48,69 @@ const Globe: React.FC<GlobeProps> = memo(({
   }, []);
 
   return (
-    <div style={{ width, height, position: 'relative' }}>
-      {/* FPS Monitor - Outside Canvas */}
-      <FPSMonitor position="top-right" />
-      
-      <Canvas
-        camera={{ position: [0, 0, 12], fov: 45 }}
-        style={{ background: '#000000' }}
-      >
-        <Suspense fallback={null}>
-          {/* Reduced ambient light for more dramatic day/night contrast */}
-          <ambientLight intensity={0.1} color="#404080" />
-          
-          {/* Dynamic directional light positioned at sun location */}
-          <directionalLight 
-            position={sunPosition}
-            intensity={2.0} 
-            color="#fff8dc"
-            castShadow={true}
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
-          />
-          
-          {/* Additional rim lighting for atmosphere effect */}
-          <directionalLight 
-            position={sunPosition.clone().multiplyScalar(-0.3)}
-            intensity={0.3} 
-            color="#4169e1"
-          />
-          
-          {/* Earth with enhanced textures and day/night cycle */}
-          <Earth 
-            sunPosition={sunPosition}
-            dayTexturePath={EARTH_DAY_MAP}
-            nightTexturePath={EARTH_NIGHT_MAP}
-            normalMapPath={EARTH_NORMAL_MAP}
-            specularMapPath={EARTH_SPECULAR_MAP}
-          />
-          
-          {/* ISS with enhanced trajectory */}
-          <ISS showTrajectory={true} trajectoryLength={300} />
-          
-          {/* Sun with realistic appearance and positioning */}
-          <Sun 
-            sunPosition={sunPosition}
-            size={SUN_SIZE}
-            distance={SUN_DISTANCE}
-            intensity={SUN_INTENSITY}
-            visible={true}
-          />
-          
-          {/* Enhanced camera controls */}
-          <Controls 
-            enableZoom={true} 
-            enablePan={true}
-            dampingFactor={0.05}
-          />
-          
-          {/* Enhanced star field with more realistic appearance */}
-          <Stars 
-            radius={200} 
-            depth={100} 
-            count={8000} 
-            factor={6} 
-            saturation={0.1} 
-            fade={true}
-            speed={0.5}
-          />
-        </Suspense>
-      </Canvas>
+    <PerformanceManager targetFps={30} enableAutoQuality={true}>
+      <div style={{ width, height, position: 'relative' }}>
+        {/* FPS Monitor - Outside Canvas */}
+        <FPSMonitor position="top-right" />
+        
+        <Canvas
+          camera={{ position: [0, 0, 12], fov: 45 }}
+          style={{ background: '#000000' }}
+        >
+          <Suspense fallback={null}>
+            {/* Reduced ambient light for more dramatic day/night contrast */}
+            <ambientLight intensity={0.08} color="#404080" />
+            
+            {/* Enhanced solar lighting system with realistic color temperature and dynamic intensity */}
+            <SolarLighting 
+              sunPosition={sunPosition}
+              solarActivity={solarActivity}
+              baseIntensity={SUN_INTENSITY}
+              enableShadows={true}
+              shadowMapSize={2048}
+            />
+            
+            {/* Earth with enhanced textures and day/night cycle */}
+            <Earth 
+              sunPosition={sunPosition}
+              dayTexturePath={EARTH_DAY_MAP}
+              nightTexturePath={EARTH_NIGHT_MAP}
+              normalMapPath={EARTH_NORMAL_MAP}
+              specularMapPath={EARTH_SPECULAR_MAP}
+            />
+            
+            {/* ISS with enhanced trajectory */}
+            <ISS showTrajectory={true} trajectoryLength={300} />
+            
+            {/* Sun with realistic appearance and positioning */}
+            <Sun 
+              sunPosition={sunPosition}
+              size={SUN_SIZE}
+              distance={SUN_DISTANCE}
+              intensity={SUN_INTENSITY}
+              visible={true}
+              onSolarActivityChange={setSolarActivity}
+            />
+            
+            {/* Enhanced camera controls */}
+            <Controls 
+              enableZoom={true} 
+              enablePan={true}
+              dampingFactor={0.05}
+            />
+            
+            {/* Enhanced star field with more realistic appearance */}
+            <Stars 
+              radius={200} 
+              depth={100} 
+              count={8000} 
+              factor={6} 
+              saturation={0.1} 
+              fade={true}
+              speed={0.5}
+            />
+          </Suspense>
+        </Canvas>
       
       {/* Enhanced loading indicator */}
       <div 
@@ -138,6 +136,7 @@ const Globe: React.FC<GlobeProps> = memo(({
         </div>
       </div>
     </div>
+  </PerformanceManager>
   );
 });
 

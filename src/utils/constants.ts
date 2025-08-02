@@ -59,6 +59,13 @@ export const CITY_GLOW_INTENSITY = 0.4; // Glow effect strength around cities
 // Sun settings
 export const SUN_SIZE = 8; // Size of the sun sphere
 export const SUN_DISTANCE = 150; // Distance of sun from Earth center
-export const SUN_INTENSITY = 1.2; // Brightness intensity of the sun
+export const SUN_INTENSITY = 2.2; // Enhanced brightness intensity of the sun
 export const SUN_COLOR = '#ffaa44'; // Base color of the sun
 export const SUN_CORONA_COLOR = '#ff6b35'; // Color of the sun's corona
+
+// Enhanced solar lighting settings
+export const SOLAR_COLOR_TEMPERATURE = 5778; // Realistic solar color temperature in Kelvin
+export const SOLAR_ACTIVITY_MIN = 0.8; // Minimum solar activity multiplier
+export const SOLAR_ACTIVITY_MAX = 1.2; // Maximum solar activity multiplier
+export const SHADOW_MAP_SIZE = 2048; // Shadow map resolution
+export const SHADOW_CAMERA_SIZE = 20; // Shadow camera frustum size

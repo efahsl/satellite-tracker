@@ -179,13 +179,13 @@ const Earth: React.FC<EarthProps> = memo(({
   return (
     <group>
       {/* Earth sphere with day/night shader */}
-      <mesh ref={earthRef}>
+      <mesh ref={earthRef} receiveShadow={true}>
         <sphereGeometry args={[EARTH_RADIUS, 64, 64]} />
         <primitive object={shaderMaterial} ref={materialRef} />
       </mesh>
 
       {/* Enhanced atmosphere glow effect */}
-      <mesh>
+      <mesh receiveShadow={true}>
         <sphereGeometry args={[EARTH_RADIUS + 0.1, 32, 32]} />
         <meshPhongMaterial
           color="#4a90e2"
@@ -196,7 +196,7 @@ const Earth: React.FC<EarthProps> = memo(({
       </mesh>
       
       {/* Outer atmosphere layer */}
-      <mesh>
+      <mesh receiveShadow={true}>
         <sphereGeometry args={[EARTH_RADIUS + 0.2, 16, 16]} />
         <meshPhongMaterial
           color="#87ceeb"
