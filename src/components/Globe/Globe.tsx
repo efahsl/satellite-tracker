@@ -1,9 +1,10 @@
-import React, { Suspense, memo, useMemo, useState, useEffect } from 'react';
+import React, { Suspense, memo, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Stars } from '@react-three/drei';
 import { Vector3 } from 'three';
 import Earth from './Earth';
 import ISS from './ISS';
+import EnhancedISS from './ISS-Enhanced';
 import Sun from './Sun';
 import Controls from './Controls';
 import FPSMonitor from './FPSMonitor';
@@ -83,7 +84,8 @@ const Globe: React.FC<GlobeProps> = memo(({
           />
           
           {/* ISS with enhanced trajectory */}
-          <ISS showTrajectory={true} trajectoryLength={300} />
+          {/* <ISS showTrajectory={true} trajectoryLength={300} /> */}
+          <EnhancedISS showTrajectory={true} trajectoryLength={300} />
           
           {/* Sun with realistic appearance and positioning */}
           <Sun 
