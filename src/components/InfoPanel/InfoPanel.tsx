@@ -2,6 +2,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { useISS } from '../../state/ISSContext';
 import Coordinates from './Coordinates';
 import Altitude from './Altitude';
+import { PerformanceControls } from '../Controls/PerformanceControls';
 // import Crew from './Crew';
 
 interface InfoPanelProps {
@@ -50,6 +51,11 @@ const InfoPanel: React.FC<InfoPanelProps> = memo(({ className = '' }) => {
             ? 'Camera is automatically tracking the ISS'
             : 'Click to make camera follow the ISS'}
         </p>
+      </div>
+
+      {/* Performance Controls */}
+      <div className="mb-6">
+        <PerformanceControls />
       </div>
 
       {/* Information panels */}
