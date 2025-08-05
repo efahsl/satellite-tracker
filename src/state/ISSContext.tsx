@@ -149,9 +149,9 @@ export const ISSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, [fetchISSPosition]);
 
   // Fetch ISS crew data (enabled now)
-  useEffect(() => {
-    fetchISSCrew();
-  }, [fetchISSCrew]);
+  // useEffect(() => {
+  //   fetchISSCrew();
+  // }, [fetchISSCrew]);
 
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({

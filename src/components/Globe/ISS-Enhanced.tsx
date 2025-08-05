@@ -4,6 +4,7 @@ import { Vector3, Group, TubeGeometry, CatmullRomCurve3, Color } from 'three';
 import * as THREE from 'three';
 import { useISS } from '../../state/ISSContext';
 import { latLongToVector3 } from '../../utils/coordinates';
+import { detectWebGLCapabilities, getRecommendedQualitySettings } from '../../utils/webglDetection';
 import { 
   EARTH_RADIUS, 
   ISS_SIZE, 
@@ -36,6 +37,12 @@ const EnhancedISS: React.FC<ISSProps> = ({
   const solarArrayRefs = useRef<(THREE.Group | null)[]>([null, null, null, null]);
   const animationTimeRef = useRef(0);
 
+  // Hardware-adaptive quality settings
+  const qualitySettings = useMemo(() => {
+    const capabilities = detectWebGLCapabilities();
+    return getRecommendedQualitySettings(capabilities);
+  }, []);
+
   // Memoize colors for performance
   const primaryColor = useMemo(() => new Color(ISS_TRACK_COLOR), []);
   const fadeColor = useMemo(() => new Color(ISS_TRACK_COLOR_FADE), []);
@@ -60,52 +67,113 @@ const EnhancedISS: React.FC<ISSProps> = ({
     return quaternion;
   }, []);
 
-  // Create optimized trail segments
-  const createOptimizedTrail = useCallback((positions: Vector3[]) => {
+  // Instanced trail rendering - MASSIVE performance improvement
+  const createInstancedTrail = useCallback((positions: Vector3[]) => {
     if (!trailGroupRef.current || positions.length < 2) return;
 
-    // Clear existing trail segments
+    // Clear existing trail
     trailGroupRef.current.clear();
 
-    // Create fewer, larger segments for better performance
-    const segmentLength = Math.max(4, Math.floor(positions.length / 10));
-    
-    for (let i = 0; i < positions.length - segmentLength; i += Math.max(2, segmentLength - 2)) {
-      const segmentEnd = Math.min(i + segmentLength, positions.length);
-      const segmentPositions = positions.slice(i, segmentEnd);
+    try {
+      // Create single curve from all positions
+      const curve = new CatmullRomCurve3(positions);
       
-      if (segmentPositions.length < 2) continue;
+      // Create single base geometry (reused for all segments) - adaptive quality
+      const baseGeometry = new TubeGeometry(
+        curve, 
+        Math.min(positions.length, 100), // Limit curve segments for performance
+        ISS_TRAIL_TUBE_RADIUS, 
+        qualitySettings.trailSegments, // Use adaptive radial segments
+        false
+      );
 
-      try {
-        // Create curve for this segment
-        const curve = new CatmullRomCurve3(segmentPositions);
-        
-        // Reduced tube segments for performance
-        const geometry = new TubeGeometry(curve, segmentPositions.length, ISS_TRAIL_TUBE_RADIUS, 6, false);
-
-        // Calculate opacity and color based on position in trail
-        const progress = i / (positions.length - 1);
-        const opacity = ISS_TRAIL_OPACITY_MIN + (ISS_TRAIL_OPACITY_MAX - ISS_TRAIL_OPACITY_MIN) * (1 - progress);
-        const color = new Color().lerpColors(fadeColor, primaryColor, 1 - progress);
-
-        // Single optimized material
-        const material = new THREE.MeshStandardMaterial({
-          color: color,
-          emissive: color.clone().multiplyScalar(ISS_TRAIL_GLOW_INTENSITY * 0.6),
+      // Create instanced mesh for trail segments - adaptive count based on hardware
+      const maxInstances = qualitySettings.shadowMapSize >= 2048 ? 30 : 20;
+      const segmentCount = Math.min(maxInstances, Math.floor(positions.length / 5));
+      const instancedMesh = new THREE.InstancedMesh(
+        baseGeometry,
+        new THREE.MeshStandardMaterial({
+          color: primaryColor,
+          emissive: primaryColor.clone().multiplyScalar(ISS_TRAIL_GLOW_INTENSITY * 0.5),
           transparent: true,
-          opacity: opacity,
+          opacity: 0.8,
           side: THREE.DoubleSide,
           blending: THREE.AdditiveBlending,
-        });
+        }),
+        segmentCount
+      );
 
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.userData = { segmentIndex: i, progress };
-        trailGroupRef.current!.add(mesh);
-      } catch (error) {
-        console.warn('Error creating trail segment:', error);
+      // Set up instance transforms and colors
+      const matrix = new THREE.Matrix4();
+      const color = new THREE.Color();
+      
+      for (let i = 0; i < segmentCount; i++) {
+        const progress = i / (segmentCount - 1);
+        const positionIndex = Math.floor(progress * (positions.length - 1));
+        const position = positions[positionIndex];
+        
+        if (position) {
+          // Set instance position and scale
+          const scale = 1.0 - progress * 0.5; // Trail gets smaller towards the end
+          matrix.setPosition(position.x, position.y, position.z);
+          matrix.scale(new Vector3(scale, scale, scale));
+          instancedMesh.setMatrixAt(i, matrix);
+          
+          // Set instance color with fade
+          const opacity = ISS_TRAIL_OPACITY_MAX - (progress * (ISS_TRAIL_OPACITY_MAX - ISS_TRAIL_OPACITY_MIN));
+          color.lerpColors(primaryColor, fadeColor, progress);
+          instancedMesh.setColorAt(i, color);
+        }
       }
+
+      // Update the instance matrices and colors
+      instancedMesh.instanceMatrix.needsUpdate = true;
+      if (instancedMesh.instanceColor) {
+        instancedMesh.instanceColor.needsUpdate = true;
+      }
+
+      // Add custom shader for better trail effects
+      instancedMesh.material.onBeforeCompile = (shader) => {
+        shader.vertexShader = shader.vertexShader.replace(
+          '#include <begin_vertex>',
+          `
+          #include <begin_vertex>
+          // Add subtle wave effect to trail
+          float wave = sin(position.x * 0.1 + time * 2.0) * 0.02;
+          transformed.y += wave;
+          `
+        );
+        
+        shader.uniforms.time = { value: 0 };
+        
+        // Store reference for animation
+        instancedMesh.userData.shader = shader;
+      };
+
+      trailGroupRef.current.add(instancedMesh);
+
+    } catch (error) {
+      console.warn('Error creating instanced trail:', error);
+      // Fallback to simple line if instancing fails
+      createSimpleTrail(positions);
     }
   }, [primaryColor, fadeColor]);
+
+  // Fallback simple trail for older hardware
+  const createSimpleTrail = useCallback((positions: Vector3[]) => {
+    if (!trailGroupRef.current || positions.length < 2) return;
+
+    const geometry = new THREE.BufferGeometry().setFromPoints(positions);
+    const material = new THREE.LineBasicMaterial({
+      color: primaryColor,
+      transparent: true,
+      opacity: 0.6,
+      blending: THREE.AdditiveBlending,
+    });
+    
+    const line = new THREE.Line(geometry, material);
+    trailGroupRef.current.add(line);
+  }, [primaryColor]);
 
   // Update ISS position and trail
   useEffect(() => {
@@ -160,13 +228,13 @@ const EnhancedISS: React.FC<ISSProps> = ({
           issRef.current.quaternion.copy(orientation);
         }
 
-        // Update trail less frequently for performance
-        if (trajectoryRef.current.length % 3 === 0 || trajectoryRef.current.length < 10) {
-          createOptimizedTrail(trajectoryRef.current);
+        // Update trail with instanced rendering - much better performance
+        if (trajectoryRef.current.length % 2 === 0 || trajectoryRef.current.length < 10) {
+          createInstancedTrail(trajectoryRef.current);
         }
       }
     }
-  }, [state.position, showTrajectory, trajectoryLength, calculateOrientation, createOptimizedTrail]);
+  }, [state.position, showTrajectory, trajectoryLength, calculateOrientation, createInstancedTrail]);
 
   // Animation loop for solar panels and trail effects
   useFrame((_, delta) => {
@@ -201,23 +269,21 @@ const EnhancedISS: React.FC<ISSProps> = ({
       }
     });
 
-    // Animate trail with subtle pulsing effect
+    // Animate instanced trail with enhanced effects
     if (trailGroupRef.current && showTrajectory) {
       trailGroupRef.current.children.forEach((child) => {
-        const mesh = child as THREE.Mesh;
-        const material = mesh.material as THREE.MeshStandardMaterial;
-        const userData = mesh.userData;
-
-        if (userData && material) {
-          // Subtle pulsing effect
-          const pulsePhase = animationTimeRef.current * ISS_TRAIL_PULSE_SPEED * 0.5 + userData.segmentIndex * 0.1;
-          const pulseIntensity = 1 + Math.sin(pulsePhase) * (ISS_TRAIL_GLOW_VARIATION * 0.5);
-
-          // Apply subtle pulse to emissive
-          const baseEmissive = material.color.clone().multiplyScalar(
-            ISS_TRAIL_GLOW_INTENSITY * 0.6 * pulseIntensity
-          );
-          
+        const instancedMesh = child as THREE.InstancedMesh;
+        
+        // Update shader time uniform for wave animation
+        if (instancedMesh.userData.shader && instancedMesh.userData.shader.uniforms.time) {
+          instancedMesh.userData.shader.uniforms.time.value = animationTimeRef.current;
+        }
+        
+        // Animate material properties for subtle pulsing
+        const material = instancedMesh.material as THREE.MeshStandardMaterial;
+        if (material) {
+          const pulseIntensity = 1 + Math.sin(animationTimeRef.current * ISS_TRAIL_PULSE_SPEED) * (ISS_TRAIL_GLOW_VARIATION * 0.3);
+          const baseEmissive = primaryColor.clone().multiplyScalar(ISS_TRAIL_GLOW_INTENSITY * 0.5 * pulseIntensity);
           material.emissive.copy(baseEmissive);
         }
       });
