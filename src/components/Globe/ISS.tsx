@@ -198,7 +198,7 @@ const ISS: React.FC<ISSProps> = memo(({
     return (
       <group position={position}>
         {/* Main panel base */}
-        <mesh>
+        <mesh castShadow={true}>
           <boxGeometry args={[0.12, 8, 3.5]} />
           <meshStandardMaterial 
             color="#1a1a3a" 
@@ -318,7 +318,7 @@ const ISS: React.FC<ISSProps> = memo(({
         {/* INTEGRATED TRUSS STRUCTURE - Main silver backbone */}
         <group name="truss">
           {/* Main horizontal truss beam - longer and more prominent */}
-          <mesh position={[0, 0, 0]}>
+          <mesh position={[0, 0, 0]} castShadow={true}>
             <boxGeometry args={[16, 0.4, 0.4]} />
             <meshStandardMaterial 
               color="#c8c8c8" 
@@ -376,7 +376,7 @@ const ISS: React.FC<ISSProps> = memo(({
         {/* CENTRAL MODULE CLUSTER - White/off-white cylindrical modules */}
         <group name="modules" position={[0, 0, 0]}>
           {/* Main central hub - Unity Node */}
-          <mesh position={[0, 0, 0]}>
+          <mesh position={[0, 0, 0]} castShadow={true}>
             <cylinderGeometry args={[0.6, 0.6, 1.2, 16]} />
             <meshStandardMaterial 
               color="#f8f8f8" 
@@ -628,7 +628,7 @@ const ISS: React.FC<ISSProps> = memo(({
   return (
     <group>
       {/* ISS model */}
-      <group ref={issRef}>
+      <group ref={issRef} castShadow={true}>
         {SatelliteModel}
       </group>
       

@@ -6,9 +6,11 @@ import Earth from './Earth';
 import ISS from './ISS';
 import EnhancedISS from './ISS-Enhanced';
 import Sun from './Sun';
+import SolarLighting from './SolarLighting';
 import Controls from './Controls';
 import FPSMonitor from './FPSMonitor';
 import { usePerformance } from '../../state/PerformanceContext';
+import { PerformanceManager } from './PerformanceManager';
 import { 
   EARTH_DAY_MAP, 
   EARTH_NIGHT_MAP, 
@@ -34,6 +36,8 @@ const Globe: React.FC<GlobeProps> = memo(({
   
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
+  // Solar activity state for dynamic lighting intensity
+  const [solarActivity, setSolarActivity] = useState<number>(0.5);
 
   // Update sun position periodically based on performance tier
   useEffect(() => {
@@ -61,21 +65,13 @@ const Globe: React.FC<GlobeProps> = memo(({
           {/* Reduced ambient light for more dramatic day/night contrast */}
           <ambientLight intensity={0.1} color="#404080" />
           
-          {/* Dynamic directional light positioned at sun location */}
-          <directionalLight 
-            position={sunPosition}
-            intensity={2.0} 
-            color="#fff8dc"
-            castShadow={shadowEnabled}
-            shadow-mapSize-width={shadowEnabled ? 2048 : 512}
-            shadow-mapSize-height={shadowEnabled ? 2048 : 512}
-          />
-          
-          {/* Additional rim lighting for atmosphere effect */}
-          <directionalLight 
-            position={sunPosition.clone().multiplyScalar(-0.3)}
-            intensity={0.3} 
-            color="#4169e1"
+          {/* Enhanced solar lighting system with realistic color temperature and dynamic intensity */}
+          <SolarLighting 
+            sunPosition={sunPosition}
+            solarActivity={solarActivity}
+            baseIntensity={SUN_INTENSITY}
+            enableShadows={shadowEnabled}
+            shadowMapSize={shadowEnabled ? 2048 : 512}
           />
           
           {/* Earth with enhanced textures and day/night cycle */}
@@ -98,6 +94,7 @@ const Globe: React.FC<GlobeProps> = memo(({
             distance={SUN_DISTANCE}
             intensity={SUN_INTENSITY}
             visible={true}
+            onSolarActivityChange={setSolarActivity}
           />
           
           {/* Enhanced camera controls */}
@@ -119,30 +116,6 @@ const Globe: React.FC<GlobeProps> = memo(({
           />
         </Suspense>
       </Canvas>
-      
-      {/* Enhanced loading indicator */}
-      <div 
-        style={{ 
-          position: 'absolute', 
-          top: '50%', 
-          left: '50%', 
-          transform: 'translate(-50%, -50%)',
-          display: 'none', // Will be shown conditionally when loading
-          color: '#ffffff',
-          fontSize: '1.2rem',
-          fontWeight: '300',
-          textAlign: 'center',
-          background: 'rgba(0, 0, 0, 0.7)',
-          padding: '20px',
-          borderRadius: '10px',
-          backdropFilter: 'blur(10px)'
-        }}
-      >
-        <div>Loading Earth...</div>
-        <div style={{ fontSize: '0.8rem', marginTop: '10px', opacity: 0.7 }}>
-          Initializing day/night cycle
-        </div>
-      </div>
     </div>
   );
 });

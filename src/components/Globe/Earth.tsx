@@ -215,7 +215,7 @@ const Earth: React.FC<EarthProps> = memo(({
   return (
     <group>
       {/* Earth sphere with tier-specific material */}
-      <mesh ref={earthRef}>
+      <mesh ref={earthRef} receiveShadow={true}>
         <sphereGeometry args={[
           EARTH_RADIUS, 
           earthQuality === 'high' ? 64 : earthQuality === 'medium' ? 48 : 32, 
@@ -226,7 +226,7 @@ const Earth: React.FC<EarthProps> = memo(({
 
       {/* Enhanced atmosphere glow effect (only for medium and high quality) */}
       {earthQuality !== 'low' && (
-        <mesh>
+        <mesh receiveShadow={true}>
           <sphereGeometry args={[EARTH_RADIUS + 0.1, 32, 32]} />
           <meshPhongMaterial
             color="#4a90e2"
@@ -239,7 +239,7 @@ const Earth: React.FC<EarthProps> = memo(({
       
       {/* Outer atmosphere layer (only for high quality) */}
       {earthQuality === 'high' && (
-        <mesh>
+        <mesh receiveShadow={true}>
           <sphereGeometry args={[EARTH_RADIUS + 0.2, 16, 16]} />
           <meshPhongMaterial
             color="#87ceeb"
