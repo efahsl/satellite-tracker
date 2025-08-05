@@ -136,9 +136,9 @@ const EnhancedISS: React.FC<ISSProps> = ({
           const orientation = calculateOrientation(newPosition, trajectoryRef.current);
           
           // Apply minimal rotations optimized for solar panel visibility
-          const xTiltAngle = Math.PI / 2; 
+          const xTiltAngle = Math.PI / 4; //originally Math.PI/2 to be straight overhead
           const yRotationAngle = Math.PI / 4;
-          const zRotationAngle = Math.PI / 90;
+          const zRotationAngle = 0;
           
           const xTiltQuaternion = new THREE.Quaternion().setFromAxisAngle(
             new Vector3(1, 0, 0),
