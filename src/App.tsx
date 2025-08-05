@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import { ISSProvider } from './state/ISSContext';
+import { PerformanceProvider } from './state/PerformanceContext';
 import MainLayout from './layouts/MainLayout';
 import { ROUTES } from './routes';
 
@@ -9,11 +10,12 @@ const App: React.FC = () => {
   return (
     <Router>
       <ISSProvider>
-        <Suspense fallback={
-          <div className="flex items-center justify-center h-screen bg-space-black text-iss-white">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold mb-4">Loading...</h2>
-              <div className="w-12 h-12 border-4 border-iss-highlight border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <PerformanceProvider>
+          <Suspense fallback={
+            <div className="flex items-center justify-center h-screen bg-space-black text-iss-white">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold mb-4">Loading...</h2>
+                <div className="w-12 h-12 border-4 border-iss-highlight border-t-transparent rounded-full animate-spin mx-auto"></div>
             </div>
           </div>
         }>
@@ -26,6 +28,7 @@ const App: React.FC = () => {
             </Route>
           </Routes>
         </Suspense>
+        </PerformanceProvider>
       </ISSProvider>
     </Router>
   );

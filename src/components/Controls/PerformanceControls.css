@@ -1,0 +1,118 @@
+.performance-controls {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-family: 'Arial', sans-serif;
+  min-width: 280px;
+}
+
+.performance-controls__header {
+  margin-bottom: 16px;
+}
+
+.performance-controls__header h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.performance-controls__description {
+  margin: 0;
+  font-size: 14px;
+  color: #b0b0b0;
+  line-height: 1.4;
+}
+
+.performance-controls__buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.performance-controls__button {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.performance-controls__button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.performance-controls__button--active {
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  border-color: #4a90e2;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+}
+
+.performance-controls__button--active:hover {
+  background: linear-gradient(135deg, #5a9ee2, #4a90e2);
+  transform: translateY(-1px);
+}
+
+.performance-controls__button-label {
+  font-weight: 600;
+}
+
+.performance-controls__button-indicator {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.performance-controls__current {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.performance-controls__current-label {
+  font-size: 14px;
+  color: #b0b0b0;
+}
+
+.performance-controls__current-tier {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a90e2;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .performance-controls {
+    min-width: 240px;
+    padding: 16px;
+  }
+  
+  .performance-controls__buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .performance-controls__button {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+} 

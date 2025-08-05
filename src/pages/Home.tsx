@@ -1,6 +1,8 @@
 import React from 'react';
 import Globe from '../components/Globe/Globe';
 import InfoPanel from '../components/InfoPanel/InfoPanel';
+import { PerformanceControls } from '../components/Controls/PerformanceControls';
+import { PerformanceMonitor } from '../components/Controls/PerformanceMonitor';
 
 const Home: React.FC = () => {
   return (
@@ -8,6 +10,16 @@ const Home: React.FC = () => {
       {/* Globe container - takes full height on mobile, 100% width and height on desktop */}
       <div className="h-screen md:h-full md:flex-grow relative">
         <Globe width="100%" height="100%" />
+        
+        {/* Performance Controls - positioned in top-right corner */}
+        <div className="absolute top-4 right-4 z-10">
+          <PerformanceControls />
+        </div>
+        
+        {/* Performance Monitor - positioned in top-left corner for testing */}
+        <div className="absolute top-4 left-4 z-10">
+          <PerformanceMonitor />
+        </div>
       </div>
       
       {/* Info panel - hidden on mobile, visible on md screens and above */}
