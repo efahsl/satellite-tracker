@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Vector3, Group, TubeGeometry, CatmullRomCurve3, Color } from 'three';
 import * as THREE from 'three';
 import { useISS } from '../../state/ISSContext';
+import { usePerformance } from '../../state/PerformanceContext';
 import { latLongToVector3 } from '../../utils/coordinates';
 import { 
   EARTH_RADIUS, 
@@ -30,6 +31,8 @@ const EnhancedISS: React.FC<ISSProps> = ({
   trajectoryLength = ISS_TRAIL_LENGTH,
 }) => {
   const { state } = useISS();
+  const { state: performanceState } = usePerformance();
+  const { trailLength, trailSegments } = performanceState.settings;
   const issRef = useRef<THREE.Group>(null);
   const trajectoryRef = useRef<Vector3[]>([]);
   const trailGroupRef = useRef<Group>(null);
@@ -67,8 +70,8 @@ const EnhancedISS: React.FC<ISSProps> = ({
     // Clear existing trail segments
     trailGroupRef.current.clear();
 
-    // Create fewer, larger segments for better performance
-    const segmentLength = Math.max(4, Math.floor(positions.length / 10));
+    // Use performance tier settings for trail optimization
+    const segmentLength = Math.max(4, Math.floor(positions.length / (trailSegments * 2)));
     
     for (let i = 0; i < positions.length - segmentLength; i += Math.max(2, segmentLength - 2)) {
       const segmentEnd = Math.min(i + segmentLength, positions.length);
@@ -80,8 +83,8 @@ const EnhancedISS: React.FC<ISSProps> = ({
         // Create curve for this segment
         const curve = new CatmullRomCurve3(segmentPositions);
         
-        // Reduced tube segments for performance
-        const geometry = new TubeGeometry(curve, segmentPositions.length, ISS_TRAIL_TUBE_RADIUS, 6, false);
+        // Use tier-specific tube segments
+        const geometry = new TubeGeometry(curve, segmentPositions.length, ISS_TRAIL_TUBE_RADIUS, trailSegments, false);
 
         // Calculate opacity and color based on position in trail
         const progress = i / (positions.length - 1);
@@ -123,8 +126,8 @@ const EnhancedISS: React.FC<ISSProps> = ({
       if (showTrajectory) {
         trajectoryRef.current.push(newPosition.clone());
         
-        // Limit trajectory length
-        if (trajectoryRef.current.length > trajectoryLength) {
+        // Limit trajectory length using performance tier setting
+        if (trajectoryRef.current.length > trailLength) {
           trajectoryRef.current.shift();
         }
         

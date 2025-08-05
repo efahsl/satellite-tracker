@@ -1,6 +1,7 @@
 import React, { useRef, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Mesh, Vector3, ShaderMaterial } from 'three';
+import { Mesh, Vector3, ShaderMaterial, MeshBasicMaterial } from 'three';
+import { usePerformance } from '../../state/PerformanceContext';
 
 interface SunProps {
   sunPosition: Vector3;
@@ -17,6 +18,9 @@ const Sun: React.FC<SunProps> = memo(({
   intensity = 1.0,
   visible = true
 }) => {
+  const { state } = usePerformance();
+  const { sunEnabled } = state.settings;
+  
   const sunRef = useRef<Mesh>(null);
   const coronaRef = useRef<Mesh>(null);
   const rimGlowRef = useRef<Mesh>(null);
@@ -124,7 +128,7 @@ const Sun: React.FC<SunProps> = memo(({
     sunShaderMaterial.uniforms.time.value = time;
   });
 
-  if (!visible) return null;
+  if (!visible || !sunEnabled) return null;
 
   return (
     <group>

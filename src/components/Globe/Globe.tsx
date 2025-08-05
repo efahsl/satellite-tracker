@@ -8,6 +8,7 @@ import EnhancedISS from './ISS-Enhanced';
 import Sun from './Sun';
 import Controls from './Controls';
 import FPSMonitor from './FPSMonitor';
+import { usePerformance } from '../../state/PerformanceContext';
 import { 
   EARTH_DAY_MAP, 
   EARTH_NIGHT_MAP, 
@@ -28,10 +29,13 @@ const Globe: React.FC<GlobeProps> = memo(({
   width = '100%', 
   height = '100%' 
 }) => {
+  const { state } = usePerformance();
+  const { shadowEnabled, updateInterval } = state.settings;
+  
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
 
-  // Update sun position periodically
+  // Update sun position periodically based on performance tier
   useEffect(() => {
     const updateSunPosition = () => {
       const newSunPosition = calculateSunPosition();
@@ -39,10 +43,10 @@ const Globe: React.FC<GlobeProps> = memo(({
     };
 
     updateSunPosition();
-    const interval = setInterval(updateSunPosition, 60000); // Update every minute
+    const interval = setInterval(updateSunPosition, updateInterval);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [updateInterval]);
 
   return (
     <div style={{ width, height, position: 'relative' }}>
@@ -62,9 +66,9 @@ const Globe: React.FC<GlobeProps> = memo(({
             position={sunPosition}
             intensity={2.0} 
             color="#fff8dc"
-            castShadow={true}
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
+            castShadow={shadowEnabled}
+            shadow-mapSize-width={shadowEnabled ? 2048 : 512}
+            shadow-mapSize-height={shadowEnabled ? 2048 : 512}
           />
           
           {/* Additional rim lighting for atmosphere effect */}
