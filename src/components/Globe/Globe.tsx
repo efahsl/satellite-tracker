@@ -8,6 +8,7 @@ import EnhancedISS from './ISS-Enhanced';
 import Sun from './Sun';
 import Controls from './Controls';
 import FPSMonitor from './FPSMonitor';
+import { detectWebGLCapabilities, logWebGLCapabilities, getRecommendedQualitySettings } from '../../utils/webglDetection';
 import { 
   EARTH_DAY_MAP, 
   EARTH_NIGHT_MAP, 
@@ -30,6 +31,15 @@ const Globe: React.FC<GlobeProps> = memo(({
 }) => {
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
+  
+  // WebGL capabilities detection
+  const [webglCapabilities] = useState(() => {
+    const capabilities = detectWebGLCapabilities();
+    logWebGLCapabilities(capabilities);
+    return capabilities;
+  });
+  
+  const qualitySettings = getRecommendedQualitySettings(webglCapabilities);
 
   // Update sun position periodically
   useEffect(() => {
@@ -52,6 +62,18 @@ const Globe: React.FC<GlobeProps> = memo(({
       <Canvas
         camera={{ position: [0, 0, 12], fov: 45 }}
         style={{ background: '#000000' }}
+        gl={{
+          powerPreference: 'high-performance',
+          antialias: qualitySettings.antialiasing,
+          alpha: false,
+          stencil: false,
+          depth: true,
+          logarithmicDepthBuffer: true,
+          preserveDrawingBuffer: false,
+          failIfMajorPerformanceCaveat: false
+        }}
+        dpr={Math.min(window.devicePixelRatio, 2)}
+        performance={{ min: 0.8, max: 1.0 }}
       >
         <Suspense fallback={null}>
           {/* Reduced ambient light for more dramatic day/night contrast */}
@@ -103,11 +125,11 @@ const Globe: React.FC<GlobeProps> = memo(({
             dampingFactor={0.05}
           />
           
-          {/* Enhanced star field with more realistic appearance */}
+          {/* Enhanced star field with adaptive quality based on hardware */}
           <Stars 
             radius={200} 
             depth={100} 
-            count={8000} 
+            count={qualitySettings.starCount} 
             factor={6} 
             saturation={0.1} 
             fade={true}

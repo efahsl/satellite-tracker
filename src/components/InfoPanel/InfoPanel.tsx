@@ -2,7 +2,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { useISS } from '../../state/ISSContext';
 import Coordinates from './Coordinates';
 import Altitude from './Altitude';
-import Crew from './Crew';
+// import Crew from './Crew';
 
 interface InfoPanelProps {
   className?: string;
@@ -55,7 +55,7 @@ const InfoPanel: React.FC<InfoPanelProps> = memo(({ className = '' }) => {
       {/* Information panels */}
       <Coordinates />
       <Altitude />
-      <Crew />
+      {/* <Crew /> */}
 
       {/* Last updated timestamp */}
       <div className="text-gray-400 text-xs mt-4">
