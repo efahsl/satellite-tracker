@@ -1,8 +1,9 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { useISS } from '../../state/ISSContext';
 import Coordinates from './Coordinates';
 import Altitude from './Altitude';
 import { PerformanceControls } from '../Controls/PerformanceControls';
+import { ISSFollowControls } from '../Controls/ISSFollowControls';
 // import Crew from './Crew';
 
 interface InfoPanelProps {
@@ -10,11 +11,7 @@ interface InfoPanelProps {
 }
 
 const InfoPanel: React.FC<InfoPanelProps> = memo(({ className = '' }) => {
-  const { state, dispatch } = useISS();
-
-  const handleToggleFollow = useCallback(() => {
-    dispatch({ type: 'TOGGLE_FOLLOW_ISS' });
-  }, [dispatch]);
+  const { state } = useISS();
 
   // Memoize the formatted timestamp to prevent unnecessary recalculations
   const formattedTimestamp = useMemo(() => {
@@ -34,23 +31,9 @@ const InfoPanel: React.FC<InfoPanelProps> = memo(({ className = '' }) => {
         </p>
       </div>
 
-      {/* Toggle follow ISS button */}
+      {/* ISS Follow Controls */}
       <div className="mb-6">
-        <button
-          onClick={handleToggleFollow}
-          className={`px-4 py-2 rounded-md transition-colors ${
-            state.followISS
-              ? 'bg-iss-highlight text-white'
-              : 'bg-gray-700 text-gray-300'
-          }`}
-        >
-          {state.followISS ? 'Following ISS' : 'Follow ISS'}
-        </button>
-        <p className="text-xs text-gray-400 mt-1">
-          {state.followISS
-            ? 'Camera is automatically tracking the ISS'
-            : 'Click to make camera follow the ISS'}
-        </p>
+        <ISSFollowControls />
       </div>
 
       {/* Performance Controls */}
