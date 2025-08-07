@@ -22,6 +22,7 @@ import {
   SUN_INTENSITY
 } from '../../utils/constants';
 import { calculateSunPosition } from '../../utils/sunPosition';
+import { getEarthQualitySettings, getStarFieldSettings } from '../../utils/earthQualitySettings';
 
 interface GlobeProps {
   width?: string;
@@ -35,6 +36,10 @@ const Globe: React.FC<GlobeProps> = memo(({
   const { state } = usePerformance();
   const { shadowEnabled, updateInterval } = state.settings;
   const { state: issState } = useISS();
+  
+  // Get quality settings based on current performance tier
+  const qualitySettings = getEarthQualitySettings(state.tier);
+  const starSettings = getStarFieldSettings(qualitySettings);
   
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
@@ -85,9 +90,12 @@ const Globe: React.FC<GlobeProps> = memo(({
             specularMapPath={EARTH_SPECULAR_MAP}
           />
           
-          {/* ISS with enhanced trajectory */}
-          {/* <ISS showTrajectory={true} trajectoryLength={300} /> */}
-          <EnhancedISS showTrajectory={true} trajectoryLength={300} />
+          {/* ISS with performance-based quality */}
+          {state.tier === 'low' ? (
+            <ISS showTrajectory={true} trajectoryLength={150} />
+          ) : (
+            <EnhancedISS showTrajectory={true} trajectoryLength={300} />
+          )}
           
           {/* Sun with realistic appearance and positioning */}
           <Sun 
@@ -107,13 +115,13 @@ const Globe: React.FC<GlobeProps> = memo(({
             earthRotateMode={issState.earthRotateMode}
           />
           
-          {/* Enhanced star field with more realistic appearance */}
+          {/* Enhanced star field with performance-based appearance */}
           <Stars 
-            radius={200} 
-            depth={100} 
-            count={8000} 
-            factor={6} 
-            saturation={0.1} 
+            radius={starSettings.radius} 
+            depth={starSettings.depth} 
+            count={starSettings.count} 
+            factor={starSettings.factor} 
+            saturation={starSettings.saturation} 
             fade={true}
             speed={0.5}
           />
