@@ -10,6 +10,7 @@ import SolarLighting from './SolarLighting';
 import Controls from './Controls';
 import FPSMonitor from './FPSMonitor';
 import { usePerformance } from '../../state/PerformanceContext';
+import { useISS } from '../../state/ISSContext';
 import { PerformanceManager } from './PerformanceManager';
 import { 
   EARTH_DAY_MAP, 
@@ -33,6 +34,7 @@ const Globe: React.FC<GlobeProps> = memo(({
 }) => {
   const { state } = usePerformance();
   const { shadowEnabled, updateInterval } = state.settings;
+  const { state: issState } = useISS();
   
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
@@ -102,6 +104,7 @@ const Globe: React.FC<GlobeProps> = memo(({
             enableZoom={true} 
             enablePan={true}
             dampingFactor={0.05}
+            earthRotateMode={issState.earthRotateMode}
           />
           
           {/* Enhanced star field with more realistic appearance */}

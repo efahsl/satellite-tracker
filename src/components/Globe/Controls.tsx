@@ -4,7 +4,7 @@ import { OrbitControls } from '@react-three/drei';
 import { Vector3 } from 'three';
 import { useISS } from '../../state/ISSContext';
 import { latLongToVector3 } from '../../utils/coordinates';
-import { EARTH_RADIUS, CAMERA_DISTANCE, ISS_ALTITUDE_SCALE } from '../../utils/constants';
+import { EARTH_RADIUS, CAMERA_DISTANCE, ISS_ALTITUDE_SCALE, EARTH_ROTATE_DISTANCE, EARTH_ROTATE_SPEED, EARTH_ROTATE_TRANSITION_SPEED } from '../../utils/constants';
 
 interface ControlsProps {
   autoRotate?: boolean;
@@ -12,6 +12,7 @@ interface ControlsProps {
   enableZoom?: boolean;
   enablePan?: boolean;
   dampingFactor?: number;
+  earthRotateMode?: boolean;
 }
 
 const Controls: React.FC<ControlsProps> = ({
@@ -20,12 +21,15 @@ const Controls: React.FC<ControlsProps> = ({
   enableZoom = true,
   enablePan = true,
   dampingFactor = 0.1,
+  earthRotateMode = false,
 }) => {
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
   const { state } = useISS();
   const cameraPositionRef = useRef<Vector3>(new Vector3(0, 0, CAMERA_DISTANCE));
   const lastFollowState = useRef<boolean>(false);
+  const lastEarthRotateState = useRef<boolean>(false);
+  const earthRotateAngle = useRef<number>(0);
 
   // Set initial camera position
   useEffect(() => {
@@ -33,16 +37,51 @@ const Controls: React.FC<ControlsProps> = ({
     camera.lookAt(0, 0, 0);
   }, [camera]);
 
-  // Follow ISS if enabled
-  useFrame(() => {
-    if (!controlsRef.current || !state.position) return;
+  // Cleanup animation references on unmount
+  useEffect(() => {
+    return () => {
+      // Reset rotation angle on cleanup
+      earthRotateAngle.current = 0;
+    };
+  }, []);
+
+  // Camera control logic
+  useFrame((_, delta) => {
+    if (!controlsRef.current) return;
     
-    const { latitude, longitude, altitude } = state.position;
-    const scaledAltitude = EARTH_RADIUS + altitude * ISS_ALTITUDE_SCALE;
-    const [x, y, z] = latLongToVector3(latitude, longitude, scaledAltitude);
-    const issPosition = new Vector3(x, y, z);
+    // Get ISS position if available
+    let issPosition: Vector3 | null = null;
+    if (state.position) {
+      const { latitude, longitude, altitude } = state.position;
+      const scaledAltitude = EARTH_RADIUS + altitude * ISS_ALTITUDE_SCALE;
+      const [x, y, z] = latLongToVector3(latitude, longitude, scaledAltitude);
+      issPosition = new Vector3(x, y, z);
+    }
     
-    if (state.followISS) {
+    // Handle Earth rotate mode
+    if (earthRotateMode) {
+      // Always keep the target at Earth center (0,0,0)
+      controlsRef.current.target.set(0, 0, 0);
+      
+      // Update rotation angle
+      earthRotateAngle.current += EARTH_ROTATE_SPEED * delta;
+      
+      // Calculate camera position in equatorial orbit
+      const x = Math.cos(earthRotateAngle.current) * EARTH_ROTATE_DISTANCE;
+      const z = Math.sin(earthRotateAngle.current) * EARTH_ROTATE_DISTANCE;
+      const y = 0; // Keep at equatorial level
+      
+      const targetPos = new Vector3(x, y, z);
+      
+      // Smooth transition to Earth rotate position
+      cameraPositionRef.current.lerp(targetPos, EARTH_ROTATE_TRANSITION_SPEED);
+      camera.position.copy(cameraPositionRef.current);
+      
+      // Ensure camera is looking at Earth center
+      camera.lookAt(0, 0, 0);
+      
+    } else if (state.followISS && issPosition) {
+      // Follow ISS mode
       // Always keep the target at Earth center (0,0,0)
       controlsRef.current.target.set(0, 0, 0);
       
@@ -65,9 +104,10 @@ const Controls: React.FC<ControlsProps> = ({
       if (!lastFollowState.current) {
         camera.lookAt(0, 0, 0);
       }
+      
     } else {
-      // When not following ISS, maintain default position
-      if (lastFollowState.current) {
+      // Manual/default mode - maintain default position when transitioning from other modes
+      if (lastFollowState.current || lastEarthRotateState.current) {
         // Smoothly transition back to a default position
         const defaultPos = new Vector3(0, 0, CAMERA_DISTANCE);
         cameraPositionRef.current.lerp(defaultPos, 0.05);
@@ -75,8 +115,9 @@ const Controls: React.FC<ControlsProps> = ({
       }
     }
     
-    // Update last follow state
+    // Update state tracking
     lastFollowState.current = state.followISS;
+    lastEarthRotateState.current = earthRotateMode;
     
     // Update controls
     controlsRef.current.update();

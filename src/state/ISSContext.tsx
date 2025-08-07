@@ -21,6 +21,7 @@ interface ISSState {
   loading: boolean;
   error: string | null;
   followISS: boolean;
+  earthRotateMode: boolean;
 }
 
 type ISSAction =
@@ -29,7 +30,8 @@ type ISSAction =
   | { type: 'FETCH_POSITION_ERROR'; payload: string }
   | { type: 'FETCH_CREW_SUCCESS'; payload: ISSCrew[] }
   | { type: 'FETCH_CREW_ERROR'; payload: string }
-  | { type: 'TOGGLE_FOLLOW_ISS' };
+  | { type: 'TOGGLE_FOLLOW_ISS' }
+  | { type: 'TOGGLE_EARTH_ROTATE' };
 
 // Initial state
 const initialState: ISSState = {
@@ -38,6 +40,7 @@ const initialState: ISSState = {
   loading: false,
   error: null,
   followISS: true,
+  earthRotateMode: false,
 };
 
 // Create context
@@ -85,6 +88,13 @@ const issReducer = (state: ISSState, action: ISSAction): ISSState => {
       return {
         ...state,
         followISS: !state.followISS,
+        earthRotateMode: !state.followISS ? false : state.earthRotateMode,
+      };
+    case 'TOGGLE_EARTH_ROTATE':
+      return {
+        ...state,
+        earthRotateMode: !state.earthRotateMode,
+        followISS: !state.earthRotateMode ? false : state.followISS,
       };
     default:
       return state;

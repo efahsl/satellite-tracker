@@ -69,3 +69,8 @@ export const SOLAR_ACTIVITY_MIN = 0.8; // Minimum solar activity multiplier
 export const SOLAR_ACTIVITY_MAX = 1.2; // Maximum solar activity multiplier
 export const SHADOW_MAP_SIZE = 2048; // Shadow map resolution
 export const SHADOW_CAMERA_SIZE = 20; // Shadow camera frustum size
+
+// Earth rotate camera settings
+export const EARTH_ROTATE_DISTANCE = EARTH_RADIUS + 10; // Camera distance for Earth rotate mode (closer zoom)
+export const EARTH_ROTATE_SPEED = 0.1047; // Radians per second (360° in 15 seconds - faster)
+export const EARTH_ROTATE_TRANSITION_SPEED = 0.05; // Lerp factor for smooth transitions

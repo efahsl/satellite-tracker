@@ -13,6 +13,10 @@ export function ISSFollowControls({ className = '' }: ISSFollowControlsProps) {
     dispatch({ type: 'TOGGLE_FOLLOW_ISS' });
   };
 
+  const handleToggleEarthRotate = () => {
+    dispatch({ type: 'TOGGLE_EARTH_ROTATE' });
+  };
+
   return (
     <div className={`iss-follow-controls ${className}`}>
       <div className="iss-follow-controls__header">
@@ -20,7 +24,9 @@ export function ISSFollowControls({ className = '' }: ISSFollowControlsProps) {
         <p className="iss-follow-controls__description">
           {state.followISS
             ? 'Camera is automatically tracking the ISS'
-            : 'Enable automatic camera tracking of the ISS'}
+            : state.earthRotateMode
+            ? 'Camera is rotating around Earth'
+            : 'Choose a camera tracking mode'}
         </p>
       </div>
       
@@ -38,14 +44,29 @@ export function ISSFollowControls({ className = '' }: ISSFollowControlsProps) {
             <span className="iss-follow-controls__button-indicator">✓</span>
           )}
         </button>
+        
+        <button
+          onClick={handleToggleEarthRotate}
+          className={`iss-follow-controls__button ${
+            state.earthRotateMode ? 'iss-follow-controls__button--active-earth-rotate' : ''
+          }`}
+        >
+          <span className="iss-follow-controls__button-label">
+            {state.earthRotateMode ? 'Earth Rotating' : 'Earth Rotate'}
+          </span>
+          {state.earthRotateMode && (
+            <span className="iss-follow-controls__button-indicator">✓</span>
+          )}
+        </button>
       </div>
       
       <div className="iss-follow-controls__status">
         <span className="iss-follow-controls__status-label">Status:</span>
         <span className={`iss-follow-controls__status-value ${
-          state.followISS ? 'iss-follow-controls__status-value--active' : ''
+          state.followISS ? 'iss-follow-controls__status-value--active' : 
+          state.earthRotateMode ? 'iss-follow-controls__status-value--active-earth-rotate' : ''
         }`}>
-          {state.followISS ? 'Tracking' : 'Manual'}
+          {state.followISS ? 'Tracking' : state.earthRotateMode ? 'Rotating' : 'Manual'}
         </span>
       </div>
     </div>
