@@ -1,29 +1,32 @@
-import React, { memo, useMemo } from 'react';
-import { useISS } from '../../state/ISSContext';
-import Coordinates from './Coordinates';
-import Altitude from './Altitude';
-import { PerformanceControls } from '../Controls/PerformanceControls';
-import { ISSFollowControls } from '../Controls/ISSFollowControls';
+import React, { memo, useMemo } from "react";
+import { useISS } from "../../state/ISSContext";
+import Coordinates from "./Coordinates";
+import Altitude from "./Altitude";
+import { PerformanceControls } from "../Controls/PerformanceControls";
+import { ISSFollowControls } from "../Controls/ISSFollowControls";
 // import Crew from './Crew';
 
 interface InfoPanelProps {
   className?: string;
 }
 
-const InfoPanel: React.FC<InfoPanelProps> = memo(({ className = '' }) => {
+const InfoPanel: React.FC<InfoPanelProps> = memo(({ className = "" }) => {
   const { state } = useISS();
 
   // Memoize the formatted timestamp to prevent unnecessary recalculations
   const formattedTimestamp = useMemo(() => {
     return state.position
       ? new Date(state.position.timestamp * 1000).toLocaleTimeString()
-      : 'Loading...';
+      : "Loading...";
   }, [state.position?.timestamp]);
 
   return (
     <div className={`p-4 ${className}`}>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-iss-white mb-1">
+        <h2
+          className="text-xl font-bold text-iss-white mb-1"
+          style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: "1px" }}
+        >
           ISS Live Tracker
         </h2>
         <p className="text-gray-300">
