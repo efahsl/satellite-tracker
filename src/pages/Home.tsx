@@ -1,24 +1,48 @@
 import React from 'react';
 import Globe from '../components/Globe/Globe';
-import InfoPanel from '../components/InfoPanel/InfoPanel';
-import { PerformanceMonitor } from '../components/Controls/PerformanceMonitor';
+import HamburgerMenu from '../components/UI/HamburgerMenu/HamburgerMenu';
+import FloatingInfoPanel from '../components/UI/FloatingInfoPanel/FloatingInfoPanel';
+import FPSMonitor from '../components/Globe/FPSMonitor';
 
 const Home: React.FC = () => {
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-space-black">
-      {/* Globe container - takes full height on mobile, 100% width and height on desktop */}
-      <div className="h-screen md:h-full md:flex-grow relative">
+    <div 
+      className="relative w-full h-screen bg-space-black overflow-hidden"
+      style={{
+        minHeight: '100vh',
+        height: '100vh',
+        width: '100vw',
+        position: 'relative'
+      }}
+    >
+      {/* Globe container - takes full screen */}
+      <div 
+        className="absolute inset-0 w-full h-full"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100%',
+          height: '100%',
+          minHeight: '100vh'
+        }}
+      >
         <Globe width="100%" height="100%" />
-        
-        {/* Performance Monitor - positioned in top-left corner for testing */}
-        <div className="absolute top-4 left-4 z-10">
-          <PerformanceMonitor />
-        </div>
       </div>
       
-      {/* Info panel - hidden on mobile, visible on md screens and above */}
-      <div className="hide-on-mobile md:h-full md:w-[350px] md:min-w-[350px] overflow-y-auto bg-space-black border-t md:border-t-0 md:border-l border-gray-800">
-        <InfoPanel />
+      {/* FPS Monitor - positioned in top-right corner */}
+      <FPSMonitor position="top-right" />
+
+      {/* Hamburger Menu - positioned in top-left */}
+      <div className="absolute top-0 left-0 z-20">
+        <HamburgerMenu />
+      </div>
+
+      {/* Floating Info Panel - positioned in bottom-right */}
+      <div className="absolute bottom-0 right-0 z-10">
+        <FloatingInfoPanel />
       </div>
     </div>
   );

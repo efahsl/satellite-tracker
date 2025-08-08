@@ -60,13 +60,27 @@ const Globe: React.FC<GlobeProps> = memo(({
   }, [updateInterval]);
 
   return (
-    <div style={{ width, height, position: 'relative' }}>
-      {/* FPS Monitor - Outside Canvas */}
-      <FPSMonitor position="top-right" />
-      
+    <div style={{ 
+      width, 
+      height, 
+      position: 'relative',
+      display: 'block',
+      minHeight: '100vh'
+    }}>
       <Canvas
         camera={{ position: [0, 0, 12], fov: 45 }}
-        style={{ background: '#000000' }}
+        style={{ 
+          background: '#000000',
+          width: '100%',
+          height: '100%',
+          minHeight: '100vh',
+          display: 'block',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0
+        }}
       >
         <Suspense fallback={null}>
           {/* Reduced ambient light for more dramatic day/night contrast */}

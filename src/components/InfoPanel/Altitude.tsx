@@ -26,7 +26,7 @@ const Altitude: React.FC = memo(() => {
   if (!position) {
     return (
       <div className="bg-space-blue/30 backdrop-blur-sm rounded-lg p-3 mb-3">
-        <h3 className="text-sm font-semibold mb-1">Altitude & Velocity</h3>
+        <h3 className="text-sm font-semibold mb-1 mt-1">Altitude & Velocity</h3>
         <p className="text-gray-300 text-xs">Loading data...</p>
       </div>
     );
@@ -34,7 +34,7 @@ const Altitude: React.FC = memo(() => {
 
   return (
     <div className="bg-space-blue/30 backdrop-blur-sm rounded-lg p-3 mb-3">
-      <h3 className="text-sm font-semibold mb-1">Altitude & Velocity</h3>
+      <h3 className="text-sm font-semibold mb-1 mt-1">Altitude & Velocity</h3>
       <div className="grid grid-cols-2 gap-2">
         <div>
           <p className="text-gray-300 text-xs">Altitude</p>

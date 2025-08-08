@@ -1,0 +1,204 @@
+.floating-info-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  max-width: 300px;
+  min-width: 250px;
+}
+
+.floating-info-panel__content {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.floating-info-panel__content:hover {
+  background: rgba(0, 0, 0, 0.75);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.floating-info-panel__header {
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.floating-info-panel__title {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.floating-info-panel__timestamp {
+  font-size: 10px;
+  color: #b0b0b0;
+  font-family: 'Exo 2', sans-serif;
+}
+
+.floating-info-panel__data {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Override existing component styles for compact display */
+.floating-info-panel .coordinates,
+.floating-info-panel .altitude {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  backdrop-filter: none !important;
+}
+
+.floating-info-panel .coordinates h3,
+.floating-info-panel .altitude h3 {
+  font-size: 11px;
+  margin: 0 0 4px 0;
+  color: #b0b0b0;
+  font-weight: 500;
+}
+
+.floating-info-panel .coordinates__data,
+.floating-info-panel .altitude__data {
+  font-size: 12px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.floating-info-panel .coordinates__item,
+.floating-info-panel .altitude__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.floating-info-panel .coordinates__label,
+.floating-info-panel .altitude__label {
+  font-size: 10px;
+  color: #b0b0b0;
+}
+
+.floating-info-panel .coordinates__value,
+.floating-info-panel .altitude__value {
+  font-size: 10px;
+  color: #4a90e2;
+  font-weight: 600;
+}
+
+/* Make all text elements within the panel transparent */
+.floating-info-panel .text-gray-300,
+.floating-info-panel .text-gray-400,
+.floating-info-panel .text-iss-white {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.floating-info-panel .text-gray-300 {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.floating-info-panel .text-gray-400 {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Remove any borders or separators that might be opaque */
+.floating-info-panel .border-t,
+.floating-info-panel .border-gray-700 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Make grid layouts transparent */
+.floating-info-panel .grid {
+  background: transparent !important;
+}
+
+.floating-info-panel .grid-cols-2 {
+  background: transparent !important;
+}
+
+/* Ensure all backgrounds are transparent */
+.floating-info-panel .bg-space-blue\/30 {
+  background: transparent !important;
+}
+
+.floating-info-panel .backdrop-blur-sm {
+  backdrop-filter: none !important;
+}
+
+.floating-info-panel .rounded-lg {
+  background: transparent !important;
+}
+
+.floating-info-panel .p-3 {
+  background: transparent !important;
+}
+
+.floating-info-panel .mb-3 {
+  background: transparent !important;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .floating-info-panel {
+    bottom: 15px;
+    right: 15px;
+    left: 15px;
+    max-width: none;
+    min-width: auto;
+  }
+
+  .floating-info-panel__content {
+    /* padding: 12px; */
+  }
+
+  .floating-info-panel__title {
+    font-size: 13px;
+  }
+
+  .floating-info-panel__timestamp {
+    font-size: 9px;
+  }
+}
+
+/* Animation for initial load */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.floating-info-panel {
+  animation: slideInFromBottom 0.5s ease-out;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .floating-info-panel__content {
+    border-width: 2px;
+    background: rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .floating-info-panel__content,
+  .floating-info-panel {
+    transition: none;
+    animation: none;
+  }
+}

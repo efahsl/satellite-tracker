@@ -2,8 +2,6 @@ import React, { memo, useMemo } from "react";
 import { useISS } from "../../state/ISSContext";
 import Coordinates from "./Coordinates";
 import Altitude from "./Altitude";
-import { PerformanceControls } from "../Controls/PerformanceControls";
-import { ISSFollowControls } from "../Controls/ISSFollowControls";
 // import Crew from './Crew';
 
 interface InfoPanelProps {
@@ -32,16 +30,6 @@ const InfoPanel: React.FC<InfoPanelProps> = memo(({ className = "" }) => {
         <p className="text-gray-300">
           Real-time tracking of the International Space Station
         </p>
-      </div>
-
-      {/* ISS Follow Controls */}
-      <div className="mb-6">
-        <ISSFollowControls />
-      </div>
-
-      {/* Performance Controls */}
-      <div className="mb-6">
-        <PerformanceControls />
       </div>
 
       {/* Information panels */}
