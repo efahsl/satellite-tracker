@@ -78,26 +78,7 @@
   color: #ffffff;
 }
 
-.performance-controls__current {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
 
-.performance-controls__current-label {
-  font-size: 12px;
-  color: #b0b0b0;
-}
-
-.performance-controls__current-tier {
-  font-size: 12px;
-  font-weight: 600;
-  color: #4a90e2;
-}
 
 /* Details Toggle */
 .performance-controls__details-toggle {
