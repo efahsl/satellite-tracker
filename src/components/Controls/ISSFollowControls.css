@@ -79,6 +79,17 @@
   transform: translateY(-1px);
 }
 
+.iss-follow-controls__button--active-manual {
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  border-color: #4a90e2;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+}
+
+.iss-follow-controls__button--active-manual:hover {
+  background: linear-gradient(135deg, #5ba0f2, #4a90e2);
+  transform: translateY(-1px);
+}
+
 .iss-follow-controls__button-label {
   font-weight: 600;
 }

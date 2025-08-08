@@ -31,7 +31,8 @@ type ISSAction =
   | { type: 'FETCH_CREW_SUCCESS'; payload: ISSCrew[] }
   | { type: 'FETCH_CREW_ERROR'; payload: string }
   | { type: 'TOGGLE_FOLLOW_ISS' }
-  | { type: 'TOGGLE_EARTH_ROTATE' };
+  | { type: 'TOGGLE_EARTH_ROTATE' }
+  | { type: 'SET_MANUAL_MODE' };
 
 // Initial state
 const initialState: ISSState = {
@@ -95,6 +96,12 @@ const issReducer = (state: ISSState, action: ISSAction): ISSState => {
         ...state,
         earthRotateMode: !state.earthRotateMode,
         followISS: !state.earthRotateMode ? false : state.followISS,
+      };
+    case 'SET_MANUAL_MODE':
+      return {
+        ...state,
+        followISS: false,
+        earthRotateMode: false,
       };
     default:
       return state;

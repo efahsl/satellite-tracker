@@ -14,7 +14,7 @@ export function PerformanceControls({
 }: PerformanceControlsProps) {
   const { state, setTier } = usePerformance();
   const { tier } = state;
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(true);
 
   const handleTierChange = (newTier: PerformanceTier) => {
     if (newTier !== tier) {

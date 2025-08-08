@@ -17,6 +17,10 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
     dispatch({ type: "TOGGLE_EARTH_ROTATE" });
   };
 
+  const handleSetManualMode = () => {
+    dispatch({ type: "SET_MANUAL_MODE" });
+  };
+
   return (
     <div className={`iss-follow-controls ${className}`}>
       <div className="iss-follow-controls__header">
@@ -26,7 +30,7 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
             ? "Camera is automatically tracking the ISS"
             : state.earthRotateMode
             ? "Camera is rotating around Earth"
-            : "Choose a camera tracking mode"}
+            : "Camera is in manual mode - you can pan and zoom freely"}
         </p>
       </div>
 
@@ -57,6 +61,22 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
             {state.earthRotateMode ? "Earth Rotating" : "Earth Rotate"}
           </span>
           {state.earthRotateMode && (
+            <span className="iss-follow-controls__button-indicator">✓</span>
+          )}
+        </button>
+
+        <button
+          onClick={handleSetManualMode}
+          className={`iss-follow-controls__button ${
+            !state.followISS && !state.earthRotateMode
+              ? "iss-follow-controls__button--active-manual"
+              : ""
+          }`}
+        >
+          <span className="iss-follow-controls__button-label">
+            {!state.followISS && !state.earthRotateMode ? "Manual Active" : "Manual"}
+          </span>
+          {!state.followISS && !state.earthRotateMode && (
             <span className="iss-follow-controls__button-indicator">✓</span>
           )}
         </button>
