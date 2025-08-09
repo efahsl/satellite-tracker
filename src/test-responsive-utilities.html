@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Utilities Test</title>
+    <link rel="stylesheet" href="./index.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--space-black);
+            color: var(--iss-white);
+        }
+        .test-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+        .test-item {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            background-color: rgba(59, 130, 246, 0.2);
+            border-radius: 4px;
+        }
+        .screen-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-info">
+        Screen: <span id="screen-width"></span>px
+    </div>
+
+    <h1>Responsive Utilities Test</h1>
+    
+    <div class="test-section">
+        <h2>Display Utilities Test</h2>
+        
+        <div class="test-item mobile-only">
+            <strong>Mobile Only:</strong> This should only be visible on mobile (< 768px)
+        </div>
+        
+        <div class="test-item desktop-only">
+            <strong>Desktop Only:</strong> This should only be visible on desktop (>= 768px)
+        </div>
+        
+        <div class="test-item show-mobile hide-desktop">
+            <strong>Show Mobile / Hide Desktop:</strong> Visible on mobile, hidden on desktop
+        </div>
+        
+        <div class="test-item show-desktop hide-mobile">
+            <strong>Show Desktop / Hide Mobile:</strong> Visible on desktop, hidden on mobile
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Layout Utilities Test</h2>
+        
+        <div class="test-item flex sm:flex-col md:flex-row gap-2">
+            <div class="bg-iss-highlight p-2 rounded">Item 1</div>
+            <div class="bg-iss-highlight p-2 rounded">Item 2</div>
+            <div class="bg-iss-highlight p-2 rounded">Item 3</div>
+        </div>
+        <p class="text-sm text-gray-400">Above items should be in column on mobile, row on desktop</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Typography Utilities Test</h2>
+        
+        <div class="test-item sm:text-xs md:text-base">
+            <strong>Responsive Text:</strong> This text should be extra small on mobile, base size on desktop
+        </div>
+        
+        <div class="test-item mobile-text-sm md:text-lg">
+            <strong>Mixed Classes:</strong> Small on mobile, large on desktop
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Spacing Utilities Test</h2>
+        
+        <div class="test-item sm:p-2 md:p-4 bg-space-blue">
+            <strong>Responsive Padding:</strong> Less padding on mobile, more on desktop
+        </div>
+        
+        <div class="test-item mobile-mb-1 md:mb-4">
+            <strong>Responsive Margin:</strong> Small bottom margin on mobile, larger on desktop
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Grid Utilities Test</h2>
+        
+        <div class="grid sm:grid-cols-1 md:grid-cols-2 gap-2">
+            <div class="test-item">Grid Item 1</div>
+            <div class="test-item">Grid Item 2</div>
+            <div class="test-item">Grid Item 3</div>
+            <div class="test-item">Grid Item 4</div>
+        </div>
+        <p class="text-sm text-gray-400">Grid should be 1 column on mobile, 2 columns on desktop</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Container Utilities Test</h2>
+        
+        <div class="container-mobile md:container-desktop bg-space-blue p-3 rounded">
+            <strong>Responsive Container:</strong> Mobile container on small screens, desktop container on large screens
+        </div>
+    </div>
+
+    <script>
+        function updateScreenInfo() {
+            document.getElementById('screen-width').textContent = window.innerWidth;
+        }
+        
+        updateScreenInfo();
+        window.addEventListener('resize', updateScreenInfo);
+    </script>
+</body>
+</html>

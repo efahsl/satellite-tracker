@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, memo } from "react";
+import { useDevice } from "../../state/DeviceContext";
 
 interface FPSMonitorProps {
   warningThreshold?: number;
@@ -18,6 +19,7 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
     graphHeight = 60,
     historySize = 80,
   }) => {
+    const { isMobile } = useDevice();
     const [fps, setFps] = useState(60);
     const [avgFps, setAvgFps] = useState(60);
     const [minFps, setMinFps] = useState(60);
@@ -76,7 +78,7 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
           cancelAnimationFrame(animationId.current);
         }
       };
-    }, [historySize]);
+    }, [historySize, isMobile]);
 
     // Draw the FPS history graph on the canvas
     const drawGraph = () => {
@@ -89,12 +91,16 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
       // Clear the canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw background grid
+      // Draw background grid with mobile-optimized spacing
       ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
       ctx.lineWidth = 0.5;
 
+      // Adjust grid spacing for mobile
+      const horizontalSpacing = isMobile ? 12 : 15;
+      const verticalSpacing = isMobile ? 15 : 20;
+
       // Horizontal grid lines
-      for (let i = 0; i <= canvas.height; i += 15) {
+      for (let i = 0; i <= canvas.height; i += horizontalSpacing) {
         ctx.beginPath();
         ctx.moveTo(0, i);
         ctx.lineTo(canvas.width, i);
@@ -102,7 +108,7 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
       }
 
       // Vertical grid lines
-      for (let i = 0; i <= canvas.width; i += 20) {
+      for (let i = 0; i <= canvas.width; i += verticalSpacing) {
         ctx.beginPath();
         ctx.moveTo(i, 0);
         ctx.lineTo(i, canvas.height);
@@ -115,8 +121,8 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
       // Find the max value for scaling (minimum 60 to keep scale consistent)
       const maxValue = Math.max(60, ...fpsHistory.current);
 
-      // Draw the FPS line
-      ctx.lineWidth = 2;
+      // Draw the FPS line with mobile-optimized width
+      ctx.lineWidth = isMobile ? 1.5 : 2;
       ctx.lineJoin = "round";
 
       const history = [...fpsHistory.current];
@@ -178,6 +184,86 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
       "bottom-right": { bottom: 10, right: 10 },
     };
 
+    // Mobile variant - shows only current FPS and graph
+    if (isMobile) {
+      // Mobile-optimized dimensions
+      const mobileGraphWidth = Math.min(graphWidth * 0.8, 110);
+      const mobileGraphHeight = Math.min(graphHeight * 0.8, 48);
+      
+      // Mobile-specific positioning adjustments
+      const mobilePositionStyles = {
+        "top-left": { top: 8, left: 8 },
+        "top-right": { top: 8, right: 8 },
+        "bottom-left": { bottom: 8, left: 8 },
+        "bottom-right": { bottom: 8, right: 8 },
+      };
+
+      return (
+        <div
+          style={{
+            position: "absolute",
+            ...mobilePositionStyles[position],
+            backgroundColor: "rgba(0, 0, 0, 0.85)",
+            color: "#ffffff",
+            padding: "6px 8px",
+            borderRadius: "4px",
+            fontFamily: "monospace",
+            fontSize: "11px",
+            lineHeight: "1.2",
+            minWidth: "90px",
+            maxWidth: "120px",
+            zIndex: 1000,
+            pointerEvents: "none",
+            userSelect: "none",
+            // Ensure readability on mobile
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+          }}
+        >
+          <div
+            style={{ 
+              marginBottom: "4px", 
+              fontSize: "12px", 
+              fontWeight: "bold",
+              textAlign: "center"
+            }}
+          >
+            FPS: <span style={{ color: getColor(fps) }}>{fps}</span>
+          </div>
+
+          <div style={{ marginTop: "6px", display: "flex", justifyContent: "center" }}>
+            <canvas
+              ref={canvasRef}
+              width={mobileGraphWidth}
+              height={mobileGraphHeight}
+              style={{
+                backgroundColor: "rgba(0, 0, 0, 0.4)",
+                borderRadius: "2px",
+                // Ensure canvas is touch-friendly (though it's non-interactive)
+                touchAction: "none",
+              }}
+            />
+          </div>
+
+          {fps < criticalThreshold && (
+            <div
+              style={{
+                marginTop: "3px",
+                padding: "2px 4px",
+                backgroundColor: "rgba(255, 0, 0, 0.4)",
+                borderRadius: "2px",
+                fontSize: "9px",
+                textAlign: "center",
+              }}
+            >
+              ⚠️ Low Performance
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Desktop variant - maintains existing full display with all metrics
     return (
       <div
         style={{

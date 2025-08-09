@@ -19,7 +19,7 @@ const InfoPanel: React.FC<InfoPanelProps> = memo(({ className = "" }) => {
   }, [state.position?.timestamp]);
 
   return (
-    <div className={`p-4 ${className}`}>
+    <div className={`p-4 hidden md:block ${className}`}>
       <div className="mb-6">
         <h2
           className="text-xl font-bold text-iss-white mb-1"
