@@ -2,8 +2,11 @@ import React from 'react';
 import Globe from '../components/Globe/Globe';
 import FloatingInfoPanel from '../components/UI/FloatingInfoPanel/FloatingInfoPanel';
 import FPSMonitor from '../components/Globe/FPSMonitor';
+import { useDevice } from '../state/DeviceContext';
 
 const Home: React.FC = () => {
+  const { isMobile, isDesktop } = useDevice();
+
   return (
     <div 
       className="relative w-full h-screen bg-space-black overflow-hidden"
@@ -11,7 +14,10 @@ const Home: React.FC = () => {
         minHeight: '100vh',
         height: '100vh',
         width: '100vw',
-        position: 'relative'
+        position: 'relative',
+        // Optimize touch interactions for mobile
+        touchAction: isMobile ? 'pan-x pan-y' : 'auto',
+        userSelect: 'none'
       }}
     >
       {/* Globe container - takes full screen */}
@@ -31,11 +37,26 @@ const Home: React.FC = () => {
         <Globe width="100%" height="100%" />
       </div>
       
-      {/* FPS Monitor - positioned in top-right corner */}
-      <FPSMonitor position="top-right" />
+      {/* FPS Monitor - positioned in top-right corner with responsive positioning */}
+      <div 
+        className="absolute z-10"
+        style={{
+          top: isMobile ? '10px' : '20px',
+          right: isMobile ? '10px' : '20px'
+        }}
+      >
+        <FPSMonitor position="top-right" />
+      </div>
 
-      {/* Floating Info Panel - positioned in bottom-right */}
-      <div className="absolute bottom-0 right-0 z-10">
+      {/* Floating Info Panel - responsive positioning */}
+      <div 
+        className="absolute z-10"
+        style={{
+          bottom: isMobile ? '15px' : '20px',
+          right: isDesktop ? '20px' : '15px',
+          left: isMobile ? '15px' : 'auto'
+        }}
+      >
         <FloatingInfoPanel />
       </div>
     </div>

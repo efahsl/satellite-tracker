@@ -5,13 +5,11 @@ import { DeviceProvider } from '../../../state/DeviceContext';
 import FloatingInfoPanel from '../FloatingInfoPanel';
 
 // Mock the info panel components
-jest.mock('../../../InfoPanel/Coordinates', () => ({
-  __esModule: true,
+vi.mock('../../InfoPanel/Coordinates', () => ({
   default: () => <div data-testid="coordinates">Coordinates Component</div>
 }));
 
-jest.mock('../../../InfoPanel/Altitude', () => ({
-  __esModule: true,
+vi.mock('../../InfoPanel/Altitude', () => ({
   default: () => <div data-testid="altitude">Altitude Component</div>
 }));
 
@@ -89,10 +87,10 @@ describe('FloatingInfoPanel', () => {
     // Mock ISS context to return no position data
     const mockISSContext = {
       state: { position: null },
-      dispatch: jest.fn()
+      dispatch: vi.fn()
     };
 
-    jest.doMock('../../../state/ISSContext', () => ({
+    vi.doMock('../../../state/ISSContext', () => ({
       useISS: () => mockISSContext
     }));
 
@@ -104,13 +102,13 @@ describe('FloatingInfoPanel', () => {
     // Mock device context to return mobile device
     const mockDeviceContext = {
       state: { deviceType: 'mobile' },
-      dispatch: jest.fn(),
+      dispatch: vi.fn(),
       isMobile: true,
       isDesktop: false,
       isTV: false
     };
 
-    jest.doMock('../../../state/DeviceContext', () => ({
+    vi.doMock('../../../state/DeviceContext', () => ({
       useDevice: () => mockDeviceContext
     }));
 
@@ -123,13 +121,13 @@ describe('FloatingInfoPanel', () => {
     // Mock device context to return desktop device
     const mockDeviceContext = {
       state: { deviceType: 'desktop' },
-      dispatch: jest.fn(),
+      dispatch: vi.fn(),
       isMobile: false,
       isDesktop: true,
       isTV: false
     };
 
-    jest.doMock('../../../state/DeviceContext', () => ({
+    vi.doMock('../../../state/DeviceContext', () => ({
       useDevice: () => mockDeviceContext
     }));
 

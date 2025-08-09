@@ -823,7 +823,7 @@ const Sun: React.FC<SunProps> = memo(
       }
       
       // Temperature variation based on activity and surface features
-      float temperatureVariation(vec2 uv, float time, float activity, float granulationValue) {
+      float calculateTemperatureVariation(vec2 uv, float time, float activity, float granulationValue) {
         // Base temperature variation
         float tempVar = sin(uv.x * 6.28318 + time * 0.1) * cos(uv.y * 6.28318 + time * 0.08);
         tempVar *= temperatureVariation;
@@ -856,7 +856,7 @@ const Sun: React.FC<SunProps> = memo(
         float sunspotEffect = sunspots(vUv, time, activityLevel);
         
         // Temperature variation effects
-        float tempVariation = temperatureVariation(vUv, time, activityLevel, granulationPattern);
+        float tempVariation = calculateTemperatureVariation(vUv, time, activityLevel, granulationPattern);
         
         // Realistic solar color temperature variations
         // Center: ~5778K (white-yellow), Edge: ~4500K (orange-red)
