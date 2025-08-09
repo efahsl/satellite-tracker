@@ -10,7 +10,7 @@ This document defines the architectural standards, patterns, and best practices 
 ### 1. Framework & Stack
 - **Frontend Framework:** ReactJS (latest LTS)
 - **Language:** TypeScript (required)
-- **Styling:** Bootstrap CSS preferred, CSS Modules allowed
+- **Styling:** CSS Modules allowed
 - **Routing:** React Router
 - **State Management:** React Context for global app state, local `useState` where applicable
 - **Build Tool:** Vite (preferred) or Create React App (CRA)
