@@ -50,6 +50,23 @@
   gap: 8px;
 }
 
+/* Mobile layout: side-by-side for Coordinates and Altitude */
+.floating-info-panel__data--mobile {
+  flex-direction: row;
+  gap: 12px;
+}
+
+.floating-info-panel__data--mobile > * {
+  flex: 1;
+  min-width: 0; /* Allow flex items to shrink below their content size */
+}
+
+/* Desktop layout: maintain existing stacked layout */
+.floating-info-panel__data--desktop {
+  flex-direction: column;
+  gap: 8px;
+}
+
 /* Override existing component styles for compact display */
 .floating-info-panel .coordinates,
 .floating-info-panel .altitude {
@@ -147,18 +164,41 @@
   background: transparent !important;
 }
 
+/* Mobile-specific optimizations for side-by-side layout */
+.floating-info-panel__data--mobile .bg-space-blue\/30 {
+  padding: 8px !important;
+  margin-bottom: 0 !important;
+}
+
+.floating-info-panel__data--mobile h3 {
+  font-size: 10px !important;
+  margin-bottom: 6px !important;
+}
+
+.floating-info-panel__data--mobile .grid {
+  gap: 4px !important;
+}
+
+.floating-info-panel__data--mobile .text-xs {
+  font-size: 9px !important;
+}
+
+.floating-info-panel__data--mobile .text-sm {
+  font-size: 10px !important;
+}
+
 /* Responsive Design */
-@media (max-width: 480px) {
+@media (max-width: 767px) {
   .floating-info-panel {
     bottom: 15px;
     right: 15px;
     left: 15px;
-    max-width: none;
-    min-width: auto;
+    max-width: 380px;
+    min-width: 380px;
   }
 
   .floating-info-panel__content {
-    /* padding: 12px; */
+    padding: 12px;
   }
 
   .floating-info-panel__title {
@@ -167,6 +207,24 @@
 
   .floating-info-panel__timestamp {
     font-size: 9px;
+  }
+
+  /* Ensure mobile layout works well on small screens */
+  .floating-info-panel__data--mobile {
+    gap: 8px;
+  }
+
+  /* Hide imperial units on mobile */
+  .floating-info-panel .imperial-unit,
+  .floating-info-panel p.imperial-unit,
+  .floating-info-panel .text-gray-400.imperial-unit {
+    display: none !important;
+  }
+
+  /* Hide orbital period on mobile */
+  .floating-info-panel .orbital-period,
+  .floating-info-panel div.orbital-period {
+    display: none !important;
   }
 }
 

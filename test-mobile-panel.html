@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Panel Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .floating-info-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            max-width: 300px;
+            min-width: 250px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .floating-info-panel__data--mobile {
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+        }
+        
+        .floating-info-panel__data--mobile > * {
+            flex: 1;
+        }
+        
+        .imperial-unit {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .orbital-period {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile styles */
+        @media (max-width: 767px) {
+            .floating-info-panel {
+                bottom: 15px;
+                right: 15px;
+                left: 15px;
+                max-width: 380px;
+                min-width: 380px;
+            }
+            
+            .floating-info-panel p.imperial-unit,
+            .floating-info-panel .imperial-unit {
+                display: none !important;
+            }
+            
+            .floating-info-panel div.orbital-period,
+            .floating-info-panel .orbital-period {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Mobile Panel Test</h1>
+    <p>Resize window to less than 768px to test mobile behavior</p>
+    
+    <div class="floating-info-panel">
+        <h3>ISS Position</h3>
+        <div class="floating-info-panel__data floating-info-panel__data--mobile">
+            <div>
+                <h4>Current Position</h4>
+                <p>Latitude: 49.0289° N</p>
+                <p>Longitude: 174.3326° E</p>
+            </div>
+            <div>
+                <h4>Altitude & Velocity</h4>
+                <p>Altitude: 428.54 km</p>
+                <p class="imperial-unit">261.31 miles</p>
+                <p>Velocity: 27595.07 km/h</p>
+                <p class="imperial-unit">17146.78 mph</p>
+                
+                <div class="orbital-period">
+                    <p>Orbital Period</p>
+                    <p>~90 minutes per orbit</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

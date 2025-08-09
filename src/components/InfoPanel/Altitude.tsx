@@ -41,7 +41,7 @@ const Altitude: React.FC = memo(() => {
           <p className="text-iss-white font-mono text-sm">
             {formattedData?.altitude.km} <span className="text-xs">km</span>
           </p>
-          <p className="text-gray-400 text-xs">
+          <p className="text-gray-400 text-xs imperial-unit">
             {formattedData?.altitude.miles} miles
           </p>
         </div>
@@ -50,14 +50,14 @@ const Altitude: React.FC = memo(() => {
           <p className="text-iss-white font-mono text-sm">
             {formattedData?.velocity.kmh} <span className="text-xs">km/h</span>
           </p>
-          <p className="text-gray-400 text-xs">
+          <p className="text-gray-400 text-xs imperial-unit">
             {formattedData?.velocity.mph} mph
           </p>
         </div>
       </div>
       
       {/* Orbit time calculation */}
-      <div className="mt-2 pt-2 border-t border-gray-700">
+      <div className="mt-2 pt-2 border-t border-gray-700 orbital-period">
         <p className="text-gray-300 text-xs">Orbital Period</p>
         <p className="text-iss-white text-xs">
           {/* ISS orbits Earth approximately every 90 minutes */}

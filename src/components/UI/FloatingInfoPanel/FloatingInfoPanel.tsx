@@ -1,5 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { useISS } from '../../../state/ISSContext';
+import { useDevice } from '../../../state/DeviceContext';
 import Coordinates from '../../InfoPanel/Coordinates';
 import Altitude from '../../InfoPanel/Altitude';
 import './FloatingInfoPanel.css';
@@ -10,6 +11,7 @@ interface FloatingInfoPanelProps {
 
 const FloatingInfoPanel: React.FC<FloatingInfoPanelProps> = memo(({ className = '' }) => {
   const { state } = useISS();
+  const { isMobile } = useDevice();
 
   const formattedTimestamp = useMemo(() => {
     return state.position
@@ -25,8 +27,8 @@ const FloatingInfoPanel: React.FC<FloatingInfoPanelProps> = memo(({ className = 
         bottom: '20px',
         right: '20px',
         zIndex: 100,
-        maxWidth: '300px',
-        minWidth: '250px'
+        maxWidth: isMobile ? '380px' : '300px',
+        minWidth: isMobile ? '380px' : '250px'
       }}
     >
       <div 
@@ -53,7 +55,7 @@ const FloatingInfoPanel: React.FC<FloatingInfoPanelProps> = memo(({ className = 
           </div>
         </div>
         
-        <div className="floating-info-panel__data">
+        <div className={`floating-info-panel__data ${isMobile ? 'floating-info-panel__data--mobile' : 'floating-info-panel__data--desktop'}`}>
           <Coordinates />
           <Altitude />
         </div>

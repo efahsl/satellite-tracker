@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ISSProvider } from '../../../state/ISSContext';
+import { DeviceProvider } from '../../../state/DeviceContext';
 import FloatingInfoPanel from '../FloatingInfoPanel';
 
 // Mock the info panel components
@@ -16,9 +17,11 @@ jest.mock('../../../InfoPanel/Altitude', () => ({
 
 const renderWithProviders = (component: React.ReactElement) => {
   return render(
-    <ISSProvider>
-      {component}
-    </ISSProvider>
+    <DeviceProvider>
+      <ISSProvider>
+        {component}
+      </ISSProvider>
+    </DeviceProvider>
   );
 };
 
@@ -71,9 +74,11 @@ describe('FloatingInfoPanel', () => {
     
     // Re-render with same props should not cause unnecessary re-renders
     rerender(
-      <ISSProvider>
-        <FloatingInfoPanel />
-      </ISSProvider>
+      <DeviceProvider>
+        <ISSProvider>
+          <FloatingInfoPanel />
+        </ISSProvider>
+      </DeviceProvider>
     );
     
     // Component should still render correctly
@@ -93,5 +98,43 @@ describe('FloatingInfoPanel', () => {
 
     renderWithProviders(<FloatingInfoPanel />);
     expect(screen.getByText('Last updated: Loading...')).toBeInTheDocument();
+  });
+
+  it('applies mobile layout class when on mobile device', () => {
+    // Mock device context to return mobile device
+    const mockDeviceContext = {
+      state: { deviceType: 'mobile' },
+      dispatch: jest.fn(),
+      isMobile: true,
+      isDesktop: false,
+      isTV: false
+    };
+
+    jest.doMock('../../../state/DeviceContext', () => ({
+      useDevice: () => mockDeviceContext
+    }));
+
+    renderWithProviders(<FloatingInfoPanel />);
+    const dataContainer = screen.getByTestId('coordinates').parentElement;
+    expect(dataContainer).toHaveClass('floating-info-panel__data--mobile');
+  });
+
+  it('applies desktop layout class when on desktop device', () => {
+    // Mock device context to return desktop device
+    const mockDeviceContext = {
+      state: { deviceType: 'desktop' },
+      dispatch: jest.fn(),
+      isMobile: false,
+      isDesktop: true,
+      isTV: false
+    };
+
+    jest.doMock('../../../state/DeviceContext', () => ({
+      useDevice: () => mockDeviceContext
+    }));
+
+    renderWithProviders(<FloatingInfoPanel />);
+    const dataContainer = screen.getByTestId('coordinates').parentElement;
+    expect(dataContainer).toHaveClass('floating-info-panel__data--desktop');
   });
 });
