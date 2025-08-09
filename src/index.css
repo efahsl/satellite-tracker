@@ -177,8 +177,20 @@ code {
   font-family: monospace;
 }
 
+.font-orbitron {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.font-exo {
+  font-family: 'Exo 2', sans-serif;
+}
+
 .text-center {
   text-align: center;
+}
+
+.tracking-wide {
+  letter-spacing: 0.025em;
 }
 
 /* Colors */

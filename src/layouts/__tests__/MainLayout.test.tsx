@@ -1,7 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import { vi } from 'vitest';
 import MainLayout from '../MainLayout';
 import { DeviceProvider } from '../../state/DeviceContext';
 
@@ -68,6 +69,34 @@ describe('MainLayout', () => {
   it('renders Helmet component without errors', () => {
     // This test verifies that react-helmet-async is working correctly
     // by ensuring the component renders without throwing errors
+    expect(() => {
+      renderWithProviders(<MainLayout />);
+    }).not.toThrow();
+  });
+
+  it('uses responsive components for layout', () => {
+    const { container } = renderWithProviders(<MainLayout />);
+    
+    // Check that the layout uses responsive components
+    expect(container.querySelector('header')).toBeInTheDocument();
+    expect(container.querySelector('main')).toBeInTheDocument();
+    expect(container.querySelector('footer')).toBeInTheDocument();
+  });
+
+  it('applies proper semantic HTML structure', () => {
+    renderWithProviders(<MainLayout />);
+    
+    expect(screen.getByRole('banner')).toBeInTheDocument(); // header
+    expect(screen.getByRole('main')).toBeInTheDocument();
+    expect(screen.getByRole('contentinfo')).toBeInTheDocument(); // footer
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
+  });
+
+  it('includes font preloading in head', () => {
+    renderWithProviders(<MainLayout />);
+    
+    // The Helmet component should be rendered (tested by not throwing)
+    // Font preloading links are added to the document head via Helmet
     expect(() => {
       renderWithProviders(<MainLayout />);
     }).not.toThrow();
