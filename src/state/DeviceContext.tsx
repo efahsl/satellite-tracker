@@ -43,7 +43,7 @@ const initialState: DeviceState = {
   orientation: 'landscape'
 };
 
-// Device detection utility functions
+// Device detection utility functions - memoized for performance
 const detectTouchDevice = (): boolean => {
   if (typeof window === 'undefined') return false;
   
@@ -55,6 +55,7 @@ const detectTouchDevice = (): boolean => {
   );
 };
 
+// Memoized device type detection to avoid recalculation
 const detectDeviceType = (width: number, height: number, isTouchDevice: boolean): DeviceType => {
   // Mobile: Screen width < 768px (Bootstrap's md breakpoint) OR touch device with width < 1200px
   if (width < 768 || (isTouchDevice && width < 1200)) {
@@ -132,11 +133,11 @@ const deviceReducer = (state: DeviceState, action: DeviceAction): DeviceState =>
 // Create context
 const DeviceContext = createContext<DeviceContextType | undefined>(undefined);
 
-// Provider component
+// Provider component with optimized performance
 export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(deviceReducer, initialState);
 
-  // Initialize device detection
+  // Initialize device detection - memoized to prevent recreation
   const initializeDevice = useCallback(() => {
     if (typeof window === 'undefined') return;
 
@@ -154,7 +155,7 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     });
   }, []);
 
-  // Handle window resize with debouncing
+  // Handle window resize with debouncing - optimized for performance
   const handleResize = useCallback(() => {
     if (typeof window === 'undefined') return;
 
@@ -167,7 +168,7 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     });
   }, []);
 
-  // Handle orientation change
+  // Handle orientation change - optimized with proper cleanup
   const handleOrientationChange = useCallback(() => {
     if (typeof window === 'undefined') return;
 

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, memo } from "react";
+import React, { useRef, useEffect, useState, memo, useMemo, useCallback } from "react";
 import { useDevice } from "../../state/DeviceContext";
 
 interface FPSMonitorProps {
@@ -30,6 +30,27 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
     const fpsHistory = useRef<number[]>([]);
     const animationId = useRef<number | undefined>(undefined);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    // Memoize mobile-optimized dimensions to prevent recalculation
+    const mobileGraphDimensions = useMemo(() => ({
+      width: Math.min(graphWidth * 0.8, 110),
+      height: Math.min(graphHeight * 0.8, 48)
+    }), [graphWidth, graphHeight]);
+
+    // Memoize position styles to prevent object recreation
+    const positionStyles = useMemo(() => ({
+      "top-left": { top: 10, left: 10 },
+      "top-right": { top: 10, right: 10 },
+      "bottom-left": { bottom: 10, left: 10 },
+      "bottom-right": { bottom: 10, right: 10 },
+    }), []);
+
+    const mobilePositionStyles = useMemo(() => ({
+      "top-left": { top: 8, left: 8 },
+      "top-right": { top: 8, right: 8 },
+      "bottom-left": { bottom: 8, left: 8 },
+      "bottom-right": { bottom: 8, right: 8 },
+    }), []);
 
     useEffect(() => {
       const measureFPS = () => {
@@ -169,34 +190,15 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
       ctx.setLineDash([]);
     };
 
-    // Determine color based on FPS
-    const getColor = (fps: number) => {
+    // Memoize color calculation to prevent recalculation
+    const getColor = useCallback((fps: number) => {
       if (fps >= warningThreshold) return "#00ff00"; // Green
       if (fps >= criticalThreshold) return "#ffaa00"; // Orange
       return "#ff0000"; // Red
-    };
-
-    // Position styles
-    const positionStyles = {
-      "top-left": { top: 10, left: 10 },
-      "top-right": { top: 10, right: 10 },
-      "bottom-left": { bottom: 10, left: 10 },
-      "bottom-right": { bottom: 10, right: 10 },
-    };
+    }, [warningThreshold, criticalThreshold]);
 
     // Mobile variant - shows only current FPS and graph
     if (isMobile) {
-      // Mobile-optimized dimensions
-      const mobileGraphWidth = Math.min(graphWidth * 0.8, 110);
-      const mobileGraphHeight = Math.min(graphHeight * 0.8, 48);
-      
-      // Mobile-specific positioning adjustments
-      const mobilePositionStyles = {
-        "top-left": { top: 8, left: 8 },
-        "top-right": { top: 8, right: 8 },
-        "bottom-left": { bottom: 8, left: 8 },
-        "bottom-right": { bottom: 8, right: 8 },
-      };
 
       return (
         <div
@@ -234,8 +236,8 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
           <div style={{ marginTop: "6px", display: "flex", justifyContent: "center" }}>
             <canvas
               ref={canvasRef}
-              width={mobileGraphWidth}
-              height={mobileGraphHeight}
+              width={mobileGraphDimensions.width}
+              height={mobileGraphDimensions.height}
               style={{
                 backgroundColor: "rgba(0, 0, 0, 0.4)",
                 borderRadius: "2px",
