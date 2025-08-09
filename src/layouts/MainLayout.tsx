@@ -1,34 +1,52 @@
-import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import React from "react";
+import { Outlet, Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import HamburgerMenu from "../components/UI/HamburgerMenu/HamburgerMenu";
 
 const MainLayout: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-space-black text-iss-white">
       <Helmet>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600&family=Orbitron:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
       </Helmet>
       {/* Header */}
       <header className="bg-space-blue shadow-md">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-xl font-bold" style={{fontFamily: "'Orbitron', sans-serif", letterSpacing: "1px"}}>ISS Live Tracker</h1>
+        <div className="flex justify-between items-center px-4">
+          <div className="flex items-center space-x-4">
+            <HamburgerMenu />
+            <h1
+              className="text-xl font-bold"
+              style={{
+                fontFamily: "'Orbitron', sans-serif",
+                letterSpacing: "1px",
+                paddingLeft: "10px"
+              }}
+            >
+              ISS Live Tracker
+            </h1>
           </div>
-          <nav style={{fontFamily: "'Exo 2', sans-serif"}}>
+          <nav style={{ fontFamily: "'Exo 2', sans-serif" }}>
             <ul className="flex space-x-6">
               <li>
-                <Link 
-                  to="/" 
+                <Link
+                  to="/"
                   className="text-white hover:text-iss-highlight transition-colors"
                 >
                   Home
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/about" 
+                <Link
+                  to="/about"
                   className="text-white hover:text-iss-highlight transition-colors"
                 >
                   About
@@ -46,8 +64,14 @@ const MainLayout: React.FC = () => {
 
       {/* Footer */}
       <footer className="bg-space-blue py-4 text-center text-sm">
-        <div className="container mx-auto px-4" style={{fontFamily: "'Exo 2', sans-serif"}}>
-          <p>© {new Date().getFullYear()} ISS Live Tracker | Data provided by wheretheiss.at and Open Notify</p>
+        <div
+          className="container mx-auto px-4"
+          style={{ fontFamily: "'Exo 2', sans-serif" }}
+        >
+          <p>
+            © {new Date().getFullYear()} ISS Live Tracker | Data provided by
+            wheretheiss.at and Open Notify
+          </p>
         </div>
       </footer>
     </div>

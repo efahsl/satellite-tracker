@@ -5,23 +5,19 @@
 
 /* Hamburger Button */
 .hamburger-menu__button {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  width: 50px;
-  height: 50px;
-  background: rgba(0, 0, 0, 0.8);
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1001;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 40px;
+  min-height: 40px;
 }
 
 .hamburger-menu__button:hover {
@@ -71,27 +67,31 @@
   transform: translateY(-7px) rotate(-45deg);
 }
 
-/* Menu Content - Changed to drop down from top */
+/* Menu Content - Dropdown from header */
 .hamburger-menu__content {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 70px;
+  left: 1rem;
   width: 320px;
   height: auto;
   max-height: 600px;
   background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(15px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  transform: translateY(-100%);
-  transition: transform 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transform: translateY(-10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
   z-index: 1000;
   overflow-y: auto;
-  padding: 80px 20px 20px 20px;
+  padding: 20px;
 }
 
 .hamburger-menu__content--open {
   transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Controls Container */
@@ -101,7 +101,7 @@
   /* gap: 20px; */
 }
 
-/* Backdrop - Removed blur effect */
+/* Backdrop */
 .hamburger-menu__backdrop {
   position: fixed;
   top: 0;
@@ -116,14 +116,13 @@
 /* Responsive Design */
 @media (max-width: 480px) {
   .hamburger-menu__button {
-    top: 15px;
-    left: 15px;
-    width: 45px;
-    height: 45px;
+    width: 36px;
+    height: 36px;
   }
 
   .hamburger-menu__content {
-    padding: 70px 15px 15px 15px;
+    width: 280px;
+    padding: 15px;
   }
 
   .hamburger-menu__controls {

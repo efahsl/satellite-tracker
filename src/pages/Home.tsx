@@ -1,6 +1,5 @@
 import React from 'react';
 import Globe from '../components/Globe/Globe';
-import HamburgerMenu from '../components/UI/HamburgerMenu/HamburgerMenu';
 import FloatingInfoPanel from '../components/UI/FloatingInfoPanel/FloatingInfoPanel';
 import FPSMonitor from '../components/Globe/FPSMonitor';
 
@@ -34,11 +33,6 @@ const Home: React.FC = () => {
       
       {/* FPS Monitor - positioned in top-right corner */}
       <FPSMonitor position="top-right" />
-
-      {/* Hamburger Menu - positioned in top-left */}
-      <div className="absolute top-0 left-0 z-20">
-        <HamburgerMenu />
-      </div>
 
       {/* Floating Info Panel - positioned in bottom-right */}
       <div className="absolute bottom-0 right-0 z-10">
