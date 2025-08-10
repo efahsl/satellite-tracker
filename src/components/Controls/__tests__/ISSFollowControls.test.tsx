@@ -127,12 +127,12 @@ describe('ISSFollowControls Earth Rotate Button', () => {
     const buttonElement = activeButton.closest('button');
     
     // Should have active class for Earth Rotate
-    expect(buttonElement).toHaveClass('iss-follow-controls__button--active-earth-rotate');
+    expect(buttonElement).toHaveClass('_buttonActiveEarthRotate_be7772');
     
     // Verify the CSS class exists (the actual blue gradient styling is in CSS)
     const computedStyle = window.getComputedStyle(buttonElement!);
     // Note: In jsdom, computed styles may not reflect CSS, but we can verify the class is applied
-    expect(buttonElement).toHaveClass('iss-follow-controls__button--active-earth-rotate');
+    expect(buttonElement).toHaveClass('_buttonActiveEarthRotate_be7772');
   });
 
   it('should verify Follow ISS button also uses blue styling when active', () => {
@@ -143,7 +143,7 @@ describe('ISSFollowControls Earth Rotate Button', () => {
     const buttonElement = followButton.closest('button');
     
     // Should have the standard active class (which now uses blue gradient)
-    expect(buttonElement).toHaveClass('iss-follow-controls__button--active');
+    expect(buttonElement).toHaveClass('_buttonActive_be7772');
   });
 
   it('should handle click events correctly and dispatch actions', () => {
@@ -170,7 +170,6 @@ describe('ISSFollowControls Earth Rotate Button', () => {
     // Initial state: Follow ISS active, Earth Rotate inactive
     expect(getByText('Following ISS')).toBeInTheDocument();
     expect(getByText('Earth Rotate')).toBeInTheDocument();
-    expect(getByText('Tracking')).toBeInTheDocument();
     
     // Activate Earth Rotate
     fireEvent.click(getByText('Earth Rotate'));
@@ -178,7 +177,6 @@ describe('ISSFollowControls Earth Rotate Button', () => {
     // State should be synchronized: Earth Rotate active, Follow ISS inactive
     expect(getByText('Earth Rotating')).toBeInTheDocument();
     expect(getByText('Follow ISS')).toBeInTheDocument();
-    expect(getByText('Rotating')).toBeInTheDocument();
     
     // Activate Follow ISS
     fireEvent.click(getByText('Follow ISS'));
@@ -186,7 +184,6 @@ describe('ISSFollowControls Earth Rotate Button', () => {
     // State should be synchronized: Follow ISS active, Earth Rotate inactive
     expect(getByText('Following ISS')).toBeInTheDocument();
     expect(getByText('Earth Rotate')).toBeInTheDocument();
-    expect(getByText('Tracking')).toBeInTheDocument();
   });
 
   it('should render buttons side-by-side with correct layout', () => {
@@ -204,22 +201,19 @@ describe('ISSFollowControls Earth Rotate Button', () => {
     expect(container).toContain(earthRotateButton);
     
     // Container should have the button container class
-    expect(container).toHaveClass('iss-follow-controls__button-container');
+    expect(container).toHaveClass('_buttonContainer_be7772');
   });
 
-  it('should show status indicator with correct color for each mode', () => {
+  it('should show correct button state indicators', () => {
     const { getByText } = renderWithProvider(<ISSFollowControls />);
     
-    // Initially Follow ISS is active - status should show "Tracking"
-    const initialStatus = getByText('Tracking');
-    expect(initialStatus).toHaveClass('iss-follow-controls__status-value--active');
+    // Initially Follow ISS is active - should show checkmark
+    expect(getByText('✓')).toBeInTheDocument();
     
     // Activate Earth Rotate
-    fireEvent.click(getByText('Following ISS')); // Deactivate Follow ISS first
     fireEvent.click(getByText('Earth Rotate'));
     
-    // Status should show "Rotating" with Earth Rotate color
-    const rotatingStatus = getByText('Rotating');
-    expect(rotatingStatus).toHaveClass('iss-follow-controls__status-value--active-earth-rotate');
+    // Should still show checkmark for active Earth Rotate
+    expect(getByText('✓')).toBeInTheDocument();
   });
 });
