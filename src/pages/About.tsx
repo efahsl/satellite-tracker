@@ -1,14 +1,8 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 
 const About: React.FC = () => {
   return (
     <>
-      <Helmet>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet" />
-      </Helmet>
       <div className="container mx-auto px-8 py-12 max-w-4xl text-iss-white" style={{fontFamily: "'Exo 2', sans-serif", paddingLeft: "2rem"}}>
         <h1 className="text-4xl font-bold mb-10" style={{fontFamily: "'Orbitron', sans-serif", letterSpacing: "1px"}}>
           About the ISS Live Tracker

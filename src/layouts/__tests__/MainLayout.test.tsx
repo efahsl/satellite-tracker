@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
 import { vi } from 'vitest';
 import MainLayout from '../MainLayout';
 import { DeviceProvider } from '../../state/DeviceContext';
@@ -14,11 +13,9 @@ vi.mock('../../components/UI/HamburgerMenu/HamburgerMenu', () => ({
 const renderWithProviders = (component: React.ReactElement) => {
   return render(
     <BrowserRouter>
-      <HelmetProvider>
-        <DeviceProvider>
-          {component}
-        </DeviceProvider>
-      </HelmetProvider>
+      <DeviceProvider>
+        {component}
+      </DeviceProvider>
     </BrowserRouter>
   );
 };
@@ -66,9 +63,8 @@ describe('MainLayout', () => {
     // The component should render without errors and apply device-based styling
   });
 
-  it('renders Helmet component without errors', () => {
-    // This test verifies that react-helmet-async is working correctly
-    // by ensuring the component renders without throwing errors
+  it('renders component without errors', () => {
+    // This test verifies that the component renders without throwing errors
     expect(() => {
       renderWithProviders(<MainLayout />);
     }).not.toThrow();
@@ -92,11 +88,10 @@ describe('MainLayout', () => {
     expect(screen.getByRole('navigation')).toBeInTheDocument();
   });
 
-  it('includes font preloading in head', () => {
+  it('renders layout structure correctly', () => {
     renderWithProviders(<MainLayout />);
     
-    // The Helmet component should be rendered (tested by not throwing)
-    // Font preloading links are added to the document head via Helmet
+    // The component should render the basic layout structure
     expect(() => {
       renderWithProviders(<MainLayout />);
     }).not.toThrow();

@@ -1,6 +1,5 @@
 import React from "react";
 import { Outlet, Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import HamburgerMenu from "../components/UI/HamburgerMenu/HamburgerMenu";
 import { useDevice } from "../state/DeviceContext";
 import { ResponsiveContainer, ResponsiveText, DeviceStyle } from "../components/UI/ResponsiveLayout";
@@ -10,18 +9,6 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-space-black text-iss-white">
-      <Helmet>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin=""
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600&family=Orbitron:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </Helmet>
       
       {/* Header */}
       <header className="bg-space-blue shadow-md">
