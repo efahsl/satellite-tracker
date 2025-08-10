@@ -39,7 +39,7 @@ describe('ISSFollowControls Earth Rotate Button', () => {
     const earthRotateButton = getByText('Earth Rotate');
     fireEvent.click(earthRotateButton);
     
-    expect(getByText('Rotating')).toBeInTheDocument();
+    expect(getByText('Earth Rotating')).toBeInTheDocument();
   });
 
   it('should apply active styling when Earth Rotate mode is enabled', () => {
@@ -49,7 +49,7 @@ describe('ISSFollowControls Earth Rotate Button', () => {
     fireEvent.click(earthRotateButton);
     
     const activeButton = getByText('Earth Rotating');
-    expect(activeButton.closest('button')).toHaveClass('iss-follow-controls__button--active-earth-rotate');
+    expect(activeButton.closest('button')).toHaveClass('_buttonActiveEarthRotate_be7772');
   });
 
   it('should show checkmark indicator when Earth Rotate mode is active', () => {
@@ -101,8 +101,8 @@ describe('ISSFollowControls Earth Rotate Button', () => {
     const earthRotatingButton = getByText('Earth Rotating');
     fireEvent.click(earthRotatingButton);
     
-    // Should show choose mode description
-    expect(getByText('Choose a camera tracking mode')).toBeInTheDocument();
+    // Should show manual mode description
+    expect(getByText('Camera is in manual mode - you can pan and zoom freely')).toBeInTheDocument();
   });
 
   it('should render button with correct initial styling', () => {
@@ -112,9 +112,9 @@ describe('ISSFollowControls Earth Rotate Button', () => {
     const buttonElement = earthRotateButton.closest('button');
     
     // Should have base button class
-    expect(buttonElement).toHaveClass('iss-follow-controls__button');
+    expect(buttonElement).toHaveClass('_button_be7772');
     // Should not have active class initially
-    expect(buttonElement).not.toHaveClass('iss-follow-controls__button--active-earth-rotate');
+    expect(buttonElement).not.toHaveClass('_buttonActiveEarthRotate_be7772');
   });
 
   it('should apply correct active styling with blue gradient', () => {

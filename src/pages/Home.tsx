@@ -3,9 +3,11 @@ import Globe from '../components/Globe/Globe';
 import FloatingInfoPanel from '../components/UI/FloatingInfoPanel/FloatingInfoPanel';
 import FPSMonitor from '../components/Globe/FPSMonitor';
 import { useDevice } from '../state/DeviceContext';
+import { useUI } from '../state/UIContext';
 
 const Home: React.FC = () => {
   const { isMobile, isDesktop } = useDevice();
+  const { state: uiState } = useUI();
 
   return (
     <div 
@@ -38,27 +40,31 @@ const Home: React.FC = () => {
       </div>
       
       {/* FPS Monitor - positioned in top-right corner with responsive positioning */}
-      <div 
-        className="absolute z-10"
-        style={{
-          top: isMobile ? '10px' : '20px',
-          right: isMobile ? '10px' : '20px'
-        }}
-      >
-        <FPSMonitor position="top-right" />
-      </div>
+      {uiState.fpsMonitorVisible && (
+        <div 
+          className="absolute z-10"
+          style={{
+            top: isMobile ? '10px' : '20px',
+            right: isMobile ? '10px' : '20px'
+          }}
+        >
+          <FPSMonitor position="top-right" />
+        </div>
+      )}
 
       {/* Floating Info Panel - responsive positioning */}
-      <div 
-        className="absolute z-10"
-        style={{
-          bottom: isMobile ? '15px' : '20px',
-          right: isDesktop ? '20px' : '15px',
-          left: isMobile ? '15px' : 'auto'
-        }}
-      >
-        <FloatingInfoPanel />
-      </div>
+      {uiState.infoPanelVisible && (
+        <div 
+          className="absolute z-10"
+          style={{
+            bottom: isMobile ? '15px' : '20px',
+            right: isDesktop ? '20px' : '15px',
+            left: isMobile ? '15px' : 'auto'
+          }}
+        >
+          <FloatingInfoPanel />
+        </div>
+      )}
     </div>
   );
 };

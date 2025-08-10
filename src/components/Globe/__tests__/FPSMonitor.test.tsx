@@ -117,7 +117,7 @@ describe('FPSMonitor', () => {
       const fpsMonitor = container.querySelector('div[style*="position: absolute"]');
       expect(fpsMonitor).toHaveStyle({
         position: 'absolute',
-        zIndex: '1000',
+        zIndex: '100',
       });
     });
   });

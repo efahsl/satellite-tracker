@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import HamburgerMenu from '../HamburgerMenu';
+import { DeviceProvider } from '../../../state/DeviceContext';
 
 // Mock the control components to avoid complex dependencies
 vi.mock('../../../Controls/ISSFollowControls', () => ({
@@ -10,6 +11,10 @@ vi.mock('../../../Controls/ISSFollowControls', () => ({
 
 vi.mock('../../../Controls/PerformanceControls', () => ({
   PerformanceControls: () => <div data-testid="performance-controls">Performance Controls</div>
+}));
+
+vi.mock('../../../Controls/DisplayControls', () => ({
+  DisplayControls: () => <div data-testid="display-controls">Display Controls</div>
 }));
 
 // Mock the device context
@@ -36,7 +41,11 @@ vi.mock('../../../state/DeviceContext', async (importOriginal) => {
 });
 
 const renderComponent = (component: React.ReactElement) => {
-  return render(component);
+  return render(
+    <DeviceProvider>
+      {component}
+    </DeviceProvider>
+  );
 };
 
 describe('HamburgerMenu', () => {
@@ -75,7 +84,7 @@ describe('HamburgerMenu', () => {
     expect(screen.getByTestId('iss-follow-controls')).toBeInTheDocument();
     
     // Press escape on the hamburger menu container
-    const menuContainer = screen.getByRole('button').closest('.hamburger-menu');
+    const menuContainer = screen.getByRole('button').parentElement;
     if (menuContainer) {
       fireEvent.keyDown(menuContainer, { key: 'Escape' });
     }
@@ -91,7 +100,7 @@ describe('HamburgerMenu', () => {
     expect(screen.getByTestId('iss-follow-controls')).toBeInTheDocument();
     
     // Click backdrop
-    const backdrop = document.querySelector('.hamburger-menu__backdrop');
+    const backdrop = document.querySelector('[class*="backdrop"]');
     if (backdrop) {
       fireEvent.click(backdrop);
     }
@@ -140,10 +149,10 @@ describe('HamburgerMenu', () => {
 
   it('renders hamburger icon with three lines', () => {
     renderComponent(<HamburgerMenu />);
-    const icon = screen.getByRole('button').querySelector('.hamburger-menu__icon');
+    const icon = screen.getByRole('button').querySelector('[class*="icon"]');
     expect(icon).toBeInTheDocument();
     
-    const lines = icon?.querySelectorAll('.hamburger-menu__line');
+    const lines = icon?.querySelectorAll('[class*="line"]');
     expect(lines).toHaveLength(3);
   });
 
@@ -154,7 +163,7 @@ describe('HamburgerMenu', () => {
     expect(screen.queryByTestId('iss-follow-controls')).not.toBeInTheDocument();
     
     // Press escape (should not cause any issues)
-    const menuContainer = screen.getByRole('button').closest('.hamburger-menu');
+    const menuContainer = screen.getByRole('button').parentElement;
     if (menuContainer) {
       fireEvent.keyDown(menuContainer, { key: 'Escape' });
     }

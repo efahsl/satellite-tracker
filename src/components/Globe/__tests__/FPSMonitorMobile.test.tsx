@@ -42,14 +42,29 @@ Object.defineProperty(window, 'performance', {
   },
 });
 
-// Mock mobile device context
-const MockMobileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return (
-    <DeviceProvider>
-      {children}
-    </DeviceProvider>
-  );
+// Mock useDevice hook to return mobile context
+const mockMobileDeviceContext = {
+  state: {
+    deviceType: DeviceType.MOBILE,
+    screenWidth: 375,
+    screenHeight: 667,
+    isTouchDevice: true,
+    orientation: 'portrait' as const
+  },
+  dispatch: vi.fn(),
+  isMobile: true,
+  isDesktop: false,
+  isTV: false
 };
+
+vi.mock('../../../state/DeviceContext', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useDevice: () => mockMobileDeviceContext,
+    DeviceProvider: ({ children }: { children: React.ReactNode }) => children
+  };
+});
 
 // Mock different mobile screen sizes
 const mobileScreenSizes = [
@@ -100,11 +115,7 @@ describe('FPS Monitor Mobile Performance and Usability', () => {
           configurable: true
         });
 
-        render(
-          <MockMobileProvider>
-            <FPSMonitor />
-          </MockMobileProvider>
-        );
+        render(<FPSMonitor />);
 
         // Should show mobile variant (only FPS, no Avg/Min/Max)
         expect(screen.getByText(/FPS:/)).toBeInTheDocument();
@@ -129,13 +140,9 @@ describe('FPS Monitor Mobile Performance and Usability', () => {
       Object.defineProperty(window, 'innerWidth', { value: 375 });
       Object.defineProperty(window, 'innerHeight', { value: 667 });
 
-      render(
-        <MockMobileProvider>
-          <FPSMonitor graphWidth={140} graphHeight={60} />
-        </MockMobileProvider>
-      );
+      render(<FPSMonitor graphWidth={140} graphHeight={60} />);
 
-      const canvas = screen.getByRole('img', { hidden: true }) as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas') as HTMLCanvasElement;
       
       // Mobile should use 80% of original size, max 110x48
       expect(canvas.width).toBe(110); // Math.min(140 * 0.8, 110)
@@ -166,11 +173,7 @@ describe('FPS Monitor Mobile Performance and Usability', () => {
     it('should handle performance warnings appropriately on mobile', () => {
       Object.defineProperty(window, 'innerWidth', { value: 375 });
       
-      render(
-        <MockMobileProvider>
-          <FPSMonitor criticalThreshold={20} warningThreshold={30} />
-        </MockMobileProvider>
-      );
+      render(<FPSMonitor criticalThreshold={20} warningThreshold={30} />);
 
       // Initially should not show warning (starts at 60 FPS)
       expect(screen.queryByText(/Low Performance/)).not.toBeInTheDocument();
@@ -233,7 +236,7 @@ describe('FPS Monitor Mobile Performance and Usability', () => {
         </MockMobileProvider>
       );
 
-      const canvas = screen.getByRole('img', { hidden: true }) as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas') as HTMLCanvasElement;
       expect(canvas).toHaveStyle({ touchAction: 'none' });
     });
   });
@@ -352,11 +355,7 @@ describe('FPS Monitor Mobile Performance and Usability', () => {
 
       // Should not crash when rendering
       expect(() => {
-        render(
-          <MockMobileProvider>
-            <FPSMonitor />
-          </MockMobileProvider>
-        );
+        render(<FPSMonitor />);
       }).not.toThrow();
     });
   });

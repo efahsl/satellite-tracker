@@ -49,30 +49,43 @@ const advanceTime = (ms: number) => {
   });
 };
 
-// Mock device context
-const MockDeviceProvider: React.FC<{ deviceType: DeviceType; children: React.ReactNode }> = ({ 
-  deviceType, 
-  children 
-}) => {
-  const mockContext = {
+// Mock device context - default to mobile for this test file
+let currentMockDeviceContext = {
+  state: {
+    deviceType: DeviceType.MOBILE,
+    screenWidth: 375,
+    screenHeight: 667,
+    isTouchDevice: true,
+    orientation: 'portrait' as const
+  },
+  dispatch: vi.fn(),
+  isMobile: true,
+  isDesktop: false,
+  isTV: false
+};
+
+vi.mock('../../../state/DeviceContext', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useDevice: () => currentMockDeviceContext,
+  };
+});
+
+const setMockDeviceType = (deviceType: DeviceType) => {
+  currentMockDeviceContext = {
     state: {
       deviceType,
       screenWidth: deviceType === DeviceType.MOBILE ? 375 : 1024,
       screenHeight: deviceType === DeviceType.MOBILE ? 667 : 768,
       isTouchDevice: deviceType === DeviceType.MOBILE,
-      orientation: 'landscape' as const
+      orientation: deviceType === DeviceType.MOBILE ? 'portrait' as const : 'landscape' as const
     },
     dispatch: vi.fn(),
     isMobile: deviceType === DeviceType.MOBILE,
     isDesktop: deviceType === DeviceType.DESKTOP,
     isTV: deviceType === DeviceType.TV
   };
-
-  return (
-    <DeviceProvider>
-      {children}
-    </DeviceProvider>
-  );
 };
 
 describe('FPS Monitor Performance', () => {
@@ -91,11 +104,8 @@ describe('FPS Monitor Performance', () => {
     it('should render mobile variant efficiently', () => {
       const startTime = Date.now();
       
-      render(
-        <MockDeviceProvider deviceType={DeviceType.MOBILE}>
-          <FPSMonitor />
-        </MockDeviceProvider>
-      );
+      setMockDeviceType(DeviceType.MOBILE);
+      render(<FPSMonitor />);
 
       const renderTime = Date.now() - startTime;
       expect(renderTime).toBeLessThan(100); // Should render quickly
@@ -111,12 +121,10 @@ describe('FPS Monitor Performance', () => {
 
     it('should use optimized dimensions for mobile', () => {
       render(
-        <MockDeviceProvider deviceType={DeviceType.MOBILE}>
-          <FPSMonitor graphWidth={140} graphHeight={60} />
-        </MockDeviceProvider>
+        <FPSMonitor graphWidth={140} graphHeight={60} />
       );
 
-      const canvas = screen.getByRole('img', { hidden: true }) as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas') as HTMLCanvasElement;
       
       // Mobile should use smaller dimensions (80% of original, max 110x48)
       expect(canvas.width).toBe(110); // Math.min(140 * 0.8, 110) = 110
@@ -126,11 +134,8 @@ describe('FPS Monitor Performance', () => {
 
   describe('Desktop Performance', () => {
     it('should render desktop variant with all metrics', () => {
-      render(
-        <MockDeviceProvider deviceType={DeviceType.DESKTOP}>
-          <FPSMonitor />
-        </MockDeviceProvider>
-      );
+      setMockDeviceType(DeviceType.DESKTOP);
+      render(<FPSMonitor />);
 
       // Should show all desktop metrics
       expect(screen.getByText(/FPS:/)).toBeInTheDocument();
@@ -140,13 +145,10 @@ describe('FPS Monitor Performance', () => {
     });
 
     it('should use full dimensions for desktop', () => {
-      render(
-        <MockDeviceProvider deviceType={DeviceType.DESKTOP}>
-          <FPSMonitor graphWidth={140} graphHeight={60} />
-        </MockDeviceProvider>
-      );
+      setMockDeviceType(DeviceType.DESKTOP);
+      render(<FPSMonitor graphWidth={140} graphHeight={60} />);
 
-      const canvas = screen.getByRole('img', { hidden: true }) as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas') as HTMLCanvasElement;
       
       // Desktop should use full dimensions
       expect(canvas.width).toBe(140);
@@ -156,11 +158,8 @@ describe('FPS Monitor Performance', () => {
 
   describe('Animation Performance', () => {
     it('should handle animation frames efficiently', () => {
-      render(
-        <MockDeviceProvider deviceType={DeviceType.MOBILE}>
-          <FPSMonitor />
-        </MockDeviceProvider>
-      );
+      setMockDeviceType(DeviceType.MOBILE);
+      render(<FPSMonitor />);
 
       // Should start animation loop
       expect(global.requestAnimationFrame).toHaveBeenCalled();
@@ -174,11 +173,8 @@ describe('FPS Monitor Performance', () => {
     });
 
     it('should clean up animation frames on unmount', () => {
-      const { unmount } = render(
-        <MockDeviceProvider deviceType={DeviceType.MOBILE}>
-          <FPSMonitor />
-        </MockDeviceProvider>
-      );
+      setMockDeviceType(DeviceType.MOBILE);
+      const { unmount } = render(<FPSMonitor />);
 
       expect(animationFrameCallbacks.length).toBeGreaterThan(0);
 
@@ -191,11 +187,8 @@ describe('FPS Monitor Performance', () => {
 
   describe('Canvas Drawing Performance', () => {
     it('should optimize canvas drawing for mobile', () => {
-      render(
-        <MockDeviceProvider deviceType={DeviceType.MOBILE}>
-          <FPSMonitor />
-        </MockDeviceProvider>
-      );
+      setMockDeviceType(DeviceType.MOBILE);
+      render(<FPSMonitor />);
 
       // Trigger FPS update to cause canvas drawing
       advanceTime(250);
@@ -207,11 +200,8 @@ describe('FPS Monitor Performance', () => {
     });
 
     it('should use standard canvas drawing for desktop', () => {
-      render(
-        <MockDeviceProvider deviceType={DeviceType.DESKTOP}>
-          <FPSMonitor />
-        </MockDeviceProvider>
-      );
+      setMockDeviceType(DeviceType.DESKTOP);
+      render(<FPSMonitor />);
 
       // Trigger FPS update to cause canvas drawing
       advanceTime(250);
@@ -269,22 +259,18 @@ describe('FPS Monitor Performance', () => {
   describe('Memoization Effectiveness', () => {
     it('should memoize expensive calculations', () => {
       const { rerender } = render(
-        <MockDeviceProvider deviceType={DeviceType.MOBILE}>
-          <FPSMonitor graphWidth={140} graphHeight={60} />
-        </MockDeviceProvider>
+        <FPSMonitor graphWidth={140} graphHeight={60} />
       );
 
-      const canvas1 = screen.getByRole('img', { hidden: true }) as HTMLCanvasElement;
+      const canvas1 = document.querySelector('canvas') as HTMLCanvasElement;
       const dimensions1 = { width: canvas1.width, height: canvas1.height };
 
       // Re-render with same props
       rerender(
-        <MockDeviceProvider deviceType={DeviceType.MOBILE}>
-          <FPSMonitor graphWidth={140} graphHeight={60} />
-        </MockDeviceProvider>
+        <FPSMonitor graphWidth={140} graphHeight={60} />
       );
 
-      const canvas2 = screen.getByRole('img', { hidden: true }) as HTMLCanvasElement;
+      const canvas2 = document.querySelector('canvas') as HTMLCanvasElement;
       const dimensions2 = { width: canvas2.width, height: canvas2.height };
 
       // Dimensions should be the same (memoized)

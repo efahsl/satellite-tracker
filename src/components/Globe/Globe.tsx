@@ -7,8 +7,8 @@ import ISS from './ISS';
 import EnhancedISS from './ISS-Enhanced';
 import Sun from './Sun';
 import Controls from './Controls';
-import FPSMonitor from './FPSMonitor';
 import { useISS } from '../../state/ISSContext';
+import { usePerformance } from '../../state/PerformanceContext';
 import { 
   EARTH_DAY_MAP, 
   EARTH_NIGHT_MAP, 
@@ -32,6 +32,9 @@ const Globe: React.FC<GlobeProps> = memo(({
   // Add ISS context hook to access earthRotateMode state
   const { state } = useISS();
   
+  // Add performance context hook to access performance tier
+  const { state: performanceState } = usePerformance();
+  
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
 
@@ -50,9 +53,6 @@ const Globe: React.FC<GlobeProps> = memo(({
 
   return (
     <div style={{ width, height, position: 'relative' }}>
-      {/* FPS Monitor - Outside Canvas */}
-      <FPSMonitor position="top-right" />
-      
       <Canvas
         camera={{ position: [0, 0, 12], fov: 45 }}
         style={{ background: '#000000' }}
@@ -66,9 +66,9 @@ const Globe: React.FC<GlobeProps> = memo(({
             position={sunPosition}
             intensity={2.0} 
             color="#fff8dc"
-            castShadow={true}
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
+            castShadow={performanceState.settings.shadowEnabled}
+            shadow-mapSize-width={performanceState.settings.shadowEnabled ? 2048 : 0}
+            shadow-mapSize-height={performanceState.settings.shadowEnabled ? 2048 : 0}
           />
           
           {/* Additional rim lighting for atmosphere effect */}
@@ -87,18 +87,23 @@ const Globe: React.FC<GlobeProps> = memo(({
             specularMapPath={EARTH_SPECULAR_MAP}
           />
           
-          {/* ISS with enhanced trajectory */}
-          {/* <ISS showTrajectory={true} trajectoryLength={300} /> */}
-          <EnhancedISS showTrajectory={true} trajectoryLength={300} />
+          {/* ISS with conditional rendering based on performance tier */}
+          {performanceState.tier === 'low' ? (
+            <ISS showTrajectory={true} trajectoryLength={performanceState.settings.trailLength} />
+          ) : (
+            <EnhancedISS showTrajectory={true} trajectoryLength={performanceState.settings.trailLength} />
+          )}
           
-          {/* Sun with realistic appearance and positioning */}
-          <Sun 
-            sunPosition={sunPosition}
-            size={SUN_SIZE}
-            distance={SUN_DISTANCE}
-            intensity={SUN_INTENSITY}
-            visible={true}
-          />
+          {/* Sun with conditional rendering based on performance tier */}
+          {performanceState.settings.sunEnabled && (
+            <Sun 
+              sunPosition={sunPosition}
+              size={SUN_SIZE}
+              distance={SUN_DISTANCE}
+              intensity={SUN_INTENSITY}
+              visible={true}
+            />
+          )}
           
           {/* Enhanced camera controls */}
           <Controls 
@@ -108,11 +113,11 @@ const Globe: React.FC<GlobeProps> = memo(({
             earthRotateMode={state.earthRotateMode}
           />
           
-          {/* Enhanced star field with more realistic appearance */}
+          {/* Enhanced star field with conditional rendering based on performance tier */}
           <Stars 
             radius={200} 
             depth={100} 
-            count={8000} 
+            count={performanceState.tier === 'low' ? 2000 : performanceState.tier === 'medium' ? 4000 : 8000} 
             factor={6} 
             saturation={0.1} 
             fade={true}

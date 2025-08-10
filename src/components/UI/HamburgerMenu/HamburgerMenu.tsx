@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { ISSFollowControls } from '../../Controls/ISSFollowControls';
-import { PerformanceControls } from '../../Controls/PerformanceControls';
+import { ISSFollowControls, PerformanceControls, DisplayControls } from '../../Controls';
 import { useDevice } from '../../../state/DeviceContext';
 import styles from './HamburgerMenu.module.css';
 
@@ -64,6 +63,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
         <div className={styles.controls} onClick={handleControlInteraction}>
           <ISSFollowControls />
           <PerformanceControls />
+          <DisplayControls />
         </div>
       </div>
 
