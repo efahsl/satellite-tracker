@@ -1,6 +1,6 @@
 import React from "react";
 import { useISS } from "../../state/ISSContext";
-import "./ISSFollowControls.css";
+import styles from "./ISSFollowControls.module.css";
 
 interface ISSFollowControlsProps {
   className?: string;
@@ -22,10 +22,10 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
   };
 
   return (
-    <div className={`iss-follow-controls ${className}`}>
-      <div className="iss-follow-controls__header">
+    <div className={`${styles.issFollowControls} ${className}`}>
+      <div className={styles.header}>
         <h3>Camera Tracking</h3>
-        <p className="iss-follow-controls__description">
+        <p className={styles.description}>
           {state.followISS
             ? "Camera is automatically tracking the ISS"
             : state.earthRotateMode
@@ -34,50 +34,50 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
         </p>
       </div>
 
-      <div className="iss-follow-controls__button-container">
+      <div className={styles.buttonContainer}>
         <button
           onClick={handleToggleFollow}
-          className={`iss-follow-controls__button ${
-            state.followISS ? "iss-follow-controls__button--active" : ""
+          className={`${styles.button} ${
+            state.followISS ? styles.buttonActive : ""
           }`}
         >
-          <span className="iss-follow-controls__button-label">
+          <span className={styles.buttonLabel}>
             {state.followISS ? "Following ISS" : "Follow ISS"}
           </span>
           {state.followISS && (
-            <span className="iss-follow-controls__button-indicator">✓</span>
+            <span className={styles.buttonIndicator}>✓</span>
           )}
         </button>
 
         <button
           onClick={handleToggleEarthRotate}
-          className={`iss-follow-controls__button ${
+          className={`${styles.button} ${
             state.earthRotateMode
-              ? "iss-follow-controls__button--active-earth-rotate"
+              ? styles.buttonActiveEarthRotate
               : ""
           }`}
         >
-          <span className="iss-follow-controls__button-label">
+          <span className={styles.buttonLabel}>
             {state.earthRotateMode ? "Earth Rotating" : "Earth Rotate"}
           </span>
           {state.earthRotateMode && (
-            <span className="iss-follow-controls__button-indicator">✓</span>
+            <span className={styles.buttonIndicator}>✓</span>
           )}
         </button>
 
         <button
           onClick={handleSetManualMode}
-          className={`iss-follow-controls__button ${
+          className={`${styles.button} ${
             !state.followISS && !state.earthRotateMode
-              ? "iss-follow-controls__button--active-manual"
+              ? styles.buttonActiveManual
               : ""
           }`}
         >
-          <span className="iss-follow-controls__button-label">
-            {!state.followISS && !state.earthRotateMode ? "Manual Active" : "Manual"}
+          <span className={styles.buttonLabel}>
+            Manual
           </span>
           {!state.followISS && !state.earthRotateMode && (
-            <span className="iss-follow-controls__button-indicator">✓</span>
+            <span className={styles.buttonIndicator}>✓</span>
           )}
         </button>
       </div>

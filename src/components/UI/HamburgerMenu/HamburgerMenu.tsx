@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { ISSFollowControls } from '../../Controls/ISSFollowControls';
 import { PerformanceControls } from '../../Controls/PerformanceControls';
 import { useDevice } from '../../../state/DeviceContext';
-import './HamburgerMenu.css';
+import styles from './HamburgerMenu.module.css';
 
 interface HamburgerMenuProps {
   className?: string;
@@ -35,40 +35,33 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
   }, [isMobile]);
 
   return (
-    <div className={`hamburger-menu ${className}`} onKeyDown={handleKeyDown}>
+    <div className={`${styles.hamburgerMenu} ${className}`} onKeyDown={handleKeyDown}>
       {/* Hamburger Button */}
       <button
-        className={`hamburger-menu__button ${isOpen ? 'hamburger-menu__button--active' : ''}`}
+        className={`${styles.button} ${isOpen ? styles.buttonActive : ''}`}
         onClick={handleToggle}
         aria-label={isOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={isOpen}
         aria-controls="hamburger-menu-content"
         type="button"
       >
-        <span className="hamburger-menu__icon">
-          <span className="hamburger-menu__line"></span>
-          <span className="hamburger-menu__line"></span>
-          <span className="hamburger-menu__line"></span>
+        <span className={styles.icon}>
+          <span className={styles.line}></span>
+          <span className={styles.line}></span>
+          <span className={styles.line}></span>
         </span>
       </button>
 
       {/* Menu Content */}
       <div 
         id="hamburger-menu-content"
-        className={`hamburger-menu__content ${isOpen ? 'hamburger-menu__content--open' : ''} ${isMobile ? 'hamburger-menu__content--mobile' : ''}`}
+        className={`${styles.content} ${isOpen ? styles.contentOpen : ''} ${isMobile ? styles.contentMobile : ''}`}
         aria-hidden={!isOpen}
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
-        style={{
-          // Improve mobile positioning
-          width: isMobile ? 'calc(100vw - 2rem)' : '320px',
-          maxWidth: isMobile ? '320px' : '320px',
-          left: isMobile ? '1rem' : '1rem',
-          right: isMobile ? '1rem' : 'auto',
-        }}
       >
-        <div className="hamburger-menu__controls" onClick={handleControlInteraction}>
+        <div className={styles.controls} onClick={handleControlInteraction}>
           <ISSFollowControls />
           <PerformanceControls />
         </div>
@@ -77,7 +70,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
       {/* Backdrop */}
       {isOpen && (
         <div 
-          className="hamburger-menu__backdrop"
+          className={styles.backdrop}
           onClick={handleBackdropClick}
           aria-hidden="true"
         />

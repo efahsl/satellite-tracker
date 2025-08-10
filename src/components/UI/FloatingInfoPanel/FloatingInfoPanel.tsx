@@ -1,9 +1,8 @@
 import React, { memo, useMemo } from 'react';
 import { useISS } from '../../../state/ISSContext';
-import { useDevice } from '../../../state/DeviceContext';
 import Coordinates from '../../InfoPanel/Coordinates';
 import Altitude from '../../InfoPanel/Altitude';
-import './FloatingInfoPanel.css';
+import styles from './FloatingInfoPanel.module.css';
 
 interface FloatingInfoPanelProps {
   className?: string;
@@ -11,7 +10,6 @@ interface FloatingInfoPanelProps {
 
 const FloatingInfoPanel: React.FC<FloatingInfoPanelProps> = memo(({ className = '' }) => {
   const { state } = useISS();
-  const { isMobile } = useDevice();
 
   const formattedTimestamp = useMemo(() => {
     return state.position
@@ -21,41 +19,17 @@ const FloatingInfoPanel: React.FC<FloatingInfoPanelProps> = memo(({ className = 
 
   return (
     <div 
-      className={`floating-info-panel ${className}`}
-      style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        zIndex: 100,
-        maxWidth: isMobile ? '380px' : '300px',
-        minWidth: isMobile ? '380px' : '250px'
-      }}
+      className={`${styles.floatingInfoPanel} ${className}`}
     >
-      <div 
-        className="floating-info-panel__content"
-        style={{
-          background: 'rgba(0, 0, 0, 0.6)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          borderRadius: '12px',
-          padding: '16px',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-          transition: 'all 0.3s ease'
-        }}
-      >
-        <div className="floating-info-panel__header" style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '10px'
-        }}>
-          <h3 className="floating-info-panel__title">ISS Position</h3>
-          <div className="floating-info-panel__timestamp">
+      <div className={styles.content}>
+        <div className={styles.header}>
+          <h3 className={styles.title}>ISS Position</h3>
+          <div className={styles.timestamp}>
             Last updated: {formattedTimestamp}
           </div>
         </div>
         
-        <div className={`floating-info-panel__data ${isMobile ? 'floating-info-panel__data--mobile' : 'floating-info-panel__data--desktop'}`}>
+        <div className={styles.data}>
           <Coordinates />
           <Altitude />
         </div>

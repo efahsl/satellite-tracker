@@ -214,7 +214,7 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
             lineHeight: "1.2",
             minWidth: "90px",
             maxWidth: "120px",
-            zIndex: 1000,
+            zIndex: 100, /* Reduced to ensure it's below the hamburger menu (z-index: 9999) */
             pointerEvents: "none",
             userSelect: "none",
             // Ensure readability on mobile
@@ -279,7 +279,7 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
           fontSize: "12px",
           lineHeight: "1.4",
           minWidth: "120px",
-          zIndex: 1000,
+          zIndex: 100, /* Reduced to ensure it's below the hamburger menu (z-index: 9999) */
           pointerEvents: "none",
           userSelect: "none",
         }}

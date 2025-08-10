@@ -3,7 +3,7 @@ import {
   usePerformance,
   PerformanceTier,
 } from "../../state/PerformanceContext";
-import "./PerformanceControls.css";
+import styles from "./PerformanceControls.module.css";
 
 interface PerformanceControlsProps {
   className?: string;
@@ -64,43 +64,43 @@ export function PerformanceControls({
   };
 
   return (
-    <div className={`performance-controls ${className}`}>
-      <div className="performance-controls__header">
+    <div className={`${styles.performanceControls} ${className}`}>
+      <div className={styles.header}>
         <h3>Performance Tier</h3>
-        <p className="performance-controls__description">
+        <p className={styles.description}>
           {getTierDescription(tier)}
         </p>
       </div>
 
-      <div className="performance-controls__buttons">
+      <div className={styles.buttons}>
         {(["high", "medium", "low"] as PerformanceTier[]).map((tierOption) => (
           <button
             key={tierOption}
-            className={`performance-controls__button ${
-              tier === tierOption ? "performance-controls__button--active" : ""
+            className={`${styles.button} ${
+              tier === tierOption ? styles.buttonActive : ""
             }`}
             onClick={() => handleTierChange(tierOption)}
             title={getTierDescription(tierOption)}
           >
-            <span className="performance-controls__button-label">
+            <span className={styles.buttonLabel}>
               {getTierLabel(tierOption)}
             </span>
             {tier === tierOption && (
-              <span className="performance-controls__button-indicator">✓</span>
+              <span className={styles.buttonIndicator}>✓</span>
             )}
           </button>
         ))}
       </div>
       {/* Details Toggle */}
-      <div className="performance-controls__details-toggle">
+      <div className={styles.detailsToggle}>
         <button
           onClick={() => setShowDetails(!showDetails)}
-          className="performance-controls__details-button"
+          className={styles.detailsButton}
         >
           <span>{showDetails ? "Hide" : "Show"} Details</span>
           <span
-            className={`performance-controls__details-arrow ${
-              showDetails ? "performance-controls__details-arrow--expanded" : ""
+            className={`${styles.detailsArrow} ${
+              showDetails ? styles.detailsArrowExpanded : ""
             }`}
           >
             ▼
@@ -110,17 +110,17 @@ export function PerformanceControls({
 
       {/* Details Section */}
       {showDetails && (
-        <div className="performance-controls__details">
-          <h4 className="performance-controls__details-title">
+        <div className={styles.details}>
+          <h4 className={styles.detailsTitle}>
             Current Tier Settings
           </h4>
-          <div className="performance-controls__details-grid">
+          <div className={styles.detailsGrid}>
             {getTierDetails(tier).map((detail, index) => (
-              <div key={index} className="performance-controls__detail-item">
-                <span className="performance-controls__detail-label">
+              <div key={index} className={styles.detailItem}>
+                <span className={styles.detailLabel}>
                   {detail.label}:
                 </span>
-                <span className="performance-controls__detail-value">
+                <span className={styles.detailValue}>
                   {detail.value}
                 </span>
               </div>

@@ -1,10 +1,11 @@
-.hamburger-menu {
+/* HamburgerMenu Component CSS Module */
+.hamburgerMenu {
   position: relative;
-  z-index: 1000;
+  z-index: 9999;
 }
 
 /* Hamburger Button */
-.hamburger-menu__button {
+.button {
   position: relative;
   width: 40px;
   height: 40px;
@@ -23,24 +24,24 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.hamburger-menu__button:hover {
+.button:hover {
   background: rgba(0, 0, 0, 0.9);
   border-color: rgba(255, 255, 255, 0.3);
   transform: scale(1.05);
 }
 
-.hamburger-menu__button:focus {
+.button:focus {
   outline: 2px solid rgba(74, 144, 226, 0.8);
   outline-offset: 2px;
 }
 
-.hamburger-menu__button--active {
+.buttonActive {
   background: rgba(74, 144, 226, 0.2);
   border-color: rgba(74, 144, 226, 0.5);
 }
 
 /* Hamburger Icon */
-.hamburger-menu__icon {
+.icon {
   position: relative;
   width: 20px;
   height: 16px;
@@ -49,33 +50,33 @@
   justify-content: space-between;
 }
 
-.hamburger-menu__line {
+.line {
   width: 100%;
   height: 2px;
-  background: #ffffff;
+  background: var(--iss-white);
   border-radius: 1px;
   transition: all 0.3s ease;
   transform-origin: center;
 }
 
-.hamburger-menu__button--active .hamburger-menu__line:nth-child(1) {
+.buttonActive .line:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
 
-.hamburger-menu__button--active .hamburger-menu__line:nth-child(2) {
+.buttonActive .line:nth-child(2) {
   opacity: 0;
 }
 
-.hamburger-menu__button--active .hamburger-menu__line:nth-child(3) {
+.buttonActive .line:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
 
 /* Menu Content - Dropdown from header */
-.hamburger-menu__content {
-  position: fixed;
-  top: 70px;
-  left: 1rem;
-  width: 320px;
+.content {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: 400px; /* Increased from 320px to 400px */
   height: auto;
   max-height: 600px;
   background: rgba(0, 0, 0, 0.95);
@@ -86,126 +87,131 @@
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
-  z-index: 1000;
+  z-index: 9999;
   overflow-y: auto;
-  padding: 20px;
+  padding: 1.5rem;
   /* Improve mobile scrolling */
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
 
-.hamburger-menu__content--open {
+.contentOpen {
   transform: translateY(0);
   opacity: 1;
   visibility: visible;
 }
 
 /* Controls Container */
-.hamburger-menu__controls {
+.controls {
   display: flex;
   flex-direction: column;
-  /* gap: 20px; */
+  /* gap: var(--spacing-lg); */
 }
 
 /* Backdrop */
-.hamburger-menu__backdrop {
+.backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.3);
-  z-index: 999;
+  z-index: calc(var(--z-dropdown) - 1);
   transition: opacity 0.2s ease;
+  pointer-events: none;
 }
 
 /* Mobile-specific styles */
-.hamburger-menu__content--mobile {
-  top: 60px;
+.contentMobile {
+  top: 100%;
   max-height: calc(100vh - 120px);
   max-width: calc(100vw - 2rem);
+  left: 0;
+  right: auto;
 }
 
 /* Responsive Design */
 @media (max-width: 767px) {
-  .hamburger-menu__button {
+  .button {
     width: 44px;
     height: 44px;
     min-width: 44px;
     min-height: 44px;
   }
 
-  .hamburger-menu__content {
+  .content {
     width: calc(100vw - 2rem);
     max-width: 320px;
-    padding: 16px;
-    top: 60px;
+    padding: 1rem;
+    top: 100%;
     max-height: calc(100vh - 120px);
+    left: 0;
+    right: auto;
   }
 
-  .hamburger-menu__controls {
-    gap: 16px;
+  .controls {
+    gap: 1rem;
   }
 
-  .hamburger-menu__icon {
+  .icon {
     width: 22px;
     height: 18px;
   }
 
-  .hamburger-menu__line {
+  .line {
     height: 2.5px;
   }
 }
 
 @media (max-width: 480px) {
-  .hamburger-menu__content {
+  .content {
     width: calc(100vw - 1.5rem);
-    left: 0.75rem;
-    right: 0.75rem;
-    padding: 12px;
+    left: 0;
+    right: auto;
+    padding: 0.5rem;
   }
 
-  .hamburger-menu__controls {
-    gap: 12px;
+  .controls {
+    gap: 0.5rem;
   }
 }
 
 /* Custom scrollbar for menu content */
-.hamburger-menu__content::-webkit-scrollbar {
+.content::-webkit-scrollbar {
   width: 6px;
 }
 
-.hamburger-menu__content::-webkit-scrollbar-track {
+.content::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
 }
 
-.hamburger-menu__content::-webkit-scrollbar-thumb {
+.content::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 3px;
 }
 
-.hamburger-menu__content::-webkit-scrollbar-thumb:hover {
+.content::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .hamburger-menu__button {
+  .button {
     border-width: 2px;
   }
   
-  .hamburger-menu__line {
+  .line {
     height: 3px;
   }
 }
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .hamburger-menu__button,
-  .hamburger-menu__content,
-  .hamburger-menu__line,
-  .hamburger-menu__backdrop {
+  .button,
+  .content,
+  .line,
+  .backdrop {
     transition: none;
   }
 }

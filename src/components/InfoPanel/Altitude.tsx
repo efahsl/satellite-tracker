@@ -1,8 +1,10 @@
 import React, { memo, useMemo } from 'react';
 import { useISS } from '../../state/ISSContext';
+import { useDevice } from '../../state/DeviceContext';
 
 const Altitude: React.FC = memo(() => {
   const { state } = useISS();
+  const { isMobile } = useDevice();
   const { position } = state;
 
   // Memoize formatted altitude and velocity data

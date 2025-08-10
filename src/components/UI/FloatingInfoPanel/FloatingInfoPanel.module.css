@@ -1,0 +1,339 @@
+/* FloatingInfoPanel Component CSS Module */
+.floatingInfoPanel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  max-width: 300px;
+  min-width: 250px;
+}
+
+.content {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+}
+
+.content:hover {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.4);
+}
+
+.header {
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.title {
+  margin: 0 0 4px 0;
+  padding: 4px 8px 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f8fafc;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.timestamp {
+  font-size: 11px;
+  color: #9ca3af;
+  font-family: 'Exo 2', sans-serif;
+  padding: 0 8px;
+}
+
+.data {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Mobile responsive layout - side-by-side for Coordinates and Altitude */
+@media (max-width: 767px) {
+  .data {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .data > * {
+    flex: 1;
+    min-width: 0; /* Allow flex items to shrink below their content size */
+  }
+}
+
+/* Override existing component styles for compact display */
+.floatingInfoPanel .coordinates,
+.floatingInfoPanel .altitude {
+  background: transparent !important;
+  border: none !important;
+  padding: 8px 8px !important;
+  margin: 0 !important;
+  backdrop-filter: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.floatingInfoPanel .altitude {
+  border-bottom: none !important;
+}
+
+.floatingInfoPanel .coordinates h3,
+.floatingInfoPanel .altitude h3 {
+  font-size: 11px;
+  margin: 0 0 4px 0;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.floatingInfoPanel .coordinates__data,
+.floatingInfoPanel .altitude__data {
+  font-size: 11px;
+  color: #f8fafc;
+  font-weight: 600;
+}
+
+.floatingInfoPanel .coordinates__item,
+.floatingInfoPanel .altitude__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.floatingInfoPanel .coordinates__label,
+.floatingInfoPanel .altitude__label {
+  font-size: 10px;
+  color: var(--color-gray-400);
+}
+
+.floatingInfoPanel .coordinates__value,
+.floatingInfoPanel .altitude__value {
+  font-size: 10px;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Make all text elements within the panel transparent */
+.floatingInfoPanel .text-gray-300,
+.floatingInfoPanel .text-gray-400,
+.floatingInfoPanel .text-iss-white {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.floatingInfoPanel .text-gray-300 {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.floatingInfoPanel .text-gray-400 {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Remove any borders or separators that might be opaque */
+.floatingInfoPanel .border-t,
+.floatingInfoPanel .border-gray-700 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Make grid layouts transparent */
+.floatingInfoPanel .grid {
+  background: transparent !important;
+}
+
+.floatingInfoPanel .grid-cols-2 {
+  background: transparent !important;
+}
+
+/* Ensure all backgrounds are transparent */
+.floatingInfoPanel .bg-space-blue\/30 {
+  background: transparent !important;
+}
+
+.floatingInfoPanel .backdrop-blur-sm {
+  backdrop-filter: none !important;
+}
+
+.floatingInfoPanel .rounded-lg {
+  background: transparent !important;
+}
+
+.floatingInfoPanel .p-3 {
+  background: transparent !important;
+}
+
+.floatingInfoPanel .mb-3 {
+  background: transparent !important;
+}
+
+/* Mobile-specific optimizations for side-by-side layout */
+.dataMobile .bg-space-blue\/30 {
+  padding: var(--spacing-sm) !important;
+  margin-bottom: 0 !important;
+}
+
+.dataMobile h3 {
+  font-size: 10px !important;
+  margin-bottom: 6px !important;
+}
+
+.dataMobile .grid {
+  gap: var(--spacing-xs) !important;
+}
+
+.dataMobile .text-xs {
+  font-size: 9px !important;
+}
+
+.dataMobile .text-sm {
+  font-size: 10px !important;
+}
+
+/* Responsive Design */
+@media (max-width: 767px) {
+  .floatingInfoPanel {
+    bottom: 15px;
+    right: 15px;
+    left: 15px;
+    max-width: 380px;
+    min-width: 380px;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  .title {
+    font-size: 13px;
+    padding: 4px 12px 0 12px;
+  }
+
+  .timestamp {
+    font-size: 9px;
+    padding: 0 12px;
+  }
+
+  /* Ensure mobile layout works well on small screens */
+  .dataMobile {
+    gap: var(--spacing-sm);
+  }
+
+  /* Additional padding for mobile coordinates and altitude */
+  .floatingInfoPanel .coordinates,
+  .floatingInfoPanel .altitude {
+    padding: 8px 12px !important;
+  }
+
+  /* Hide imperial units on mobile */
+  .floatingInfoPanel p.imperial-unit,
+  .floatingInfoPanel .imperial-unit,
+  .content .imperial-unit,
+  p.imperial-unit,
+  .text-gray-400.imperial-unit {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Hide orbital period on mobile */
+  .floatingInfoPanel .orbital-period,
+  .content .orbital-period,
+  div.orbital-period,
+  .orbital-period {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+
+/* Animation for initial load */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.floatingInfoPanel {
+  animation: slideInFromBottom 0.5s ease-out;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .content {
+    border-width: 2px;
+    background: var(--color-black80);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .content,
+  .floatingInfoPanel {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* Additional mobile-specific hiding rules with broader scope */
+@media (max-width: 767px) {
+  /* Ensure imperial units are hidden on mobile - broader selectors */
+  .imperial-unit,
+  p.imperial-unit,
+  span.imperial-unit,
+  div.imperial-unit,
+  .text-gray-400.imperial-unit,
+  p.text-gray-400.imperial-unit,
+  *[class*="imperial-unit"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Ensure orbital period is hidden on mobile - broader selectors */
+  .orbital-period,
+  div.orbital-period,
+  .mt-2.orbital-period,
+  div.mt-2.orbital-period,
+  *[class*="orbital-period"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+}
+
+/* Even more aggressive mobile hiding with attribute selectors */
+@media screen and (max-width: 767px) {
+  /* Target any element with imperial-unit in class name */
+  [class*="imperial-unit"] {
+    display: none !important;
+  }
+  
+  /* Target any element with orbital-period in class name */
+  [class*="orbital-period"] {
+    display: none !important;
+  }
+  
+  /* Target third paragraph in each grid column (imperial units) */
+  .floatingInfoPanel .grid > div > p:nth-child(3) {
+    display: none !important;
+  }
+  
+  /* Target the orbital period div by structure */
+  .floatingInfoPanel .mt-2.pt-2.border-t {
+    display: none !important;
+  }
+  
+  /* More specific targeting based on exact class combinations */
+  .floatingInfoPanel p.text-gray-400.text-xs {
+    display: none !important;
+  }
+}

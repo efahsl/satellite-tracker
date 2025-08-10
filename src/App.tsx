@@ -1,6 +1,5 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import './App.css';
 import { ISSProvider } from './state/ISSContext';
 import { PerformanceProvider } from './state/PerformanceContext';
 import { DeviceProvider } from './state/DeviceContext';

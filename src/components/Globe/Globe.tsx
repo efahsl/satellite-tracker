@@ -6,12 +6,8 @@ import Earth from './Earth';
 import ISS from './ISS';
 import EnhancedISS from './ISS-Enhanced';
 import Sun from './Sun';
-import SolarLighting from './SolarLighting';
 import Controls from './Controls';
 import FPSMonitor from './FPSMonitor';
-import { usePerformance } from '../../state/PerformanceContext';
-import { useISS } from '../../state/ISSContext';
-import { PerformanceManager } from './PerformanceManager';
 import { 
   EARTH_DAY_MAP, 
   EARTH_NIGHT_MAP, 
@@ -22,7 +18,6 @@ import {
   SUN_INTENSITY
 } from '../../utils/constants';
 import { calculateSunPosition } from '../../utils/sunPosition';
-import { getEarthQualitySettings, getStarFieldSettings } from '../../utils/earthQualitySettings';
 
 interface GlobeProps {
   width?: string;
@@ -33,20 +28,10 @@ const Globe: React.FC<GlobeProps> = memo(({
   width = '100%', 
   height = '100%' 
 }) => {
-  const { state } = usePerformance();
-  const { shadowEnabled, updateInterval } = state.settings;
-  const { state: issState } = useISS();
-  
-  // Get quality settings based on current performance tier
-  const qualitySettings = getEarthQualitySettings(state.tier);
-  const starSettings = getStarFieldSettings(qualitySettings);
-  
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
-  // Solar activity state for dynamic lighting intensity
-  const [solarActivity, setSolarActivity] = useState<number>(0.5);
 
-  // Update sun position periodically based on performance tier
+  // Update sun position periodically
   useEffect(() => {
     const updateSunPosition = () => {
       const newSunPosition = calculateSunPosition();
@@ -54,45 +39,39 @@ const Globe: React.FC<GlobeProps> = memo(({
     };
 
     updateSunPosition();
-    const interval = setInterval(updateSunPosition, updateInterval);
+    const interval = setInterval(updateSunPosition, 60000); // Update every minute
 
     return () => clearInterval(interval);
-  }, [updateInterval]);
+  }, []);
 
   return (
-    <div style={{ 
-      width, 
-      height, 
-      position: 'relative',
-      display: 'block',
-      minHeight: '100vh'
-    }}>
+    <div style={{ width, height, position: 'relative' }}>
+      {/* FPS Monitor - Outside Canvas */}
+      <FPSMonitor position="top-right" />
+      
       <Canvas
         camera={{ position: [0, 0, 12], fov: 45 }}
-        style={{ 
-          background: '#000000',
-          width: '100%',
-          height: '100%',
-          minHeight: '100vh',
-          display: 'block',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0
-        }}
+        style={{ background: '#000000' }}
       >
         <Suspense fallback={null}>
           {/* Reduced ambient light for more dramatic day/night contrast */}
           <ambientLight intensity={0.1} color="#404080" />
           
-          {/* Enhanced solar lighting system with realistic color temperature and dynamic intensity */}
-          <SolarLighting 
-            sunPosition={sunPosition}
-            solarActivity={solarActivity}
-            baseIntensity={SUN_INTENSITY}
-            enableShadows={shadowEnabled}
-            shadowMapSize={shadowEnabled ? 2048 : 512}
+          {/* Dynamic directional light positioned at sun location */}
+          <directionalLight 
+            position={sunPosition}
+            intensity={2.0} 
+            color="#fff8dc"
+            castShadow={true}
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+          />
+          
+          {/* Additional rim lighting for atmosphere effect */}
+          <directionalLight 
+            position={sunPosition.clone().multiplyScalar(-0.3)}
+            intensity={0.3} 
+            color="#4169e1"
           />
           
           {/* Earth with enhanced textures and day/night cycle */}
@@ -104,12 +83,9 @@ const Globe: React.FC<GlobeProps> = memo(({
             specularMapPath={EARTH_SPECULAR_MAP}
           />
           
-          {/* ISS with performance-based quality */}
-          {state.tier === 'low' ? (
-            <ISS showTrajectory={true} trajectoryLength={150} />
-          ) : (
-            <EnhancedISS showTrajectory={true} trajectoryLength={300} />
-          )}
+          {/* ISS with enhanced trajectory */}
+          {/* <ISS showTrajectory={true} trajectoryLength={300} /> */}
+          <EnhancedISS showTrajectory={true} trajectoryLength={300} />
           
           {/* Sun with realistic appearance and positioning */}
           <Sun 
@@ -118,7 +94,6 @@ const Globe: React.FC<GlobeProps> = memo(({
             distance={SUN_DISTANCE}
             intensity={SUN_INTENSITY}
             visible={true}
-            onSolarActivityChange={setSolarActivity}
           />
           
           {/* Enhanced camera controls */}
@@ -126,21 +101,44 @@ const Globe: React.FC<GlobeProps> = memo(({
             enableZoom={true} 
             enablePan={true}
             dampingFactor={0.05}
-            earthRotateMode={issState.earthRotateMode}
           />
           
-          {/* Enhanced star field with performance-based appearance */}
+          {/* Enhanced star field with more realistic appearance */}
           <Stars 
-            radius={starSettings.radius} 
-            depth={starSettings.depth} 
-            count={starSettings.count} 
-            factor={starSettings.factor} 
-            saturation={starSettings.saturation} 
+            radius={200} 
+            depth={100} 
+            count={8000} 
+            factor={6} 
+            saturation={0.1} 
             fade={true}
             speed={0.5}
           />
         </Suspense>
       </Canvas>
+      
+      {/* Enhanced loading indicator */}
+      <div 
+        style={{ 
+          position: 'absolute', 
+          top: '50%', 
+          left: '50%', 
+          transform: 'translate(-50%, -50%)',
+          display: 'none', // Will be shown conditionally when loading
+          color: '#ffffff',
+          fontSize: '1.2rem',
+          fontWeight: '300',
+          textAlign: 'center',
+          background: 'rgba(0, 0, 0, 0.7)',
+          padding: '20px',
+          borderRadius: '10px',
+          backdropFilter: 'blur(10px)'
+        }}
+      >
+        <div>Loading Earth...</div>
+        <div style={{ fontSize: '0.8rem', marginTop: '10px', opacity: 0.7 }}>
+          Initializing day/night cycle
+        </div>
+      </div>
     </div>
   );
 });
