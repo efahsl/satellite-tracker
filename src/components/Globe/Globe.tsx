@@ -8,6 +8,7 @@ import EnhancedISS from './ISS-Enhanced';
 import Sun from './Sun';
 import Controls from './Controls';
 import FPSMonitor from './FPSMonitor';
+import { useISS } from '../../state/ISSContext';
 import { 
   EARTH_DAY_MAP, 
   EARTH_NIGHT_MAP, 
@@ -28,6 +29,9 @@ const Globe: React.FC<GlobeProps> = memo(({
   width = '100%', 
   height = '100%' 
 }) => {
+  // Add ISS context hook to access earthRotateMode state
+  const { state } = useISS();
+  
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
 
@@ -101,6 +105,7 @@ const Globe: React.FC<GlobeProps> = memo(({
             enableZoom={true} 
             enablePan={true}
             dampingFactor={0.05}
+            earthRotateMode={state.earthRotateMode}
           />
           
           {/* Enhanced star field with more realistic appearance */}

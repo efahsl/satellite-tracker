@@ -1,17 +1,17 @@
 /* ISSFollowControls Component CSS Module */
 .issFollowControls {
-  background: var(--color-black80);
-  border-radius: var(--border-radius-lg);
+  background: var(--color-space-black80);
+  border-radius: var(--spacing-lg);
   padding: var(--spacing-md);
   backdrop-filter: blur(10px);
   border: 1px solid var(--color-white10);
   color: var(--color-iss-white);
-  font-family: 'Arial', sans-serif;
+  font-family: var(--font-family-sans);
   min-width: 240px;
 }
 
 .header {
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
 .header h3 {
@@ -29,7 +29,7 @@
 }
 
 .buttonContainer {
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
   display: flex;
   gap: 6px;
 }
@@ -38,10 +38,10 @@
   flex: 1;
   background: var(--color-white10);
   border: 1px solid var(--color-white20);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-sm) var(--spacing-sm);
+  border-radius: 8px;
+  padding: var(--spacing-md) var(--spacing-sm);
   color: var(--color-iss-white);
-  font-size: var(--font-size-xs);
+  font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -50,6 +50,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
+  min-height: 32px;
 }
 
 .button:hover {
@@ -59,35 +60,35 @@
 }
 
 .buttonActive {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   border-color: var(--color-primary);
   box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
 }
 
 .buttonActive:hover {
-  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+  background: linear-gradient(135deg, #60a5fa, var(--color-primary));
   transform: translateY(-1px);
 }
 
 .buttonActiveEarthRotate {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   border-color: var(--color-primary);
   box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
 }
 
 .buttonActiveEarthRotate:hover {
-  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+  background: linear-gradient(135deg, #60a5fa, var(--color-primary));
   transform: translateY(-1px);
 }
 
 .buttonActiveManual {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   border-color: var(--color-primary);
   box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
 }
 
 .buttonActiveManual:hover {
-  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+  background: linear-gradient(135deg, #60a5fa, var(--color-primary));
   transform: translateY(-1px);
 }
 
