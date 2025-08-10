@@ -2,6 +2,13 @@
 .hamburgerMenu {
   position: relative;
   z-index: 9999;
+  margin: 0.25rem; /* Add default margin */
+}
+
+@media (max-width: 767px) {
+  .hamburgerMenu {
+    margin: 0.5rem; /* More margin on mobile */
+  }
 }
 
 /* Hamburger Button */

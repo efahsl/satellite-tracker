@@ -15,7 +15,7 @@ const MainLayout: React.FC = () => {
         <ResponsiveContainer maxWidth="full" padding="sm">
           <DeviceStyle
             baseClassName="flex justify-between items-center"
-            mobileClassName="min-h-[48px] px-1"
+            mobileClassName="h-12 px-1"
             desktopClassName="min-h-[56px] px-2"
           >
             <div className="flex items-center">
@@ -42,8 +42,8 @@ const MainLayout: React.FC = () => {
                     className="text-white hover:text-iss-highlight transition-colors flex items-center"
                     style={{
                       fontSize: isMobile ? "14px" : "16px",
-                      padding: isMobile ? "8px 12px" : "4px 8px",
-                      minHeight: isMobile ? "44px" : "auto",
+                      padding: isMobile ? "0 8px" : "4px 8px",
+                      minHeight: isMobile ? "32px" : "auto",
                       // Optimize touch targets for mobile
                       touchAction: isMobile ? "manipulation" : "auto",
                       // Ensure minimum touch target size on mobile
@@ -59,8 +59,8 @@ const MainLayout: React.FC = () => {
                     className="text-white hover:text-iss-highlight transition-colors flex items-center"
                     style={{
                       fontSize: isMobile ? "14px" : "16px",
-                      padding: isMobile ? "8px 12px" : "4px 8px",
-                      minHeight: isMobile ? "44px" : "auto",
+                      padding: isMobile ? "0 8px" : "4px 8px",
+                      minHeight: isMobile ? "32px" : "auto",
                       // Optimize touch targets for mobile
                       touchAction: isMobile ? "manipulation" : "auto",
                       // Ensure minimum touch target size on mobile
