@@ -4,13 +4,18 @@ import React, { createContext, useContext, useReducer, ReactNode, useMemo } from
 interface UIState {
   fpsMonitorVisible: boolean;
   infoPanelVisible: boolean;
+  hamburgerMenuVisible: boolean;
+  hamburgerMenuFocusIndex: number;
 }
 
 type UIAction = 
   | { type: 'TOGGLE_FPS_MONITOR' }
   | { type: 'TOGGLE_INFO_PANEL' }
   | { type: 'SET_FPS_MONITOR_VISIBLE'; payload: boolean }
-  | { type: 'SET_INFO_PANEL_VISIBLE'; payload: boolean };
+  | { type: 'SET_INFO_PANEL_VISIBLE'; payload: boolean }
+  | { type: 'SET_HAMBURGER_MENU_VISIBLE'; payload: boolean }
+  | { type: 'SET_HAMBURGER_MENU_FOCUS'; payload: number }
+  | { type: 'CLOSE_HAMBURGER_MENU_FOR_MANUAL' };
 
 interface UIContextType {
   state: UIState;
@@ -19,12 +24,17 @@ interface UIContextType {
   toggleInfoPanel: () => void;
   setFPSMonitorVisible: (visible: boolean) => void;
   setInfoPanelVisible: (visible: boolean) => void;
+  setHamburgerMenuVisible: (visible: boolean) => void;
+  setHamburgerMenuFocus: (index: number) => void;
+  closeHamburgerMenuForManual: () => void;
 }
 
 // Initial state
 const initialState: UIState = {
   fpsMonitorVisible: true,
   infoPanelVisible: true,
+  hamburgerMenuVisible: true, // Default to visible for TV mode
+  hamburgerMenuFocusIndex: 0, // Start focus on first item
 };
 
 // Create context
@@ -53,6 +63,22 @@ const uiReducer = (state: UIState, action: UIAction): UIState => {
         ...state,
         infoPanelVisible: action.payload,
       };
+    case 'SET_HAMBURGER_MENU_VISIBLE':
+      return {
+        ...state,
+        hamburgerMenuVisible: action.payload,
+      };
+    case 'SET_HAMBURGER_MENU_FOCUS':
+      return {
+        ...state,
+        hamburgerMenuFocusIndex: action.payload,
+      };
+    case 'CLOSE_HAMBURGER_MENU_FOR_MANUAL':
+      return {
+        ...state,
+        hamburgerMenuVisible: false,
+        hamburgerMenuFocusIndex: 0, // Reset focus when closing
+      };
     default:
       return state;
   }
@@ -79,6 +105,18 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     dispatch({ type: 'SET_INFO_PANEL_VISIBLE', payload: visible });
   }, []);
 
+  const setHamburgerMenuVisible = useMemo(() => (visible: boolean) => {
+    dispatch({ type: 'SET_HAMBURGER_MENU_VISIBLE', payload: visible });
+  }, []);
+
+  const setHamburgerMenuFocus = useMemo(() => (index: number) => {
+    dispatch({ type: 'SET_HAMBURGER_MENU_FOCUS', payload: index });
+  }, []);
+
+  const closeHamburgerMenuForManual = useMemo(() => () => {
+    dispatch({ type: 'CLOSE_HAMBURGER_MENU_FOR_MANUAL' });
+  }, []);
+
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({
     state,
@@ -87,7 +125,10 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     toggleInfoPanel,
     setFPSMonitorVisible,
     setInfoPanelVisible,
-  }), [state, toggleFPSMonitor, toggleInfoPanel, setFPSMonitorVisible, setInfoPanelVisible]);
+    setHamburgerMenuVisible,
+    setHamburgerMenuFocus,
+    closeHamburgerMenuForManual,
+  }), [state, toggleFPSMonitor, toggleInfoPanel, setFPSMonitorVisible, setInfoPanelVisible, setHamburgerMenuVisible, setHamburgerMenuFocus, closeHamburgerMenuForManual]);
 
   return (
     <UIContext.Provider value={contextValue}>

@@ -138,7 +138,7 @@ export const ResponsiveCard: React.FC<ResponsiveCardProps> = memo(({
   const { isMobile } = useDevice();
   
   // Memoize class mappings
-  const baseClasses = useMemo(() => 'rounded-lg bg-space-blue/30 backdrop-blur-sm', []);
+  const baseClasses = useMemo(() => 'rounded-lg backdrop-blur-sm', []);
   
   const paddingClasses = useMemo(() => ({
     sm: isMobile ? 'p-2' : 'p-3',
@@ -285,8 +285,8 @@ export const ResponsiveModal: React.FC<ResponsiveModalProps> = memo(({
     const contentClasses = isMobile && mobileFullScreen
       ? 'w-full h-full bg-space-black rounded-none'
       : isMobile
-      ? 'w-full max-w-sm bg-space-blue/90 backdrop-blur-sm rounded-lg'
-      : 'w-full max-w-md bg-space-blue/90 backdrop-blur-sm rounded-lg';
+      ? 'w-full max-w-sm backdrop-blur-sm rounded-lg'
+      : 'w-full max-w-md backdrop-blur-sm rounded-lg';
     
     return { baseClasses, backdropClasses, contentClasses };
   }, [isMobile, mobileFullScreen]);

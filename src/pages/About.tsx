@@ -8,7 +8,7 @@ const About: React.FC = () => {
           About the ISS Live Tracker
         </h1>
       
-      <div className="bg-space-blue/30 backdrop-blur-sm rounded-lg p-8 mb-12" style={{borderLeft: "4px solid var(--iss-highlight)", padding:"1rem"}}>
+      <div className="backdrop-blur-sm rounded-lg p-8 mb-12" style={{borderLeft: "4px solid var(--iss-highlight)", padding:"1rem"}}>
         <h2 className="text-2xl font-semibold mb-6 pl-4" style={{fontFamily: "'Orbitron', sans-serif"}}>The International Space Station</h2>
         <p className="mb-6 pl-4" style={{lineHeight: "1.8", fontSize: "1.05rem"}}>
           The International Space Station (ISS) is a modular space station in low Earth orbit. 
@@ -46,7 +46,7 @@ const About: React.FC = () => {
         </div>
       </div>
       
-      <div className="bg-space-blue/30 backdrop-blur-sm rounded-lg p-8 mb-12" style={{borderLeft: "4px solid var(--iss-highlight)", padding:"1rem"}}>
+      <div className="backdrop-blur-sm rounded-lg p-8 mb-12" style={{borderLeft: "4px solid var(--iss-highlight)", padding:"1rem"}}>
         <h2 className="text-2xl font-semibold mb-6 pl-4" style={{fontFamily: "'Orbitron', sans-serif"}}>About This Application</h2>
         <p className="mb-6 pl-4" style={{lineHeight: "1.8", fontSize: "1.05rem"}}>
           The ISS Live Tracker is a web application that provides real-time tracking of the 

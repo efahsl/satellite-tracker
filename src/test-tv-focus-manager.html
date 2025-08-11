@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Focus Manager Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .instructions {
+            background-color: #e8f4fd;
+            border: 1px solid #b3d9ff;
+        }
+
+        .menu-closed {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+
+        .tv-menu {
+            width: 300px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .menu-button {
+            display: block;
+            width: 100%;
+            padding: 12px 16px;
+            margin: 8px 0;
+            font-size: 16px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .menu-button:hover {
+            background-color: #e9ecef;
+        }
+
+        .menu-button.focused {
+            border: 3px solid #4A90E2;
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+            background-color: #e3f2fd;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .controls button {
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+
+        .log {
+            height: 200px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            border: 1px solid #ddd;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .checkbox-label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-label input {
+            margin-right: 8px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TV Focus Manager Test Page</h1>
+        
+        <!-- Control Panel -->
+        <div class="panel">
+            <h3>Controls</h3>
+            <label class="checkbox-label">
+                <input type="checkbox" id="enableFocus" checked>
+                Enable TV Focus Manager
+            </label>
+            
+            <label class="checkbox-label">
+                <input type="checkbox" id="showMenu" checked>
+                Show Menu
+            </label>
+
+            <div class="controls">
+                <button id="focusPrevious">Focus Previous (↑)</button>
+                <button id="focusNext">Focus Next (↓)</button>
+                <button id="focusFirst">Focus First</button>
+                <button id="clearLog">Clear Log</button>
+            </div>
+        </div>
+
+        <!-- Status Display -->
+        <div class="panel">
+            <h3>Status</h3>
+            <div class="status-grid">
+                <div><strong>Focus Manager:</strong> <span id="statusEnabled">Enabled</span></div>
+                <div><strong>Menu Visible:</strong> <span id="statusMenu">Visible</span></div>
+                <div><strong>Focus Index:</strong> <span id="statusIndex">0</span></div>
+                <div><strong>Elements:</strong> <span id="statusElements">6</span></div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="panel instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li><strong>Arrow Up/Down:</strong> Navigate between buttons (when focus manager is enabled)</li>
+                <li><strong>Enter/Space:</strong> Activate focused button</li>
+                <li><strong>Escape:</strong> Reopen menu when closed</li>
+                <li><strong>Manual Mode button:</strong> Closes the menu to simulate TV interface behavior</li>
+                <li><strong>Mouse hover:</strong> Also updates focus when enabled</li>
+                <li>Focus indicators show with blue borders and slight scaling</li>
+            </ul>
+        </div>
+
+        <!-- Test Menu -->
+        <div id="tvMenu" class="tv-menu">
+            <h3>TV Menu (Focusable)</h3>
+            <button class="menu-button focused" data-index="0">Home</button>
+            <button class="menu-button" data-index="1">ISS Tracking</button>
+            <button class="menu-button" data-index="2">Manual Mode</button>
+            <button class="menu-button" data-index="3">Settings</button>
+            <button class="menu-button" data-index="4">About</button>
+            <button class="menu-button" data-index="5">Help</button>
+        </div>
+
+        <!-- Menu Closed Message -->
+        <div id="menuClosed" class="panel menu-closed hidden">
+            <h3>Menu Closed</h3>
+            <p>Press <strong>Escape</strong> key to reopen the menu, or use the checkbox above.</p>
+            <p>This simulates the TV interface behavior where the menu closes during manual mode.</p>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="panel">
+            <h3>Activity Log</h3>
+            <div id="activityLog" class="log">
+                <div style="color: #666; font-style: italic;">No activity yet... Try using arrow keys or clicking buttons!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // TV Focus Manager Implementation (Simplified for testing)
+        class TVFocusManager {
+            constructor() {
+                this.isEnabled = true;
+                this.currentFocusIndex = 0;
+                this.focusableElements = [];
+                this.onEscape = null;
+                this.keydownHandler = this.handleKeyDown.bind(this);
+                
+                this.updateFocusableElements();
+                this.setupEventListeners();
+            }
+
+            updateFocusableElements() {
+                const menu = document.getElementById('tvMenu');
+                if (menu && !menu.classList.contains('hidden')) {
+                    this.focusableElements = Array.from(menu.querySelectorAll('.menu-button'));
+                } else {
+                    this.focusableElements = [];
+                }
+                this.updateStatus();
+            }
+
+            setupEventListeners() {
+                document.addEventListener('keydown', this.keydownHandler);
+            }
+
+            handleKeyDown(event) {
+                if (!this.isEnabled || this.focusableElements.length === 0) return;
+
+                switch (event.key) {
+                    case 'ArrowDown':
+                        event.preventDefault();
+                        this.focusNext();
+                        break;
+                    
+                    case 'ArrowUp':
+                        event.preventDefault();
+                        this.focusPrevious();
+                        break;
+                    
+                    case 'Enter':
+                    case ' ':
+                        event.preventDefault();
+                        this.activateCurrentElement();
+                        break;
+                    
+                    case 'Escape':
+                        event.preventDefault();
+                        if (this.onEscape) {
+                            this.onEscape();
+                        }
+                        break;
+                }
+            }
+
+            focusNext() {
+                if (this.focusableElements.length === 0) return;
+                this.currentFocusIndex = (this.currentFocusIndex + 1) % this.focusableElements.length;
+                this.updateFocus();
+                this.addLog(`Focus moved to: ${this.getCurrentElementText()} (index ${this.currentFocusIndex})`);
+            }
+
+            focusPrevious() {
+                if (this.focusableElements.length === 0) return;
+                this.currentFocusIndex = this.currentFocusIndex === 0 
+                    ? this.focusableElements.length - 1 
+                    : this.currentFocusIndex - 1;
+                this.updateFocus();
+                this.addLog(`Focus moved to: ${this.getCurrentElementText()} (index ${this.currentFocusIndex})`);
+            }
+
+            focusElement(index) {
+                if (this.focusableElements.length === 0) return;
+                this.currentFocusIndex = Math.max(0, Math.min(index, this.focusableElements.length - 1));
+                this.updateFocus();
+                this.addLog(`Focus set to: ${this.getCurrentElementText()} (index ${this.currentFocusIndex})`);
+            }
+
+            activateCurrentElement() {
+                if (this.focusableElements.length === 0) return;
+                const element = this.focusableElements[this.currentFocusIndex];
+                if (element) {
+                    element.click();
+                }
+            }
+
+            updateFocus() {
+                // Remove focus from all elements
+                this.focusableElements.forEach(el => el.classList.remove('focused'));
+                
+                // Add focus to current element
+                if (this.focusableElements[this.currentFocusIndex]) {
+                    this.focusableElements[this.currentFocusIndex].classList.add('focused');
+                    this.focusableElements[this.currentFocusIndex].focus();
+                }
+                
+                this.updateStatus();
+            }
+
+            getCurrentElementText() {
+                return this.focusableElements[this.currentFocusIndex]?.textContent || 'Unknown';
+            }
+
+            updateStatus() {
+                document.getElementById('statusEnabled').textContent = this.isEnabled ? 'Enabled' : 'Disabled';
+                document.getElementById('statusIndex').textContent = this.currentFocusIndex.toString();
+                document.getElementById('statusElements').textContent = this.focusableElements.length.toString();
+            }
+
+            addLog(message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logElement = document.getElementById('activityLog');
+                const logEntry = document.createElement('div');
+                logEntry.textContent = `[${timestamp}] ${message}`;
+                
+                // Remove placeholder text
+                if (logElement.children.length === 1 && logElement.children[0].style.color === 'rgb(102, 102, 102)') {
+                    logElement.innerHTML = '';
+                }
+                
+                logElement.insertBefore(logEntry, logElement.firstChild);
+                
+                // Keep only last 20 entries
+                while (logElement.children.length > 20) {
+                    logElement.removeChild(logElement.lastChild);
+                }
+            }
+
+            setEnabled(enabled) {
+                this.isEnabled = enabled;
+                this.updateStatus();
+                this.addLog(`Focus manager ${enabled ? 'enabled' : 'disabled'}`);
+            }
+
+            setOnEscape(callback) {
+                this.onEscape = callback;
+            }
+        }
+
+        // Initialize the focus manager
+        const focusManager = new TVFocusManager();
+
+        // Set up escape handler
+        focusManager.setOnEscape(() => {
+            focusManager.addLog('Escape key pressed - reopening menu');
+            showMenu(true);
+        });
+
+        // Control handlers
+        document.getElementById('enableFocus').addEventListener('change', (e) => {
+            focusManager.setEnabled(e.target.checked);
+        });
+
+        document.getElementById('showMenu').addEventListener('change', (e) => {
+            showMenu(e.target.checked);
+        });
+
+        document.getElementById('focusPrevious').addEventListener('click', () => {
+            focusManager.focusPrevious();
+        });
+
+        document.getElementById('focusNext').addEventListener('click', () => {
+            focusManager.focusNext();
+        });
+
+        document.getElementById('focusFirst').addEventListener('click', () => {
+            focusManager.focusElement(0);
+        });
+
+        document.getElementById('clearLog').addEventListener('click', () => {
+            const logElement = document.getElementById('activityLog');
+            logElement.innerHTML = '<div style="color: #666; font-style: italic;">Log cleared...</div>';
+        });
+
+        // Menu button handlers
+        document.querySelectorAll('.menu-button').forEach((button, index) => {
+            button.addEventListener('click', () => {
+                const buttonText = button.textContent;
+                focusManager.addLog(`Button clicked: ${buttonText}`);
+                
+                if (buttonText === 'Manual Mode') {
+                    focusManager.addLog('Manual mode activated - closing menu');
+                    showMenu(false);
+                    document.getElementById('showMenu').checked = false;
+                }
+            });
+
+            button.addEventListener('mouseenter', () => {
+                if (focusManager.isEnabled) {
+                    focusManager.focusElement(index);
+                    focusManager.addLog(`Mouse hover: ${button.textContent}`);
+                }
+            });
+        });
+
+        function showMenu(visible) {
+            const menu = document.getElementById('tvMenu');
+            const menuClosed = document.getElementById('menuClosed');
+            const statusMenu = document.getElementById('statusMenu');
+            
+            if (visible) {
+                menu.classList.remove('hidden');
+                menuClosed.classList.add('hidden');
+                statusMenu.textContent = 'Visible';
+                focusManager.updateFocusableElements();
+                focusManager.focusElement(0); // Focus first element when menu opens
+            } else {
+                menu.classList.add('hidden');
+                menuClosed.classList.remove('hidden');
+                statusMenu.textContent = 'Hidden';
+                focusManager.updateFocusableElements();
+            }
+            
+            focusManager.addLog(`Menu ${visible ? 'shown' : 'hidden'}`);
+        }
+
+        // Initial log
+        focusManager.addLog('TV Focus Manager test page loaded');
+        focusManager.addLog('Try using arrow keys to navigate the menu!');
+    </script>
+</body>
+</html>

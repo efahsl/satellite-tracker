@@ -150,6 +150,16 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const width = window.innerWidth;
     const height = window.innerHeight;
     const isTouchDevice = detectTouchDevice();
+    const deviceType = detectDeviceType(width, height, isTouchDevice);
+    const isTVProfile = detectTVProfile(width);
+
+    console.log('🖥️ DeviceContext: Initializing device detection', {
+      dimensions: `${width}x${height}`,
+      deviceType,
+      isTouchDevice,
+      isTVProfile,
+      orientation: detectOrientation(width, height)
+    });
 
     dispatch({
       type: 'INITIALIZE_DEVICE',
@@ -165,14 +175,26 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const handleResize = useCallback(() => {
     if (typeof window === 'undefined') return;
 
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const deviceType = detectDeviceType(width, height, state.isTouchDevice);
+    const isTVProfile = detectTVProfile(width);
+
+    // console.log('📏 DeviceContext: Screen size changed', {
+    //   dimensions: `${width}x${height}`,
+    //   deviceType,
+    //   isTVProfile,
+    //   orientation: detectOrientation(width, height)
+    // });
+
     dispatch({
       type: 'UPDATE_SCREEN_SIZE',
       payload: {
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width,
+        height,
       },
     });
-  }, []);
+  }, [state.isTouchDevice]);
 
   // Handle orientation change - optimized with proper cleanup
   const handleOrientationChange = useCallback(() => {
@@ -218,7 +240,24 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const isMobile = useMemo(() => state.deviceType === DeviceType.MOBILE, [state.deviceType]);
   const isDesktop = useMemo(() => state.deviceType === DeviceType.DESKTOP, [state.deviceType]);
   const isTV = useMemo(() => state.deviceType === DeviceType.TV, [state.deviceType]);
-  const isTVProfile = useMemo(() => detectTVProfile(state.screenWidth), [state.screenWidth]);
+  const isTVProfile = useMemo(() => {
+    const tvProfile = detectTVProfile(state.screenWidth);
+    return tvProfile;
+  }, [state.screenWidth]);
+
+  // Log device profile changes
+  useEffect(() => {
+    console.log('📱 DeviceContext: Current device profile', {
+      dimensions: `${state.screenWidth}x${state.screenHeight}`,
+      deviceType: state.deviceType,
+      isMobile,
+      isDesktop,
+      isTV,
+      isTVProfile,
+      isTouchDevice: state.isTouchDevice,
+      orientation: state.orientation
+    });
+  }, [state.deviceType, state.screenWidth, state.screenHeight, isMobile, isDesktop, isTV, isTVProfile, state.isTouchDevice, state.orientation]);
 
   // Log current device profile whenever it changes
   useEffect(() => {

@@ -17,7 +17,7 @@ const ResponsiveUtilitiesTest: React.FC = () => {
           <strong>Mobile Only:</strong> Visible only on mobile (&lt; 768px)
         </div>
         
-        <div className="desktop-only p-2 mb-2 bg-space-blue rounded text-center">
+        <div className="desktop-only p-2 mb-2 rounded text-center">
           <strong>Desktop Only:</strong> Visible only on desktop (≥ 768px)
         </div>
         
@@ -48,15 +48,15 @@ const ResponsiveUtilitiesTest: React.FC = () => {
       <div className="test-section p-4 border border-gray-700 rounded-lg">
         <h3 className="text-lg font-semibold mb-3">Typography Utilities</h3>
         
-        <div className="sm:text-xs md:text-base mb-2 p-2 bg-space-blue rounded">
+        <div className="sm:text-xs md:text-base mb-2 p-2 rounded">
           <strong>Responsive Text Size:</strong> Extra small on mobile, base size on desktop
         </div>
         
-        <div className="mobile-text-sm md:text-lg mb-2 p-2 bg-space-blue rounded">
+        <div className="mobile-text-sm md:text-lg mb-2 p-2 rounded">
           <strong>Mixed Classes:</strong> Small text on mobile, large on desktop
         </div>
         
-        <div className="sm:font-medium md:font-semibold p-2 bg-space-blue rounded">
+        <div className="sm:font-medium md:font-semibold p-2 rounded">
           <strong>Responsive Font Weight:</strong> Medium on mobile, semibold on desktop
         </div>
       </div>
@@ -65,11 +65,11 @@ const ResponsiveUtilitiesTest: React.FC = () => {
       <div className="test-section p-4 border border-gray-700 rounded-lg">
         <h3 className="text-lg font-semibold mb-3">Spacing Utilities</h3>
         
-        <div className="sm:p-2 md:p-4 mb-3 bg-space-blue rounded">
+        <div className="sm:p-2 md:p-4 mb-3 rounded">
           <strong>Responsive Padding:</strong> Less padding on mobile, more on desktop
         </div>
         
-        <div className="mobile-mb-1 md:mb-4 p-2 bg-space-blue rounded">
+        <div className="mobile-mb-1 md:mb-4 p-2 rounded">
           <strong>Responsive Margin:</strong> Small bottom margin on mobile, larger on desktop
         </div>
       </div>
@@ -93,7 +93,7 @@ const ResponsiveUtilitiesTest: React.FC = () => {
       <div className="test-section p-4 border border-gray-700 rounded-lg">
         <h3 className="text-lg font-semibold mb-3">Container Utilities</h3>
         
-        <div className="container-mobile md:container-desktop bg-space-blue p-3 rounded">
+        <div className="container-mobile md:container-desktop p-3 rounded">
           <strong>Responsive Container:</strong> Mobile container on small screens, desktop container on large screens
         </div>
       </div>
