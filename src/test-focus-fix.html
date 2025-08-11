@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Focus Fix Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .instructions {
+            background: #333;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .instructions h2 {
+            margin-top: 0;
+            color: #4A90E2;
+        }
+        
+        .instructions ol {
+            line-height: 1.6;
+        }
+        
+        .test-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .test-button {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 150ms ease-in-out;
+        }
+        
+        .test-button:focus {
+            outline: none;
+            border: 3px solid #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
+            transform: scale(1.05);
+            background: rgba(74, 144, 226, 0.2);
+        }
+        
+        .test-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .status {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .status.success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+        }
+        
+        .status.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="instructions">
+            <h2>TV Focus Fix Test</h2>
+            <p>This test verifies that the focus doesn't automatically jump back to the first button after navigation.</p>
+            <ol>
+                <li>Click on the first button to focus it</li>
+                <li>Use the <strong>Down Arrow</strong> key to navigate to the second button</li>
+                <li>Wait for about 1 second</li>
+                <li>Verify that focus stays on the second button (doesn't jump back to first)</li>
+                <li>Continue navigating with arrow keys to test all buttons</li>
+            </ol>
+        </div>
+        
+        <div class="test-buttons">
+            <button class="test-button" id="button1">Button 1 - Following ISS</button>
+            <button class="test-button" id="button2">Button 2 - Earth Rotate</button>
+            <button class="test-button" id="button3">Button 3 - Manual</button>
+            <button class="test-button" id="button4">Button 4 - Performance High</button>
+            <button class="test-button" id="button5">Button 5 - Performance Medium</button>
+        </div>
+        
+        <div class="status" id="status">
+            <strong>Status:</strong> Ready for testing. Click on Button 1 to start.
+        </div>
+    </div>
+
+    <script>
+        let currentFocusIndex = 0;
+        let focusJumpCount = 0;
+        let lastFocusTime = 0;
+        const buttons = document.querySelectorAll('.test-button');
+        const statusEl = document.getElementById('status');
+        
+        // Track focus changes
+        buttons.forEach((button, index) => {
+            button.addEventListener('focus', () => {
+                const now = Date.now();
+                const timeSinceLastFocus = now - lastFocusTime;
+                
+                // If focus jumped back to first button within 1 second of navigation
+                if (index === 0 && currentFocusIndex > 0 && timeSinceLastFocus < 1000) {
+                    focusJumpCount++;
+                    statusEl.innerHTML = `<strong>❌ Focus Jump Detected!</strong> Focus jumped back to Button 1 after ${timeSinceLastFocus}ms. Jump count: ${focusJumpCount}`;
+                    statusEl.className = 'status error';
+                } else {
+                    statusEl.innerHTML = `<strong>✅ Focus on Button ${index + 1}</strong> - Navigation working correctly. No unexpected jumps detected.`;
+                    statusEl.className = 'status success';
+                }
+                
+                currentFocusIndex = index;
+                lastFocusTime = now;
+            });
+        });
+        
+        // Handle keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                const nextIndex = (currentFocusIndex + 1) % buttons.length;
+                buttons[nextIndex].focus();
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const prevIndex = (currentFocusIndex - 1 + buttons.length) % buttons.length;
+                buttons[prevIndex].focus();
+            }
+        });
+        
+        // Initialize
+        buttons[0].focus();
+    </script>
+</body>
+</html>

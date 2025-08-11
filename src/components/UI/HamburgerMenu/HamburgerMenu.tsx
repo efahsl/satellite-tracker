@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ISSFollowControls, PerformanceControls, DisplayControls } from '../../Controls';
 import { useDevice } from '../../../state/DeviceContext';
+import { useUI } from '../../../state/UIContext';
 import { useTVFocusManager, findFocusableElements } from '../../../hooks/useTVFocusManager';
 import styles from './HamburgerMenu.module.css';
 
@@ -10,16 +11,22 @@ interface HamburgerMenuProps {
 
 export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) => {
   const { isMobile, isTVProfile } = useDevice();
+  const { state: uiState, setHamburgerMenuVisible } = useUI();
   const [isOpen, setIsOpen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const [focusableElements, setFocusableElements] = useState<HTMLElement[]>([]);
   const menuContentRef = useRef<HTMLDivElement>(null);
 
-  // Auto-open menu when TV profile is detected
+  // Sync local state with UIContext for TV mode and auto-open menu
   useEffect(() => {
     if (isTVProfile) {
-      setIsOpen(true);
+      setIsOpen(uiState.hamburgerMenuVisible);
+      // Auto-open menu when TV profile is first detected
+      if (uiState.hamburgerMenuVisible === false) {
+        setHamburgerMenuVisible(true);
+      }
     }
-  }, [isTVProfile]);
+  }, [isTVProfile, uiState.hamburgerMenuVisible, setHamburgerMenuVisible]);
 
   // Update focusable elements when menu opens/closes or content changes
   useEffect(() => {
@@ -44,8 +51,17 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
 
   const handleToggle = useCallback(() => {
     console.log('Hamburger menu toggle clicked, current state:', isOpen);
-    setIsOpen(prev => !prev);
-  }, [isOpen]);
+    
+    if (isAnimating) return; // Prevent interaction during animation
+    
+    if (isTVProfile) {
+      // In TV mode, use UIContext to manage state
+      setHamburgerMenuVisible(!uiState.hamburgerMenuVisible);
+    } else {
+      // In mobile/desktop mode, use local state
+      setIsOpen(prev => !prev);
+    }
+  }, [isOpen, isAnimating, isTVProfile, uiState.hamburgerMenuVisible, setHamburgerMenuVisible]);
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
     if (event.key === 'Escape' && isOpen) {
@@ -54,27 +70,35 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
   }, [isOpen]);
 
   const handleBackdropClick = useCallback(() => {
-    setIsOpen(false);
-  }, []);
+    if (isAnimating) return; // Prevent interaction during animation
+    
+    if (isTVProfile) {
+      setHamburgerMenuVisible(false);
+    } else {
+      setIsOpen(false);
+    }
+  }, [isAnimating, isTVProfile, setHamburgerMenuVisible]);
 
   // Close menu when clicking on a control (better UX on mobile, but keep open on TV)
   const handleControlInteraction = useCallback(() => {
+    if (isAnimating) return; // Prevent interaction during animation
+    
     if (isMobile && !isTVProfile) {
       setIsOpen(false);
     }
-  }, [isMobile, isTVProfile]);
+  }, [isMobile, isTVProfile, isAnimating]);
 
-  // Focus first element when menu opens in TV mode
-  useEffect(() => {
-    if (isTVProfile && isOpen && focusableElements.length > 0) {
-      // Small delay to ensure elements are rendered and focusable
-      const timeoutId = setTimeout(() => {
-        focusElement(0);
-      }, 100);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [isTVProfile, isOpen, focusableElements.length, focusElement]);
+  // Animation event handlers
+  const handleAnimationStart = useCallback(() => {
+    setIsAnimating(true);
+  }, []);
+
+  const handleAnimationEnd = useCallback(() => {
+    setIsAnimating(false);
+  }, []);
+
+  // Let useTVFocusManager handle all focus management
+  // No manual focus management needed here since useTVFocusManager handles initialization
 
   return (
     <div className={`${styles.hamburgerMenu} ${className}`} onKeyDown={handleKeyDown}>
@@ -103,11 +127,15 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
         className={`${styles.content} ${(isOpen || isTVProfile) ? styles.contentOpen : ''} ${
           isTVProfile ? styles.contentTV : 
           isMobile ? styles.contentMobile : ''
-        }`}
+        } ${isAnimating ? styles.animating : ''}`}
         aria-hidden={!isOpen && !isTVProfile}
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
+        onAnimationStart={handleAnimationStart}
+        onAnimationEnd={handleAnimationEnd}
+        onTransitionStart={handleAnimationStart}
+        onTransitionEnd={handleAnimationEnd}
       >
         <div className={`${styles.controls} ${isTVProfile ? 'tv-menu-controls' : ''}`} onClick={handleControlInteraction}>
           <ISSFollowControls />

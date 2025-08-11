@@ -294,7 +294,7 @@
   width: var(--tv-menu-width);
   height: 100vh;
   max-height: none;
-  transform: translateX(0); /* Always visible in TV mode */
+  transform: translateX(-100%); /* Start hidden off-screen */
   opacity: 1;
   visibility: visible;
   border-radius: 0;
@@ -309,15 +309,48 @@
   padding-bottom: 2rem;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+  /* Smooth transitions for slide animations */
+  transition: transform var(--tv-slide-in-duration) var(--tv-easing-smooth);
 }
 
+/* TV mode - menu slides in from left when open */
 .contentTV.contentOpen {
   transform: translateX(0);
   transition: transform var(--tv-slide-in-duration) var(--tv-easing-smooth);
 }
 
+/* TV mode - menu slides out to left when closed */
 .contentTV:not(.contentOpen) {
+  transform: translateX(-100%);
   transition: transform var(--tv-slide-out-duration) var(--tv-easing-smooth);
+}
+
+/* Animation state class to prevent interactions during transitions */
+.animating {
+  pointer-events: none;
+}
+
+.contentTV.animating {
+  pointer-events: none;
+}
+
+/* Initial state handling for TV mode */
+.contentTV:not(.contentOpen):not(.animating) {
+  /* When not animating and not open, keep hidden */
+  transform: translateX(-100%);
+}
+
+/* Override for TV mode when menu should be visible by default */
+@media (width: 1920px) {
+  .contentTV {
+    /* Start visible in TV mode by default */
+    transform: translateX(0);
+  }
+  
+  .contentTV:not(.contentOpen) {
+    /* Only hide when explicitly closed */
+    transform: translateX(-100%);
+  }
 }
 
 /* TV mode - hamburger button is hidden, so no positioning needed */
@@ -427,9 +460,19 @@
     transition: none;
   }
   
+  .contentTV,
   .contentTV.contentOpen,
   .contentTV:not(.contentOpen) {
     transition: none;
+  }
+  
+  /* For reduced motion, use instant positioning instead of animations */
+  .contentTV.contentOpen {
+    transform: translateX(0);
+  }
+  
+  .contentTV:not(.contentOpen) {
+    transform: translateX(-100%);
   }
 }
 

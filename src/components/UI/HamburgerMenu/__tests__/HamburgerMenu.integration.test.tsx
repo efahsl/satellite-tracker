@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { HamburgerMenu } from '../HamburgerMenu';
 import { useDevice } from '../../../../state/DeviceContext';
+import { UIProvider } from '../../../../state/UIContext';
 
 // Mock the DeviceContext
 vi.mock('../../../../state/DeviceContext');
@@ -30,6 +31,13 @@ vi.mock('../../../Controls', () => ({
   ),
 }));
 
+// Test wrapper component
+const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <UIProvider>
+    {children}
+  </UIProvider>
+);
+
 describe('HamburgerMenu TV Keyboard Navigation Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -50,7 +58,11 @@ describe('HamburgerMenu TV Keyboard Navigation Integration', () => {
   });
 
   it('should navigate through buttons with arrow keys in TV mode', async () => {
-    render(<HamburgerMenu />);
+    render(
+      <TestWrapper>
+        <HamburgerMenu />
+      </TestWrapper>
+    );
 
     // Wait for the menu to be rendered and focusable elements to be found
     await waitFor(() => {
@@ -92,7 +104,11 @@ describe('HamburgerMenu TV Keyboard Navigation Integration', () => {
   });
 
   it('should loop focus when reaching boundaries in TV mode', async () => {
-    render(<HamburgerMenu />);
+    render(
+      <TestWrapper>
+        <HamburgerMenu />
+      </TestWrapper>
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId('iss-follow-button')).toBeInTheDocument();
@@ -126,7 +142,11 @@ describe('HamburgerMenu TV Keyboard Navigation Integration', () => {
   });
 
   it('should activate buttons with Enter and Space keys in TV mode', async () => {
-    render(<HamburgerMenu />);
+    render(
+      <TestWrapper>
+        <HamburgerMenu />
+      </TestWrapper>
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId('iss-follow-button')).toBeInTheDocument();
@@ -170,7 +190,11 @@ describe('HamburgerMenu TV Keyboard Navigation Integration', () => {
       screenHeight: 667,
     });
 
-    render(<HamburgerMenu />);
+    render(
+      <TestWrapper>
+        <HamburgerMenu />
+      </TestWrapper>
+    );
 
     // Open the menu manually in mobile mode
     const menuButton = screen.getByRole('button', { name: /menu/i });
@@ -186,7 +210,11 @@ describe('HamburgerMenu TV Keyboard Navigation Integration', () => {
   });
 
   it('should handle focus properly when switching between TV and non-TV modes', async () => {
-    const { rerender } = render(<HamburgerMenu />);
+    const { rerender } = render(
+      <TestWrapper>
+        <HamburgerMenu />
+      </TestWrapper>
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId('iss-follow-button')).toBeInTheDocument();
@@ -212,7 +240,11 @@ describe('HamburgerMenu TV Keyboard Navigation Integration', () => {
       screenHeight: 667,
     });
 
-    rerender(<HamburgerMenu />);
+    rerender(
+      <TestWrapper>
+        <HamburgerMenu />
+      </TestWrapper>
+    );
 
     // Wait for the component to update to mobile mode
     await waitFor(() => {

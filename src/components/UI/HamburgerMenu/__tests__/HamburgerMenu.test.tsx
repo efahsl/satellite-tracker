@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { HamburgerMenu } from '../HamburgerMenu';
 import { useDevice } from '../../../../state/DeviceContext';
+import { UIProvider } from '../../../../state/UIContext';
 import { useTVFocusManager, findFocusableElements } from '../../../../hooks/useTVFocusManager';
 
 // Mock the DeviceContext
@@ -39,6 +40,13 @@ vi.mock('../../../../hooks/useTVFocusManager', () => ({
   findFocusableElements: vi.fn(),
 }));
 
+// Test wrapper component
+const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <UIProvider>
+    {children}
+  </UIProvider>
+);
+
 describe('HamburgerMenu', () => {
   const mockFocusElement = vi.fn();
   const mockHandleKeyDown = vi.fn();
@@ -69,11 +77,13 @@ describe('HamburgerMenu', () => {
         isMobile: false,
         isDesktop: false,
         isTVProfile: true,
-        screenWidth: 1920,
-        screenHeight: 1080,
       });
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
       
       // Hamburger button should not be rendered in TV mode
       const menuButton = screen.queryByRole('button', { name: /menu/i });
@@ -91,11 +101,13 @@ describe('HamburgerMenu', () => {
         isMobile: true,
         isDesktop: false,
         isTVProfile: false,
-        screenWidth: 375,
-        screenHeight: 667,
       });
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
       
       const menuButton = screen.getByRole('button', { name: /menu/i });
       fireEvent.click(menuButton);
@@ -110,11 +122,13 @@ describe('HamburgerMenu', () => {
         isMobile: false,
         isDesktop: true,
         isTVProfile: false,
-        screenWidth: 1440,
-        screenHeight: 900,
       });
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
       
       const menuButton = screen.getByRole('button', { name: /menu/i });
       fireEvent.click(menuButton);
@@ -131,11 +145,13 @@ describe('HamburgerMenu', () => {
         isMobile: false,
         isDesktop: false,
         isTVProfile: true,
-        screenWidth: 1920,
-        screenHeight: 1080,
       });
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
       
       // No hamburger button in TV mode, menu is auto-open
       const menuButton = screen.queryByRole('button', { name: /menu/i });
@@ -151,11 +167,13 @@ describe('HamburgerMenu', () => {
         isMobile: true,
         isDesktop: false,
         isTVProfile: false,
-        screenWidth: 375,
-        screenHeight: 667,
       });
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
       
       const menuButton = screen.getByRole('button', { name: /menu/i });
       fireEvent.click(menuButton);
@@ -172,16 +190,18 @@ describe('HamburgerMenu', () => {
         isMobile: false,
         isDesktop: false,
         isTVProfile: true,
-        screenWidth: 1920,
-        screenHeight: 1080,
       });
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
       
       // No need to click button in TV mode - menu is auto-open
-      expect(screen.getByTestId('iss-follow-controls')).toBeInTheDocument();
-      expect(screen.getByTestId('performance-controls')).toBeInTheDocument();
-      expect(screen.getByTestId('display-controls')).toBeInTheDocument();
+      expect(screen.getByTestId('iss-follow-controls')).toBeDefined();
+      expect(screen.getByTestId('performance-controls')).toBeDefined();
+      expect(screen.getByTestId('display-controls')).toBeDefined();
     });
 
     it('should not auto-close menu when clicking controls in TV mode', () => {
@@ -189,11 +209,13 @@ describe('HamburgerMenu', () => {
         isMobile: false,
         isDesktop: false,
         isTVProfile: true,
-        screenWidth: 1920,
-        screenHeight: 1080,
       });
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
       
       // Menu is auto-open in TV mode
       const menuContent = screen.getByRole('dialog');
@@ -212,11 +234,13 @@ describe('HamburgerMenu', () => {
         isMobile: true,
         isDesktop: false,
         isTVProfile: false,
-        screenWidth: 375,
-        screenHeight: 667,
       });
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
       
       const menuButton = screen.getByRole('button', { name: /menu/i });
       fireEvent.click(menuButton);
@@ -239,11 +263,13 @@ describe('HamburgerMenu', () => {
         isMobile: false,
         isDesktop: false,
         isTVProfile: true,
-        screenWidth: 1920,
-        screenHeight: 1080,
       });
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
       
       // No hamburger button in TV mode
       const menuButton = screen.queryByRole('button', { name: /menu/i });
@@ -251,9 +277,9 @@ describe('HamburgerMenu', () => {
       
       // Menu should be auto-open with proper ARIA attributes
       const menuContent = screen.getByRole('dialog');
-      expect(menuContent).toHaveAttribute('aria-modal', 'true');
-      expect(menuContent).toHaveAttribute('aria-label', 'Navigation menu');
-      expect(menuContent).toHaveAttribute('aria-hidden', 'false');
+      expect(menuContent.getAttribute('aria-modal')).toBe('true');
+      expect(menuContent.getAttribute('aria-label')).toBe('Navigation menu');
+      expect(menuContent.getAttribute('aria-hidden')).toBe('false');
     });
 
     it('should handle keyboard navigation with Escape key in TV mode', () => {
@@ -261,11 +287,13 @@ describe('HamburgerMenu', () => {
         isMobile: false,
         isDesktop: false,
         isTVProfile: true,
-        screenWidth: 1920,
-        screenHeight: 1080,
       });
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
       
       // Menu is auto-open in TV mode
       const menuContent = screen.getByRole('dialog');
@@ -285,13 +313,15 @@ describe('HamburgerMenu', () => {
         isMobile: false,
         isDesktop: false,
         isTVProfile: true,
-        screenWidth: 1920,
-        screenHeight: 1080,
       });
     });
 
     it('should initialize TV focus manager when in TV mode', () => {
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
       expect(mockUseTVFocusManager).toHaveBeenCalledWith({
         isEnabled: true,
@@ -306,11 +336,13 @@ describe('HamburgerMenu', () => {
         isMobile: true,
         isDesktop: false,
         isTVProfile: false,
-        screenWidth: 375,
-        screenHeight: 667,
       });
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
       expect(mockUseTVFocusManager).toHaveBeenCalledWith({
         isEnabled: false,
@@ -328,7 +360,11 @@ describe('HamburgerMenu', () => {
       ];
       mockFindFocusableElements.mockReturnValue(mockButtons);
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
       await waitFor(() => {
         expect(mockFindFocusableElements).toHaveBeenCalled();
@@ -350,15 +386,25 @@ describe('HamburgerMenu', () => {
       ];
       mockFindFocusableElements.mockReturnValue(mockButtons);
 
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
+      // Note: We removed the manual focus management, so this test should not expect focusElement to be called
+      // The focus management is now handled entirely by useTVFocusManager
       await waitFor(() => {
-        expect(mockFocusElement).toHaveBeenCalledWith(0);
-      }, { timeout: 200 });
+        expect(mockFindFocusableElements).toHaveBeenCalled();
+      });
     });
 
     it('should handle keyboard events through TV focus manager', () => {
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
       // Simulate a keyboard event on the document
       const keyEvent = new KeyboardEvent('keydown', { key: 'ArrowDown' });
@@ -374,7 +420,11 @@ describe('HamburgerMenu', () => {
     });
 
     it('should provide escape handler that does not close menu in TV mode', () => {
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
       // Get the onEscape callback that was passed to useTVFocusManager
       const onEscapeCallback = mockUseTVFocusManager.mock.calls[0][0].onEscape;
@@ -393,14 +443,22 @@ describe('HamburgerMenu', () => {
     });
 
     it('should call findFocusableElements when TV mode is enabled', () => {
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
       // Should find elements when TV mode is enabled and menu is open
       expect(mockFindFocusableElements).toHaveBeenCalled();
     });
 
     it('should clear focusable elements when switching from TV to non-TV mode', () => {
-      const { rerender } = render(<HamburgerMenu />);
+      const { rerender } = render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
       // Initially in TV mode with elements
       expect(mockUseTVFocusManager).toHaveBeenCalledWith(
@@ -414,11 +472,13 @@ describe('HamburgerMenu', () => {
         isMobile: true,
         isDesktop: false,
         isTVProfile: false,
-        screenWidth: 375,
-        screenHeight: 667,
       });
 
-      rerender(<HamburgerMenu />);
+      rerender(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
       // Should disable TV focus manager
       expect(mockUseTVFocusManager).toHaveBeenCalledWith(
@@ -436,13 +496,15 @@ describe('HamburgerMenu', () => {
         isMobile: false,
         isDesktop: false,
         isTVProfile: true,
-        screenWidth: 1920,
-        screenHeight: 1080,
       });
     });
 
     it('should apply TV-specific CSS classes for focus styling', () => {
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
       const menuContent = screen.getByRole('dialog');
       expect(menuContent.className).toContain('contentTV');
@@ -456,19 +518,27 @@ describe('HamburgerMenu', () => {
     });
 
     it('should render all focusable buttons with proper test IDs', () => {
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
       // Check that all mock buttons are rendered
-      expect(screen.getByTestId('iss-button-1')).toBeInTheDocument();
-      expect(screen.getByTestId('iss-button-2')).toBeInTheDocument();
-      expect(screen.getByTestId('perf-button-1')).toBeInTheDocument();
-      expect(screen.getByTestId('perf-button-2')).toBeInTheDocument();
-      expect(screen.getByTestId('display-button-1')).toBeInTheDocument();
-      expect(screen.getByTestId('display-button-2')).toBeInTheDocument();
+      expect(screen.getByTestId('iss-button-1')).toBeDefined();
+      expect(screen.getByTestId('iss-button-2')).toBeDefined();
+      expect(screen.getByTestId('perf-button-1')).toBeDefined();
+      expect(screen.getByTestId('perf-button-2')).toBeDefined();
+      expect(screen.getByTestId('display-button-1')).toBeDefined();
+      expect(screen.getByTestId('display-button-2')).toBeDefined();
     });
 
     it('should have proper focus styling applied via CSS', () => {
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
       const button = screen.getByTestId('iss-button-1');
       
@@ -480,7 +550,11 @@ describe('HamburgerMenu', () => {
     });
 
     it('should apply enhanced styling to active buttons in TV mode', () => {
-      render(<HamburgerMenu />);
+      render(
+        <TestWrapper>
+          <HamburgerMenu />
+        </TestWrapper>
+      );
 
       // Check that buttons with active classes would receive enhanced styling
       // The actual styling is applied via CSS selectors, so we verify the structure is correct
