@@ -1,6 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 /**
+ * Grid configuration for 2D navigation
+ */
+interface GridConfig {
+  /** Number of columns in the grid */
+  columns: number;
+  /** Number of rows in the grid (optional, calculated from elements if not provided) */
+  rows?: number;
+}
+
+/**
  * Props for the TV focus manager hook
  */
 interface UseTVFocusManagerProps {
@@ -12,6 +22,8 @@ interface UseTVFocusManagerProps {
   onEscape?: () => void;
   /** Initial focus index (defaults to 0) */
   initialFocusIndex?: number;
+  /** Grid configuration for 2D navigation (optional, defaults to linear navigation) */
+  gridConfig?: GridConfig;
 }
 
 /**
@@ -28,6 +40,14 @@ interface UseTVFocusManagerReturn {
   focusNext: () => void;
   /** Function to focus the previous element */
   focusPrevious: () => void;
+  /** Function to focus element above (grid navigation) */
+  focusUp: () => void;
+  /** Function to focus element below (grid navigation) */
+  focusDown: () => void;
+  /** Function to focus element to the left (grid navigation) */
+  focusLeft: () => void;
+  /** Function to focus element to the right (grid navigation) */
+  focusRight: () => void;
 }
 
 /**
@@ -77,7 +97,8 @@ export const useTVFocusManager = ({
   isEnabled,
   focusableElements,
   onEscape,
-  initialFocusIndex = 0
+  initialFocusIndex = 0,
+  gridConfig
 }: UseTVFocusManagerProps): UseTVFocusManagerReturn => {
   const [currentFocusIndex, setCurrentFocusIndex] = useState(initialFocusIndex);
   const keydownHandlerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
@@ -113,6 +134,94 @@ export const useTVFocusManager = ({
     focusElement(prevIndex);
   }, [currentFocusIndex, focusElement]);
 
+  // Grid navigation functions
+  const focusUp = useCallback(() => {
+    if (!gridConfig) {
+      focusPrevious();
+      return;
+    }
+    
+    const { columns } = gridConfig;
+    const currentRow = Math.floor(currentFocusIndex / columns);
+    const currentCol = currentFocusIndex % columns;
+    
+    if (currentRow === 0) {
+      // At top row, wrap to bottom row
+      const totalRows = Math.ceil(focusableElements.length / columns);
+      const targetRow = totalRows - 1;
+      const targetIndex = Math.min(targetRow * columns + currentCol, focusableElements.length - 1);
+      focusElement(targetIndex);
+    } else {
+      // Move up one row
+      const targetIndex = (currentRow - 1) * columns + currentCol;
+      focusElement(targetIndex);
+    }
+  }, [currentFocusIndex, focusableElements.length, gridConfig, focusElement, focusPrevious]);
+
+  const focusDown = useCallback(() => {
+    if (!gridConfig) {
+      focusNext();
+      return;
+    }
+    
+    const { columns } = gridConfig;
+    const currentRow = Math.floor(currentFocusIndex / columns);
+    const currentCol = currentFocusIndex % columns;
+    const totalRows = Math.ceil(focusableElements.length / columns);
+    
+    if (currentRow === totalRows - 1) {
+      // At bottom row, wrap to top row
+      const targetIndex = currentCol;
+      focusElement(targetIndex);
+    } else {
+      // Move down one row
+      const targetIndex = Math.min((currentRow + 1) * columns + currentCol, focusableElements.length - 1);
+      focusElement(targetIndex);
+    }
+  }, [currentFocusIndex, focusableElements.length, gridConfig, focusElement, focusNext]);
+
+  const focusLeft = useCallback(() => {
+    if (!gridConfig) {
+      focusPrevious();
+      return;
+    }
+    
+    const { columns } = gridConfig;
+    const currentRow = Math.floor(currentFocusIndex / columns);
+    const currentCol = currentFocusIndex % columns;
+    
+    if (currentCol === 0) {
+      // At leftmost column, wrap to rightmost column of same row
+      const targetIndex = Math.min(currentRow * columns + (columns - 1), focusableElements.length - 1);
+      focusElement(targetIndex);
+    } else {
+      // Move left one column
+      const targetIndex = currentFocusIndex - 1;
+      focusElement(targetIndex);
+    }
+  }, [currentFocusIndex, focusableElements.length, gridConfig, focusElement, focusPrevious]);
+
+  const focusRight = useCallback(() => {
+    if (!gridConfig) {
+      focusNext();
+      return;
+    }
+    
+    const { columns } = gridConfig;
+    const currentRow = Math.floor(currentFocusIndex / columns);
+    const currentCol = currentFocusIndex % columns;
+    
+    if (currentCol === columns - 1 || currentFocusIndex === focusableElements.length - 1) {
+      // At rightmost column or last element, wrap to leftmost column of same row
+      const targetIndex = currentRow * columns;
+      focusElement(targetIndex);
+    } else {
+      // Move right one column
+      const targetIndex = currentFocusIndex + 1;
+      focusElement(targetIndex);
+    }
+  }, [currentFocusIndex, focusableElements.length, gridConfig, focusElement, focusNext]);
+
   // Handle keyboard events
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (!isEnabled) return;
@@ -120,12 +229,22 @@ export const useTVFocusManager = ({
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
-        focusNext();
+        focusDown();
         break;
       
       case 'ArrowUp':
         event.preventDefault();
-        focusPrevious();
+        focusUp();
+        break;
+      
+      case 'ArrowLeft':
+        event.preventDefault();
+        focusLeft();
+        break;
+      
+      case 'ArrowRight':
+        event.preventDefault();
+        focusRight();
         break;
       
       case 'Enter':
@@ -148,7 +267,7 @@ export const useTVFocusManager = ({
         // Don't prevent default for other keys
         break;
     }
-  }, [isEnabled, currentFocusIndex, focusableElements, focusNext, focusPrevious, onEscape]);
+  }, [isEnabled, currentFocusIndex, focusableElements, focusUp, focusDown, focusLeft, focusRight, onEscape]);
 
   // Set up global keyboard event listener when enabled
   useEffect(() => {
@@ -202,7 +321,11 @@ export const useTVFocusManager = ({
     handleKeyDown,
     focusElement,
     focusNext,
-    focusPrevious
+    focusPrevious,
+    focusUp,
+    focusDown,
+    focusLeft,
+    focusRight
   };
 };
 

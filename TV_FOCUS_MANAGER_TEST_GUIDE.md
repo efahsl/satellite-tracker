@@ -5,7 +5,7 @@ The TV Focus Manager custom hook has been implemented and can be tested using tw
 ## 🎯 **What is the TV Focus Manager?**
 
 The TV Focus Manager is a custom React hook that provides keyboard navigation for TV interfaces. It enables:
-- **Arrow key navigation** (Up/Down) between focusable elements
+- **Arrow key navigation** with proper 2D grid support (Up/Down for vertical, Left/Right for horizontal)
 - **Focus looping** (first ↔ last element)
 - **Enter/Space activation** of focused elements
 - **Escape key handling** for menu reopening
@@ -21,7 +21,8 @@ The TV Focus Manager is a custom React hook that provides keyboard navigation fo
 **How to test:**
 1. Open the HTML file directly in your browser
 2. Use your keyboard to test the functionality:
-   - **Arrow Up/Down**: Navigate between menu buttons
+   - **Arrow Up/Down**: Navigate vertically in the 3x4 grid
+   - **Arrow Left/Right**: Navigate horizontally in the 3x4 grid  
    - **Enter/Space**: Activate the focused button
    - **Escape**: Reopen menu when closed
 3. Use the control panel to enable/disable features
@@ -55,10 +56,12 @@ The TV Focus Manager is a custom React hook that provides keyboard navigation fo
 
 ### Basic Navigation
 1. **Enable focus manager** (should be enabled by default)
-2. **Use Arrow Down** - Focus should move to next button
-3. **Use Arrow Up** - Focus should move to previous button
-4. **Test looping** - From last button, Arrow Down goes to first
-5. **Test looping** - From first button, Arrow Up goes to last
+2. **Use Arrow Down** - Focus should move down one row in the grid
+3. **Use Arrow Up** - Focus should move up one row in the grid
+4. **Use Arrow Right** - Focus should move right one column in the grid
+5. **Use Arrow Left** - Focus should move left one column in the grid
+6. **Test grid wrapping** - At edges, focus wraps to opposite side
+7. **Test 3x4 grid layout** - Navigate through all 12 buttons with proper 2D movement
 
 ### Activation Testing
 1. **Focus on any button** using arrow keys
@@ -81,9 +84,11 @@ The TV Focus Manager is a custom React hook that provides keyboard navigation fo
 
 ### Visual Indicators
 - **Blue border** around focused element
-- **Slight scaling** (1.02x) of focused element
-- **Box shadow** for depth
-- **Smooth transitions** between focus states
+- **Enhanced scaling** (1.05x) of focused element for better TV visibility
+- **Stronger box shadow** with blue glow for depth
+- **Smooth transitions** (0.2s ease) between focus states
+- **Grid layout** with 3 columns and 4 rows
+- **Focus counter** showing current position (e.g., "5 of 12")
 
 ### Activity Log
 - **Timestamp** for each action
@@ -92,10 +97,11 @@ The TV Focus Manager is a custom React hook that provides keyboard navigation fo
 - **State changes** (enable/disable, show/hide)
 
 ### Keyboard Behavior
-- **Arrow keys** should be captured (preventDefault)
+- **All arrow keys** (Up/Down/Left/Right) should be captured (preventDefault)
 - **Other keys** should work normally
-- **Focus should loop** at boundaries
+- **Focus should loop** at boundaries (12th element back to 1st)
 - **Escape key** should work when menu is closed
+- **Sequential navigation** through grid elements regardless of arrow direction
 
 ## 🐛 **Common Issues to Test**
 

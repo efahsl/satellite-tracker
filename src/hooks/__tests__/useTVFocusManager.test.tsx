@@ -165,6 +165,143 @@ describe('useTVFocusManager', () => {
       expect(result.current.currentFocusIndex).toBe(1);
       expect(mockElements[1].focus).toHaveBeenCalled();
     });
+
+    it('should handle left and right arrow keys for linear navigation', () => {
+      const { result } = renderHook(() =>
+        useTVFocusManager({
+          isEnabled: true,
+          focusableElements: mockElements,
+          onEscape: onEscapeMock
+          // No gridConfig = linear navigation
+        })
+      );
+
+      const rightEvent = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+      const leftEvent = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
+
+      // Test right arrow (should move to next in linear mode)
+      const rightPreventDefaultSpy = vi.spyOn(rightEvent, 'preventDefault');
+      act(() => {
+        result.current.handleKeyDown(rightEvent);
+      });
+
+      expect(rightPreventDefaultSpy).toHaveBeenCalled();
+      expect(result.current.currentFocusIndex).toBe(1);
+      expect(mockElements[1].focus).toHaveBeenCalled();
+
+      // Test left arrow (should move to previous in linear mode)
+      const leftPreventDefaultSpy = vi.spyOn(leftEvent, 'preventDefault');
+      act(() => {
+        result.current.handleKeyDown(leftEvent);
+      });
+
+      expect(leftPreventDefaultSpy).toHaveBeenCalled();
+      expect(result.current.currentFocusIndex).toBe(0);
+      expect(mockElements[0].focus).toHaveBeenCalled();
+    });
+
+    it('should handle grid navigation with 2D movement', () => {
+      // Create a 2x2 grid of elements for testing
+      const gridElements = [
+        createMockButton('btn1'), // 0: row 0, col 0
+        createMockButton('btn2'), // 1: row 0, col 1
+        createMockButton('btn3'), // 2: row 1, col 0
+        createMockButton('btn4')  // 3: row 1, col 1
+      ];
+
+      const { result } = renderHook(() =>
+        useTVFocusManager({
+          isEnabled: true,
+          focusableElements: gridElements,
+          onEscape: onEscapeMock,
+          gridConfig: { columns: 2 }
+        })
+      );
+
+      // Start at position 0 (top-left)
+      expect(result.current.currentFocusIndex).toBe(0);
+
+      // Move right: 0 -> 1
+      act(() => {
+        result.current.focusRight();
+      });
+      expect(result.current.currentFocusIndex).toBe(1);
+
+      // Move down: 1 -> 3
+      act(() => {
+        result.current.focusDown();
+      });
+      expect(result.current.currentFocusIndex).toBe(3);
+
+      // Move left: 3 -> 2
+      act(() => {
+        result.current.focusLeft();
+      });
+      expect(result.current.currentFocusIndex).toBe(2);
+
+      // Move up: 2 -> 0
+      act(() => {
+        result.current.focusUp();
+      });
+      expect(result.current.currentFocusIndex).toBe(0);
+    });
+
+    it('should handle grid wrapping at boundaries', () => {
+      // Create a 3x2 grid (6 elements) for testing wrapping
+      const gridElements = [
+        createMockButton('btn1'), // 0: row 0, col 0
+        createMockButton('btn2'), // 1: row 0, col 1  
+        createMockButton('btn3'), // 2: row 0, col 2
+        createMockButton('btn4'), // 3: row 1, col 0
+        createMockButton('btn5'), // 4: row 1, col 1
+        createMockButton('btn6')  // 5: row 1, col 2
+      ];
+
+      const { result } = renderHook(() =>
+        useTVFocusManager({
+          isEnabled: true,
+          focusableElements: gridElements,
+          onEscape: onEscapeMock,
+          gridConfig: { columns: 3 }
+        })
+      );
+
+      // Test horizontal wrapping: rightmost to leftmost
+      act(() => {
+        result.current.focusElement(2); // Top-right corner
+      });
+      act(() => {
+        result.current.focusRight(); // Should wrap to left side of same row
+      });
+      expect(result.current.currentFocusIndex).toBe(0); // Top-left corner
+
+      // Test horizontal wrapping: leftmost to rightmost
+      act(() => {
+        result.current.focusElement(3); // Bottom-left corner
+      });
+      act(() => {
+        result.current.focusLeft(); // Should wrap to right side of same row
+      });
+      expect(result.current.currentFocusIndex).toBe(5); // Bottom-right corner
+
+      // Test vertical wrapping: top to bottom
+      act(() => {
+        result.current.focusElement(1); // Top-middle
+      });
+      act(() => {
+        result.current.focusUp(); // Should wrap to bottom of same column
+      });
+      expect(result.current.currentFocusIndex).toBe(4); // Bottom-middle
+
+      // Test vertical wrapping: bottom to top
+      act(() => {
+        result.current.focusElement(5); // Bottom-right
+      });
+      act(() => {
+        result.current.focusDown(); // Should wrap to top of same column
+      });
+      expect(result.current.currentFocusIndex).toBe(2); // Top-right
+    });
   });
 
   describe('Focus looping behavior', () => {

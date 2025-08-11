@@ -36,10 +36,11 @@ const TestTVFocusManager: React.FC = () => {
     }
   };
 
-  const { currentFocusIndex, focusElement, focusNext, focusPrevious } = useTVFocusManager({
+  const { currentFocusIndex, focusElement, focusNext, focusPrevious, focusUp, focusDown, focusLeft, focusRight } = useTVFocusManager({
     isEnabled: isEnabled, // Keep enabled even when menu is closed so Escape key works
     focusableElements: menuVisible ? focusableElements : [], // Only provide elements when menu is visible
-    onEscape: handleEscape
+    onEscape: handleEscape,
+    gridConfig: { columns: 3 } // 3-column grid layout
   });
 
   return (
@@ -89,6 +90,9 @@ const TestTVFocusManager: React.FC = () => {
         </label>
 
         <div style={{ marginTop: '10px' }}>
+          <div style={{ marginBottom: '10px' }}>
+            <strong>Linear Navigation:</strong>
+          </div>
           <button 
             onClick={() => focusPrevious()}
             style={{ 
@@ -101,7 +105,7 @@ const TestTVFocusManager: React.FC = () => {
               cursor: 'pointer'
             }}
           >
-            Focus Previous (↑)
+            Previous
           </button>
           <button 
             onClick={() => focusNext()}
@@ -115,11 +119,12 @@ const TestTVFocusManager: React.FC = () => {
               cursor: 'pointer'
             }}
           >
-            Focus Next (↓)
+            Next
           </button>
           <button 
             onClick={() => focusElement(0)}
             style={{ 
+              marginRight: '10px',
               padding: '5px 10px',
               backgroundColor: '#333',
               color: '#fff',
@@ -128,7 +133,82 @@ const TestTVFocusManager: React.FC = () => {
               cursor: 'pointer'
             }}
           >
-            Focus First
+            First
+          </button>
+          <button 
+            onClick={() => focusElement(focusableElements.length - 1)}
+            style={{ 
+              marginRight: '10px',
+              padding: '5px 10px',
+              backgroundColor: '#333',
+              color: '#fff',
+              border: '1px solid #555',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Last
+          </button>
+        </div>
+        
+        <div style={{ marginTop: '15px' }}>
+          <div style={{ marginBottom: '10px' }}>
+            <strong>Grid Navigation:</strong>
+          </div>
+          <button 
+            onClick={() => focusUp()}
+            style={{ 
+              marginRight: '10px', 
+              padding: '5px 10px',
+              backgroundColor: '#444',
+              color: '#fff',
+              border: '1px solid #666',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            ↑ Up
+          </button>
+          <button 
+            onClick={() => focusDown()}
+            style={{ 
+              marginRight: '10px', 
+              padding: '5px 10px',
+              backgroundColor: '#444',
+              color: '#fff',
+              border: '1px solid #666',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            ↓ Down
+          </button>
+          <button 
+            onClick={() => focusLeft()}
+            style={{ 
+              marginRight: '10px', 
+              padding: '5px 10px',
+              backgroundColor: '#444',
+              color: '#fff',
+              border: '1px solid #666',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            ← Left
+          </button>
+          <button 
+            onClick={() => focusRight()}
+            style={{ 
+              padding: '5px 10px',
+              backgroundColor: '#444',
+              color: '#fff',
+              border: '1px solid #666',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            → Right
           </button>
         </div>
       </div>
@@ -160,11 +240,13 @@ const TestTVFocusManager: React.FC = () => {
       }}>
         <h3 style={{ color: '#ffffff', marginTop: '0' }}>Instructions</h3>
         <ul>
-          <li><strong>Arrow Up/Down:</strong> Navigate between buttons</li>
+          <li><strong>Arrow Up/Down:</strong> Navigate vertically in the 3x4 grid</li>
+          <li><strong>Arrow Left/Right:</strong> Navigate horizontally in the 3x4 grid</li>
           <li><strong>Enter/Space:</strong> Activate focused button</li>
           <li><strong>Escape:</strong> Reopen menu when closed</li>
           <li><strong>Manual Mode button:</strong> Closes the menu</li>
-          <li>Focus indicators show with blue borders</li>
+          <li>Focus indicators show with blue borders and scaling</li>
+          <li><strong>Grid wrapping:</strong> Edges wrap to opposite sides</li>
         </ul>
       </div>
 
@@ -179,46 +261,66 @@ const TestTVFocusManager: React.FC = () => {
             borderRadius: '8px', 
             marginBottom: '20px',
             border: '1px solid #444',
-            width: '300px'
+            width: '800px'
           }}
         >
-          <h3 style={{ color: '#ffffff', marginTop: '0' }}>TV Menu (Focusable)</h3>
-          {[
-            'Home',
-            'ISS Tracking', 
-            'Manual Mode',
-            'Settings',
-            'About',
-            'Help'
-          ].map((label, index) => (
-            <button
-              key={label}
-              onClick={() => handleButtonClick(label)}
-              style={{
-                display: 'block',
-                width: '100%',
-                padding: '12px 16px',
-                margin: '8px 0',
-                fontSize: '16px',
-                backgroundColor: currentFocusIndex === index ? '#4A90E2' : '#333',
-                color: '#ffffff',
-                border: currentFocusIndex === index ? '3px solid #4A90E2' : '1px solid #555',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                transform: currentFocusIndex === index ? 'scale(1.02)' : 'scale(1)',
-                transition: 'all 0.2s ease',
-                boxShadow: currentFocusIndex === index ? '0 2px 8px rgba(74, 144, 226, 0.5)' : 'none'
-              }}
-              onMouseEnter={() => {
-                if (isEnabled && menuVisible) {
-                  focusElement(index);
-                  addLog(`Mouse hover: ${label}`);
-                }
-              }}
-            >
-              {label}
-            </button>
-          ))}
+          <h3 style={{ color: '#ffffff', marginTop: '0', marginBottom: '20px' }}>TV Menu Grid (Focusable)</h3>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '12px',
+            width: '100%'
+          }}>
+            {[
+              // Row 1
+              'Home', 'ISS Tracking', 'Manual Mode',
+              // Row 2  
+              'Settings', 'About', 'Help',
+              // Row 3
+              'Performance', 'Display', 'Audio',
+              // Row 4
+              'Network', 'System', 'Exit'
+            ].map((label, index) => (
+              <button
+                key={label}
+                onClick={() => handleButtonClick(label)}
+                style={{
+                  padding: '16px 20px',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  backgroundColor: currentFocusIndex === index ? '#4A90E2' : '#333',
+                  color: '#ffffff',
+                  border: currentFocusIndex === index ? '3px solid #4A90E2' : '1px solid #555',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transform: currentFocusIndex === index ? 'scale(1.05)' : 'scale(1)',
+                  transition: 'all 0.2s ease',
+                  boxShadow: currentFocusIndex === index ? '0 4px 12px rgba(74, 144, 226, 0.6)' : '0 2px 4px rgba(0, 0, 0, 0.3)',
+                  minHeight: '60px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center'
+                }}
+                onMouseEnter={() => {
+                  if (isEnabled && menuVisible) {
+                    focusElement(index);
+                    addLog(`Mouse hover: ${label} (index: ${index})`);
+                  }
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div style={{ 
+            marginTop: '15px', 
+            fontSize: '14px', 
+            color: '#888',
+            textAlign: 'center'
+          }}>
+            Use arrow keys to navigate • Current focus: {currentFocusIndex + 1} of {focusableElements.length}
+          </div>
         </div>
       )}
 
