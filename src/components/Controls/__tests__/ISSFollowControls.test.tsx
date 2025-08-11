@@ -1,14 +1,17 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { ISSProvider } from '../../../state/ISSContext';
+import { DeviceProvider } from '../../../state/DeviceContext';
 import { ISSFollowControls } from '../ISSFollowControls';
 
 describe('ISSFollowControls Earth Rotate Button', () => {
   const renderWithProvider = (component: React.ReactElement) => {
     return render(
-      <ISSProvider>
-        {component}
-      </ISSProvider>
+      <DeviceProvider>
+        <ISSProvider>
+          {component}
+        </ISSProvider>
+      </DeviceProvider>
     );
   };
 

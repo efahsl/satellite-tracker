@@ -220,6 +220,23 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const isTV = useMemo(() => state.deviceType === DeviceType.TV, [state.deviceType]);
   const isTVProfile = useMemo(() => detectTVProfile(state.screenWidth), [state.screenWidth]);
 
+  // Log current device profile whenever it changes
+  useEffect(() => {
+    if (state.screenWidth > 0) { // Only log if we have valid dimensions (not initial state)
+      const currentProfile = isTVProfile ? 'TV Profile' : 
+                           isMobile ? 'Mobile' : 
+                           isDesktop ? 'Desktop' : 
+                           isTV ? 'TV (General)' : 'Unknown';
+      
+      console.log(`📱 Device Profile: ${currentProfile}`, {
+        screenWidth: state.screenWidth,
+        screenHeight: state.screenHeight,
+        deviceType: state.deviceType,
+        isTVProfile
+      });
+    }
+  }, [state.screenWidth, state.screenHeight, state.deviceType, isTVProfile, isMobile, isDesktop, isTV]);
+
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({
     state,

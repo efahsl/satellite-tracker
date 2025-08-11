@@ -170,6 +170,35 @@
   }
 }
 
+/* TV-specific styles - applied via global classes */
+:global(.tv-button) .button {
+  min-height: var(--tv-button-min-height);
+  min-width: var(--tv-button-min-width);
+  font-size: calc(var(--font-size-base) * var(--tv-font-scale-factor));
+  padding: calc(var(--spacing-md) * 1.2) calc(var(--spacing-lg) * 1.2);
+  border-width: 2px;
+}
+
+:global(.tv-button) .button--sm {
+  min-height: calc(var(--tv-button-min-height) * 0.8);
+  min-width: calc(var(--tv-button-min-width) * 0.8);
+  font-size: calc(var(--font-size-sm) * var(--tv-font-scale-factor));
+}
+
+:global(.tv-button) .button--lg {
+  min-height: calc(var(--tv-button-min-height) * 1.2);
+  min-width: calc(var(--tv-button-min-width) * 1.2);
+  font-size: calc(var(--font-size-lg) * var(--tv-font-scale-factor));
+}
+
+:global(.tv-focus-indicator) .button:focus {
+  outline: none;
+  border-color: var(--tv-focus-border-color);
+  border-width: var(--tv-focus-border-width);
+  box-shadow: 0 0 0 2px var(--tv-focus-border-color);
+  transform: scale(1.05);
+}
+
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .button {
@@ -182,5 +211,9 @@
   
   .button--loading::after {
     animation: none;
+  }
+  
+  :global(.tv-focus-indicator) .button:focus {
+    transform: none;
   }
 }

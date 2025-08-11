@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Button.module.css';
+import { useDevice } from '../../../state/DeviceContext';
 
 export interface ButtonProps {
   children: React.ReactNode;
@@ -26,6 +27,8 @@ export const Button: React.FC<ButtonProps> = ({
   type = 'button',
   'aria-label': ariaLabel,
 }) => {
+  const { isTVProfile } = useDevice();
+  
   const getButtonClasses = () => {
     const baseClass = styles.button;
     const variantClass = styles[`button--${variant}`];
@@ -33,6 +36,7 @@ export const Button: React.FC<ButtonProps> = ({
     const stateClass = disabled ? styles['button--disabled'] : '';
     const loadingClass = loading ? styles['button--loading'] : '';
     const iconOnlyClass = iconOnly ? styles['button--icon-only'] : '';
+    const tvClass = isTVProfile ? 'tv-button tv-focus-indicator' : '';
     
     return [
       baseClass,
@@ -41,6 +45,7 @@ export const Button: React.FC<ButtonProps> = ({
       stateClass,
       loadingClass,
       iconOnlyClass,
+      tvClass,
       className,
     ]
       .filter(Boolean)

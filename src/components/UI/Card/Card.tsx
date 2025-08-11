@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import styles from './Card.module.css';
+import { useDevice } from '../../../state/DeviceContext';
 
 export interface CardProps {
   children?: ReactNode;
@@ -47,15 +48,19 @@ export const Card: React.FC<CardProps> = ({
   className = '',
   onClick,
 }) => {
+  const { isTVProfile } = useDevice();
+  
   const getCardClasses = () => {
     const baseClass = styles.card;
     const variantClass = variant !== 'default' ? styles[`card--${variant}`] : '';
     const sizeClass = size !== 'md' ? styles[`card--${size}`] : '';
+    const tvClass = isTVProfile ? 'tv-typography tv-focus-indicator' : '';
     
     return [
       baseClass,
       variantClass,
       sizeClass,
+      tvClass,
       className,
     ]
       .filter(Boolean)

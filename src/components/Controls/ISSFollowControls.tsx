@@ -1,5 +1,6 @@
 import React from "react";
 import { useISS } from "../../state/ISSContext";
+import { useDevice } from "../../state/DeviceContext";
 import styles from "./ISSFollowControls.module.css";
 
 interface ISSFollowControlsProps {
@@ -8,6 +9,7 @@ interface ISSFollowControlsProps {
 
 export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
   const { state, dispatch } = useISS();
+  const { isTVProfile } = useDevice();
 
   const handleToggleFollow = () => {
     dispatch({ type: "TOGGLE_FOLLOW_ISS" });
@@ -22,7 +24,7 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
   };
 
   return (
-    <div className={`${styles.issFollowControls} ${className}`}>
+    <div className={`${styles.issFollowControls} ${isTVProfile ? 'tv-typography' : ''} ${className}`}>
       <div className={styles.header}>
         <h3>Camera Tracking</h3>
         <p className={styles.description}>
@@ -39,7 +41,7 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
           onClick={handleToggleFollow}
           className={`${styles.button} ${
             state.followISS ? styles.buttonActive : ""
-          }`}
+          } ${isTVProfile ? 'tv-button tv-focus-indicator' : ''}`}
         >
           <span className={styles.buttonLabel}>
             {state.followISS ? "Following ISS" : "Follow ISS"}
@@ -55,7 +57,7 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
             state.earthRotateMode
               ? styles.buttonActiveEarthRotate
               : ""
-          }`}
+          } ${isTVProfile ? 'tv-button tv-focus-indicator' : ''}`}
         >
           <span className={styles.buttonLabel}>
             {state.earthRotateMode ? "Earth Rotating" : "Earth Rotate"}
@@ -71,7 +73,7 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
             !state.followISS && !state.earthRotateMode
               ? styles.buttonActiveManual
               : ""
-          }`}
+          } ${isTVProfile ? 'tv-button tv-focus-indicator' : ''}`}
         >
           <span className={styles.buttonLabel}>
             Manual

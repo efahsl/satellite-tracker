@@ -119,6 +119,54 @@ export const designTokens = {
     popover: '1050',
     tooltip: '1060',
   },
+  
+  // TV-specific design tokens
+  tv: {
+    safeZone: {
+      padding: '5%',
+      top: '5vh',
+      bottom: '5vh',
+      left: '5vw',
+      right: '5vw',
+    },
+    typography: {
+      scaleFactor: 1.5,
+      lineHeightFactor: 1.2,
+      minFontSize: '32px',
+      fontSize: {
+        xs: '18px',    // 12px * 1.5
+        sm: '21px',    // 14px * 1.5
+        base: '24px',  // 16px * 1.5
+        lg: '27px',    // 18px * 1.5
+        xl: '30px',    // 20px * 1.5
+        '2xl': '36px', // 24px * 1.5
+        '3xl': '45px', // 30px * 1.5
+        '4xl': '54px', // 36px * 1.5
+      },
+    },
+    colors: {
+      highContrastText: '#ffffff',
+      highContrastBackground: '#000000',
+      highContrastBorder: '#ffffff',
+      focusBorder: '#4A90E2',
+    },
+    button: {
+      minHeight: '48px',
+      minWidth: '200px',
+      padding: '16px 24px',
+    },
+    focus: {
+      borderWidth: '3px',
+      borderColor: '#4A90E2',
+      scale: '1.05',
+    },
+    animation: {
+      duration: '300ms',
+    },
+    menu: {
+      width: '320px',
+    },
+  },
 } as const;
 
 // Type exports for use in components

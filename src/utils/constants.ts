@@ -74,3 +74,28 @@ export const SHADOW_CAMERA_SIZE = 20; // Shadow camera frustum size
 export const EARTH_ROTATE_DISTANCE = EARTH_RADIUS + 12; // Camera distance for Earth rotate mode (closer zoom)
 export const EARTH_ROTATE_SPEED = 0.1047; // Radians per second (360° in 15 seconds - faster)
 export const EARTH_ROTATE_TRANSITION_SPEED = 0.05; // Lerp factor for smooth transitions
+
+// TV Interface Configuration
+export const TV_CONFIG = {
+  DETECTION_WIDTH: 1920,
+  SAFE_ZONE_PADDING: '5%',
+  MENU_WIDTH: '320px',
+  ANIMATION_DURATION: 300,
+  FOCUS_BORDER_WIDTH: '3px',
+  FOCUS_BORDER_COLOR: '#4A90E2',
+  MIN_FONT_SIZE: '32px', // Following TV UX guidelines for 10-foot viewing
+  BUTTON_MIN_HEIGHT: '48px',
+  BUTTON_MIN_WIDTH: '200px',
+  // Typography scaling factors for TV
+  FONT_SCALE_FACTOR: 1.5, // 50% larger fonts for TV
+  LINE_HEIGHT_FACTOR: 1.2, // Increased line height for readability
+  // High contrast colors for TV visibility
+  HIGH_CONTRAST_TEXT: '#ffffff',
+  HIGH_CONTRAST_BACKGROUND: '#000000',
+  HIGH_CONTRAST_BORDER: '#ffffff',
+  // Safe zone measurements
+  SAFE_ZONE_TOP: '5vh',
+  SAFE_ZONE_BOTTOM: '5vh',
+  SAFE_ZONE_LEFT: '5vw',
+  SAFE_ZONE_RIGHT: '5vw',
+} as const;

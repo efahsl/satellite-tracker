@@ -92,6 +92,25 @@
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease;
+  
+  /* TV-specific variables */
+  --tv-safe-zone-padding: 5%;
+  --tv-menu-width: 320px;
+  --tv-animation-duration: 300ms;
+  --tv-focus-border-width: 3px;
+  --tv-focus-border-color: #4A90E2;
+  --tv-min-font-size: 32px;
+  --tv-button-min-height: 48px;
+  --tv-button-min-width: 200px;
+  --tv-font-scale-factor: 1.5;
+  --tv-line-height-factor: 1.2;
+  --tv-high-contrast-text: #ffffff;
+  --tv-high-contrast-background: #000000;
+  --tv-high-contrast-border: #ffffff;
+  --tv-safe-zone-top: 5vh;
+  --tv-safe-zone-bottom: 5vh;
+  --tv-safe-zone-left: 5vw;
+  --tv-safe-zone-right: 5vw;
 }
 
 /* Base Reset */
@@ -186,6 +205,103 @@ code {
   html {
     scroll-behavior: auto;
   }
+}
+
+/* TV-specific styles */
+.tv-safe-zone {
+  padding: var(--tv-safe-zone-top) var(--tv-safe-zone-right) var(--tv-safe-zone-bottom) var(--tv-safe-zone-left);
+}
+
+.tv-typography {
+  font-size: calc(var(--font-size-base) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+  color: var(--tv-high-contrast-text);
+}
+
+.tv-typography h1 {
+  font-size: calc(var(--font-size-4xl) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography h2 {
+  font-size: calc(var(--font-size-3xl) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography h3 {
+  font-size: calc(var(--font-size-2xl) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography h4 {
+  font-size: calc(var(--font-size-xl) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography h5 {
+  font-size: calc(var(--font-size-lg) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography h6 {
+  font-size: calc(var(--font-size-base) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography p,
+.tv-typography span,
+.tv-typography div {
+  font-size: calc(var(--font-size-base) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography small {
+  font-size: calc(var(--font-size-sm) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+/* Ensure minimum font size for TV viewing */
+.tv-typography * {
+  font-size: max(calc(var(--font-size-base) * var(--tv-font-scale-factor)), var(--tv-min-font-size));
+}
+
+.tv-button {
+  min-height: var(--tv-button-min-height);
+  min-width: var(--tv-button-min-width);
+  font-size: calc(var(--font-size-base) * var(--tv-font-scale-factor));
+  padding: calc(var(--spacing-md) * 1.2) calc(var(--spacing-lg) * 1.2);
+  border: 2px solid transparent;
+  transition: all var(--tv-animation-duration) ease;
+}
+
+.tv-button:focus {
+  outline: none;
+  border-color: var(--tv-focus-border-color);
+  border-width: var(--tv-focus-border-width);
+  box-shadow: 0 0 0 2px var(--tv-focus-border-color);
+  transform: scale(1.05);
+}
+
+.tv-high-contrast {
+  color: var(--tv-high-contrast-text) !important;
+  background-color: var(--tv-high-contrast-background);
+  border-color: var(--tv-high-contrast-border);
+}
+
+.tv-focus-indicator {
+  position: relative;
+}
+
+.tv-focus-indicator:focus::after {
+  content: '';
+  position: absolute;
+  top: -var(--tv-focus-border-width);
+  left: -var(--tv-focus-border-width);
+  right: -var(--tv-focus-border-width);
+  bottom: -var(--tv-focus-border-width);
+  border: var(--tv-focus-border-width) solid var(--tv-focus-border-color);
+  border-radius: var(--border-radius-md);
+  pointer-events: none;
 }
 
 /* Print Styles */

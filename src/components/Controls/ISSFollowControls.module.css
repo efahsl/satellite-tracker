@@ -102,6 +102,43 @@
   color: var(--color-iss-white);
 }
 
+/* TV-specific styles - applied via global classes */
+:global(.tv-typography) .issFollowControls {
+  padding: calc(var(--spacing-md) * 1.5);
+  min-width: 320px;
+}
+
+:global(.tv-typography) .header h3 {
+  font-size: calc(var(--font-size-base) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+  margin-bottom: calc(6px * 1.5);
+}
+
+:global(.tv-typography) .description {
+  font-size: calc(var(--font-size-xs) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+:global(.tv-typography) .buttonContainer {
+  gap: calc(6px * 1.5);
+  margin-bottom: calc(var(--spacing-md) * 1.5);
+}
+
+:global(.tv-button) .button {
+  min-height: var(--tv-button-min-height);
+  padding: calc(var(--spacing-md) * 1.2) calc(var(--spacing-sm) * 1.5);
+  font-size: calc(11px * var(--tv-font-scale-factor));
+  border-width: 2px;
+}
+
+:global(.tv-focus-indicator) .button:focus {
+  outline: none;
+  border-color: var(--tv-focus-border-color);
+  border-width: var(--tv-focus-border-width);
+  box-shadow: 0 0 0 2px var(--tv-focus-border-color);
+  transform: scale(1.05);
+}
+
 /* Responsive design */
 @media (max-width: 480px) {
   .issFollowControls {
@@ -117,5 +154,10 @@
   .button {
     padding: var(--spacing-sm) var(--spacing-sm);
     font-size: 13px;
+  }
+  
+  :global(.tv-typography) .buttonContainer {
+    flex-direction: row;
+    gap: calc(6px * 1.5);
   }
 }
