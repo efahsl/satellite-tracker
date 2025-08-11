@@ -122,6 +122,20 @@
     padding-top: 2rem;
   }
   
+  /* Force all button containers to stack vertically in TV mode */
+  .contentTV .controls > * {
+    width: 100%;
+  }
+  
+  /* Target all button containers within controls and force vertical stacking */
+  .contentTV .controls div[class*="buttonContainer"],
+  .contentTV .controls div[class*="buttons"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+  }
+  
   /* Apply TV typography and spacing to all controls in TV mode */
   .contentTV .controls * {
     font-size: var(--tv-min-font-size);
@@ -132,6 +146,8 @@
   .contentTV .controls button {
     min-height: var(--tv-button-min-height);
     min-width: var(--tv-button-min-width);
+    width: 100% !important;
+    flex: none !important;
     padding: 12px 24px;
     font-size: var(--tv-min-font-size);
     border-radius: var(--tv-focus-border-radius);
@@ -143,6 +159,12 @@
     border: var(--tv-focus-border-width) solid var(--tv-focus-border-color);
     box-shadow: var(--tv-focus-shadow);
     transform: scale(var(--tv-focus-scale));
+  }
+  
+  /* Ensure control components have proper width in TV mode */
+  .contentTV .controls > div {
+    min-width: 100%;
+    max-width: 100%;
   }
 }
 

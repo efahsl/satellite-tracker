@@ -72,7 +72,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
         aria-modal="true"
         aria-label="Navigation menu"
       >
-        <div className={styles.controls} onClick={handleControlInteraction}>
+        <div className={`${styles.controls} ${isTVProfile ? 'tv-menu-controls' : ''}`} onClick={handleControlInteraction}>
           <ISSFollowControls />
           <PerformanceControls />
           <DisplayControls />

@@ -8,7 +8,7 @@ const MainLayout: React.FC = () => {
   const { isMobile, isTVProfile } = useDevice();
 
   return (
-    <div className={`flex flex-col min-h-screen bg-space-black text-iss-white ${isTVProfile ? 'tv-safe-zone tv-typography tv-high-contrast' : ''}`}>
+    <div className={`flex flex-col min-h-screen bg-space-black text-iss-white ${isTVProfile ? 'tv-typography tv-high-contrast' : ''}`}>
       
       {/* Header */}
       

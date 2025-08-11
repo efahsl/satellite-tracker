@@ -3,7 +3,7 @@
   --space-blue: #1e3a8a;
   --iss-white: #f8fafc;
   --iss-highlight: #3b82f6;
-  
+
   /* Additional variables for CSS modules compatibility */
   --color-iss-white: #f8fafc;
   --color-iss-highlight: #3b82f6;
@@ -23,34 +23,34 @@
   --tv-safe-zone-bottom: 5vh;
   --tv-safe-zone-left: 5vw;
   --tv-safe-zone-right: 5vw;
-  
+
   /* TV Menu Variables */
-  --tv-menu-width: 320px;
+  --tv-menu-width: 350px;
   --tv-animation-duration: 300ms;
-  
+
   /* TV Typography Variables */
   --tv-min-font-size: 32px;
   --tv-font-scale-factor: 1.5;
   --tv-line-height-factor: 1.2;
-  
+
   /* TV Button Variables */
   --tv-button-min-height: 48px;
   --tv-button-min-width: 200px;
-  
+
   /* TV Focus State Variables */
   --tv-focus-border-width: 3px;
-  --tv-focus-border-color: #4A90E2;
+  --tv-focus-border-color: #4a90e2;
   --tv-focus-border-radius: 8px;
   --tv-focus-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
   --tv-focus-scale: 1.05;
   --tv-focus-transition: all 150ms ease-in-out;
-  
+
   /* TV High Contrast Colors */
   --tv-high-contrast-text: #ffffff;
   --tv-high-contrast-background: #000000;
   --tv-high-contrast-border: #ffffff;
-  --tv-high-contrast-accent: #4A90E2;
-  
+  --tv-high-contrast-accent: #4a90e2;
+
   /* TV Animation Variables */
   --tv-slide-in-duration: 300ms;
   --tv-slide-out-duration: 300ms;
@@ -62,8 +62,8 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -72,7 +72,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -233,11 +233,11 @@ code {
 }
 
 .font-orbitron {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
 }
 
 .font-exo {
-  font-family: 'Exo 2', sans-serif;
+  font-family: "Exo 2", sans-serif;
 }
 
 .text-center {
@@ -307,7 +307,8 @@ code {
 }
 
 .shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .border-t {
@@ -615,19 +616,19 @@ code {
   .show-desktop {
     display: none !important;
   }
-  
+
   .hide-mobile {
     display: none !important;
   }
-  
+
   .show-mobile {
     display: block !important;
   }
-  
+
   .hide-desktop {
     display: block !important;
   }
-  
+
   /* Container utilities for mobile */
   .container-desktop {
     width: 100%;
@@ -638,161 +639,161 @@ code {
   .sm\:hidden {
     display: none;
   }
-  
+
   .sm\:block {
     display: block;
   }
-  
+
   .sm\:flex {
     display: flex;
   }
-  
+
   .sm\:grid {
     display: grid;
   }
-  
+
   .sm\:inline {
     display: inline;
   }
-  
+
   .sm\:inline-block {
     display: inline-block;
   }
-  
+
   /* Layout utilities for mobile */
   .sm\:flex-col {
     flex-direction: column;
   }
-  
+
   .sm\:flex-row {
     flex-direction: row;
   }
-  
+
   .sm\:items-center {
     align-items: center;
   }
-  
+
   .sm\:justify-center {
     justify-content: center;
   }
-  
+
   .sm\:justify-between {
     justify-content: space-between;
   }
-  
+
   .sm\:w-full {
     width: 100%;
   }
-  
+
   .sm\:h-auto {
     height: auto;
   }
-  
+
   /* Spacing utilities for mobile */
   .sm\:p-2 {
     padding: 0.5rem;
   }
-  
+
   .sm\:p-3 {
     padding: 0.75rem;
   }
-  
+
   .sm\:px-2 {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
   }
-  
+
   .sm\:px-3 {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
   }
-  
+
   .sm\:py-2 {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
   }
-  
+
   .sm\:py-3 {
     padding-top: 0.75rem;
     padding-bottom: 0.75rem;
   }
-  
+
   .sm\:m-2 {
     margin: 0.5rem;
   }
-  
+
   .sm\:mx-2 {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
   }
-  
+
   .sm\:my-2 {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .sm\:mb-1 {
     margin-bottom: 0.25rem;
   }
-  
+
   .sm\:mb-2 {
     margin-bottom: 0.5rem;
   }
-  
+
   .sm\:mt-1 {
     margin-top: 0.25rem;
   }
-  
+
   .sm\:mt-2 {
     margin-top: 0.5rem;
   }
-  
+
   /* Typography utilities for mobile */
   .sm\:text-xs {
     font-size: 0.625rem;
   }
-  
+
   .sm\:text-sm {
     font-size: 0.75rem;
   }
-  
+
   .sm\:text-base {
     font-size: 0.875rem;
   }
-  
+
   .sm\:text-lg {
     font-size: 1rem;
   }
-  
+
   .sm\:font-medium {
     font-weight: 500;
   }
-  
+
   .sm\:font-semibold {
     font-weight: 600;
   }
-  
+
   .sm\:leading-tight {
     line-height: 1.25;
   }
-  
+
   /* Grid utilities for mobile */
   .sm\:grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
-  
+
   .sm\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  
+
   .sm\:gap-1 {
     gap: 0.25rem;
   }
-  
+
   .sm\:gap-2 {
     gap: 0.5rem;
   }
-  
+
   .sm\:gap-3 {
     gap: 0.75rem;
   }
@@ -804,37 +805,37 @@ code {
   .hide-on-mobile {
     display: block;
   }
-  
+
   /* Desktop-only display utilities */
   .desktop-only {
     display: block;
   }
-  
+
   .mobile-only {
     display: none;
   }
-  
+
   .mobile-hidden {
     display: block;
   }
-  
+
   /* Conditional rendering utilities for desktop */
   .show-mobile {
     display: none !important;
   }
-  
+
   .hide-desktop {
     display: none !important;
   }
-  
+
   .show-desktop {
     display: block !important;
   }
-  
+
   .hide-mobile {
     display: block !important;
   }
-  
+
   /* Container utilities for desktop */
   .container-mobile {
     width: 100%;
@@ -842,120 +843,120 @@ code {
     margin: 0 auto;
     padding: 0 1rem;
   }
-  
+
   /* Existing md: utilities */
   .md\:flex-row {
     flex-direction: row;
   }
-  
+
   .md\:h-full {
     height: 100%;
   }
-  
+
   .md\:w-\[350px\] {
     width: 350px;
   }
-  
+
   .md\:min-w-\[350px\] {
     min-width: 350px;
   }
-  
+
   .md\:flex-grow {
     flex-grow: 1;
   }
-  
+
   .md\:border-t-0 {
     border-top-width: 0;
   }
-  
+
   .md\:border-l {
     border-left-width: 1px;
     border-left-style: solid;
   }
-  
+
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  
+
   /* Additional desktop utilities */
   .md\:hidden {
     display: none;
   }
-  
+
   .md\:block {
     display: block;
   }
-  
+
   .md\:flex {
     display: flex;
   }
-  
+
   .md\:grid {
     display: grid;
   }
-  
+
   .md\:inline {
     display: inline;
   }
-  
+
   .md\:inline-block {
     display: inline-block;
   }
-  
+
   .md\:flex-col {
     flex-direction: column;
   }
-  
+
   .md\:items-center {
     align-items: center;
   }
-  
+
   .md\:justify-center {
     justify-content: center;
   }
-  
+
   .md\:justify-between {
     justify-content: space-between;
   }
-  
+
   .md\:w-full {
     width: 100%;
   }
-  
+
   .md\:h-auto {
     height: auto;
   }
-  
+
   .md\:p-4 {
     padding: 1rem;
   }
-  
+
   .md\:px-4 {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   .md\:py-3 {
     padding-top: 0.75rem;
     padding-bottom: 0.75rem;
   }
-  
+
   .md\:text-sm {
     font-size: 0.875rem;
   }
-  
+
   .md\:text-base {
     font-size: 1rem;
   }
-  
+
   .md\:text-lg {
     font-size: 1.125rem;
   }
-  
+
   .md\:gap-4 {
     gap: 1rem;
   }
-  
+
   .md\:gap-6 {
     gap: 1.5rem;
   }
@@ -1007,7 +1008,8 @@ code {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -1064,17 +1066,23 @@ code {
 
 .tv-text-lg {
   font-size: calc(var(--tv-min-font-size) * 1.125);
-  line-height: calc(var(--tv-min-font-size) * 1.125 * var(--tv-line-height-factor));
+  line-height: calc(
+    var(--tv-min-font-size) * 1.125 * var(--tv-line-height-factor)
+  );
 }
 
 .tv-text-xl {
   font-size: calc(var(--tv-min-font-size) * 1.25);
-  line-height: calc(var(--tv-min-font-size) * 1.25 * var(--tv-line-height-factor));
+  line-height: calc(
+    var(--tv-min-font-size) * 1.25 * var(--tv-line-height-factor)
+  );
 }
 
 .tv-text-2xl {
   font-size: calc(var(--tv-min-font-size) * 1.5);
-  line-height: calc(var(--tv-min-font-size) * 1.5 * var(--tv-line-height-factor));
+  line-height: calc(
+    var(--tv-min-font-size) * 1.5 * var(--tv-line-height-factor)
+  );
 }
 
 .tv-high-contrast {
@@ -1127,7 +1135,7 @@ code {
 }
 
 .tv-focus-ring::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -3px;
   left: -3px;
@@ -1161,11 +1169,13 @@ code {
 
 /* TV Animation Classes */
 .tv-slide-in-left {
-  animation: tv-slide-in-left var(--tv-slide-in-duration) var(--tv-easing-smooth);
+  animation: tv-slide-in-left var(--tv-slide-in-duration)
+    var(--tv-easing-smooth);
 }
 
 .tv-slide-out-left {
-  animation: tv-slide-out-left var(--tv-slide-out-duration) var(--tv-easing-smooth);
+  animation: tv-slide-out-left var(--tv-slide-out-duration)
+    var(--tv-easing-smooth);
 }
 
 .tv-fade-in {
@@ -1235,30 +1245,30 @@ code {
   .tv-only {
     display: block !important;
   }
-  
+
   .tv-hidden {
     display: none !important;
   }
-  
+
   .tv-flex {
     display: flex !important;
   }
-  
+
   .tv-grid {
     display: grid !important;
   }
-  
+
   /* Apply TV typography scaling automatically */
   .tv-auto-scale {
     font-size: calc(1rem * var(--tv-font-scale-factor));
     line-height: calc(1.5 * var(--tv-line-height-factor));
   }
-  
+
   /* Apply TV safe zones automatically */
   .tv-auto-safe-zone {
     padding: var(--tv-safe-zone-padding);
   }
-  
+
   /* TV-specific layout adjustments */
   .tv-layout {
     padding: var(--tv-safe-zone-padding);
@@ -1274,7 +1284,7 @@ code {
   .tv-focus-ring::after {
     transition: none;
   }
-  
+
   .tv-slide-in-left,
   .tv-slide-out-left,
   .tv-fade-in,
@@ -1282,7 +1292,7 @@ code {
   .tv-scale-focus {
     animation: none;
   }
-  
+
   .tv-focusable:focus,
   .tv-focusable.tv-focused,
   .tv-button:focus {
@@ -1299,11 +1309,53 @@ code {
     --tv-high-contrast-border: #ffffff;
     --tv-high-contrast-accent: #ffffff;
   }
-  
+
   .tv-focusable:focus,
   .tv-focusable.tv-focused,
   .tv-button:focus {
     border-color: var(--tv-focus-border-color);
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* TV Menu Control Component Overrides */
+@media (width: 1920px) {
+  /* Force vertical stacking for all control button containers in TV menu */
+  .tv-menu-controls div[class*="buttonContainer"],
+  .tv-menu-controls div[class*="buttons"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+  }
+
+  /* Ensure all buttons in TV menu are full width and stack vertically */
+  .tv-menu-controls button {
+    width: 100% !important;
+    flex: none !important;
+    min-height: var(--tv-button-min-height) !important;
+    font-size: calc(
+      var(--tv-min-font-size) * 0.7
+    ) !important; /* Slightly smaller for menu */
+    padding: 12px 16px !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Ensure control components take full width in TV menu */
+  .tv-menu-controls > div {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Adjust control component headers for TV */
+  .tv-menu-controls h3 {
+    font-size: calc(var(--tv-min-font-size) * 0.8) !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Hide descriptions in TV mode to save space */
+  .tv-menu-controls p[class*="description"] {
+    display: none !important;
   }
 }
