@@ -32,6 +32,7 @@ interface DeviceContextType {
   isMobile: boolean;
   isDesktop: boolean;
   isTV: boolean;
+  isTVProfile: boolean;
 }
 
 // Initial state
@@ -62,13 +63,18 @@ const detectDeviceType = (width: number, height: number, isTouchDevice: boolean)
     return DeviceType.MOBILE;
   }
   
-  // TV: Screen width >= 1920px (future implementation)
+  // TV: Screen width >= 1920px (general TV detection for existing functionality)
   if (width >= 1920 && height >= 1080) {
     return DeviceType.TV;
   }
   
   // Desktop: Default case
   return DeviceType.DESKTOP;
+};
+
+// TV Profile detection - specifically for exactly 1920px width
+const detectTVProfile = (width: number): boolean => {
+  return width === 1920;
 };
 
 const detectOrientation = (width: number, height: number): 'portrait' | 'landscape' => {
@@ -212,6 +218,7 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const isMobile = useMemo(() => state.deviceType === DeviceType.MOBILE, [state.deviceType]);
   const isDesktop = useMemo(() => state.deviceType === DeviceType.DESKTOP, [state.deviceType]);
   const isTV = useMemo(() => state.deviceType === DeviceType.TV, [state.deviceType]);
+  const isTVProfile = useMemo(() => detectTVProfile(state.screenWidth), [state.screenWidth]);
 
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({
@@ -220,7 +227,8 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     isMobile,
     isDesktop,
     isTV,
-  }), [state, dispatch, isMobile, isDesktop, isTV]);
+    isTVProfile,
+  }), [state, dispatch, isMobile, isDesktop, isTV, isTVProfile]);
 
   return (
     <DeviceContext.Provider value={contextValue}>
