@@ -27,6 +27,7 @@ const App: React.FC = () => {
                   <Route index element={React.createElement(ROUTES.HOME.component)} />
                   <Route path={ROUTES.ABOUT.path.substring(1)} element={React.createElement(ROUTES.ABOUT.component)} />
                   <Route path={ROUTES.RESPONSIVE_TEST.path.substring(1)} element={React.createElement(ROUTES.RESPONSIVE_TEST.component)} />
+                  <Route path={ROUTES.TV_FOCUS_TEST.path.substring(1)} element={React.createElement(ROUTES.TV_FOCUS_TEST.component)} />
                   <Route path="index.html" element={<Navigate to="/" replace />} />
                   <Route path="*" element={React.createElement(ROUTES.NOT_FOUND.component)} />
                 </Route>
