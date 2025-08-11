@@ -152,6 +152,9 @@
     font-size: var(--tv-min-font-size);
     border-radius: var(--tv-focus-border-radius);
     transition: var(--tv-focus-transition);
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
   }
   
   .contentTV .controls button:focus {
@@ -159,12 +162,104 @@
     border: var(--tv-focus-border-width) solid var(--tv-focus-border-color);
     box-shadow: var(--tv-focus-shadow);
     transform: scale(var(--tv-focus-scale));
+    background: rgba(74, 144, 226, 0.2);
+    z-index: 1;
+  }
+  
+  .contentTV .controls button:focus::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border: 2px solid var(--tv-focus-border-color);
+    border-radius: calc(var(--tv-focus-border-radius) + 2px);
+    pointer-events: none;
+    animation: tvFocusPulse 2s infinite;
+  }
+  
+  @keyframes tvFocusPulse {
+    0%, 100% {
+      opacity: 0.6;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.02);
+    }
   }
   
   /* Ensure control components have proper width in TV mode */
   .contentTV .controls > div {
     min-width: 100%;
     max-width: 100%;
+  }
+  
+  /* Enhanced focus styling for all focusable elements in TV mode */
+  .contentTV .controls *:focus-visible {
+    outline: none;
+    border: var(--tv-focus-border-width) solid var(--tv-focus-border-color);
+    box-shadow: var(--tv-focus-shadow);
+    transform: scale(var(--tv-focus-scale));
+    background: rgba(74, 144, 226, 0.2);
+    border-radius: var(--tv-focus-border-radius);
+    transition: var(--tv-focus-transition);
+  }
+  
+  /* Specific styling for input elements in TV mode */
+  .contentTV .controls input:focus,
+  .contentTV .controls select:focus,
+  .contentTV .controls textarea:focus {
+    outline: none;
+    border: var(--tv-focus-border-width) solid var(--tv-focus-border-color);
+    box-shadow: var(--tv-focus-shadow);
+    background: rgba(74, 144, 226, 0.1);
+  }
+  
+  /* High contrast focus indicators for better TV visibility */
+  .contentTV .controls button:focus,
+  .contentTV .controls input:focus,
+  .contentTV .controls select:focus {
+    box-shadow: 
+      var(--tv-focus-shadow),
+      0 0 0 1px rgba(255, 255, 255, 0.8),
+      inset 0 0 0 1px rgba(74, 144, 226, 0.5);
+  }
+  
+  /* Enhanced styling for active/selected buttons in TV mode */
+  .contentTV .controls button[class*="buttonActive"],
+  .contentTV .controls button[class*="Active"] {
+    background: linear-gradient(135deg, #4A90E2, #60a5fa) !important;
+    border-color: #4A90E2 !important;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4) !important;
+    color: white !important;
+  }
+  
+  .contentTV .controls button[class*="buttonActive"]:focus,
+  .contentTV .controls button[class*="Active"]:focus {
+    background: linear-gradient(135deg, #60a5fa, #4A90E2) !important;
+    border: var(--tv-focus-border-width) solid var(--tv-focus-border-color) !important;
+    box-shadow: 
+      var(--tv-focus-shadow),
+      0 4px 16px rgba(74, 144, 226, 0.6),
+      0 0 0 1px rgba(255, 255, 255, 0.8) !important;
+    transform: scale(var(--tv-focus-scale));
+  }
+  
+  .contentTV .controls button[class*="buttonActive"]:hover,
+  .contentTV .controls button[class*="Active"]:hover {
+    background: linear-gradient(135deg, #60a5fa, #4A90E2) !important;
+    transform: translateY(-1px);
+  }
+  
+  /* More specific selectors for different active button types */
+  .contentTV .controls button[class*="buttonActiveEarthRotate"],
+  .contentTV .controls button[class*="buttonActiveManual"] {
+    background: linear-gradient(135deg, #4A90E2, #60a5fa) !important;
+    border-color: #4A90E2 !important;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4) !important;
+    color: white !important;
   }
 }
 

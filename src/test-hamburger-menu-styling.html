@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HamburgerMenu TV Styling Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-container {
+            width: 320px;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 2rem 1.5rem;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .control-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-section h3 {
+            margin: 0 0 16px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .button {
+            min-height: 48px;
+            min-width: 200px;
+            width: 100%;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: all 150ms ease-in-out;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .button:focus {
+            outline: none;
+            border: 3px solid #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
+            transform: scale(1.05);
+            background: rgba(74, 144, 226, 0.2);
+            z-index: 1;
+        }
+        
+        /* Active button styling */
+        .button.active {
+            background: linear-gradient(135deg, #4A90E2, #60a5fa) !important;
+            border-color: #4A90E2 !important;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4) !important;
+            color: white !important;
+        }
+        
+        .button.active:focus {
+            background: linear-gradient(135deg, #60a5fa, #4A90E2) !important;
+            border: 3px solid #4A90E2 !important;
+            box-shadow: 
+                0 0 0 3px rgba(74, 144, 226, 0.3),
+                0 4px 16px rgba(74, 144, 226, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.8) !important;
+            transform: scale(1.05);
+        }
+        
+        .checkmark {
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>HamburgerMenu TV Styling Test</h1>
+    <p>This shows how the active buttons should look in TV mode with light blue background and checkmarks.</p>
+    
+    <div class="test-container">
+        <div class="controls">
+            <div class="control-section">
+                <h3>Camera Tracking</h3>
+                <div class="button-container">
+                    <button class="button active" tabindex="0">
+                        <span>Following ISS</span>
+                        <span class="checkmark">✓</span>
+                    </button>
+                    <button class="button" tabindex="0">
+                        <span>Earth Rotate</span>
+                    </button>
+                    <button class="button" tabindex="0">
+                        <span>Manual</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h3>Performance Tier</h3>
+                <div class="button-container">
+                    <button class="button" tabindex="0">
+                        <span>High</span>
+                    </button>
+                    <button class="button active" tabindex="0">
+                        <span>Medium</span>
+                        <span class="checkmark">✓</span>
+                    </button>
+                    <button class="button" tabindex="0">
+                        <span>Low</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h3>Display Options</h3>
+                <div class="button-container">
+                    <button class="button active" tabindex="0">
+                        <span>FPS Stats ON</span>
+                        <span class="checkmark">✓</span>
+                    </button>
+                    <button class="button active" tabindex="0">
+                        <span>Position Info ON</span>
+                        <span class="checkmark">✓</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add keyboard navigation for testing
+        const buttons = document.querySelectorAll('.button');
+        let currentIndex = 0;
+        
+        function focusButton(index) {
+            if (buttons[index]) {
+                buttons[index].focus();
+                currentIndex = index;
+            }
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    focusButton((currentIndex + 1) % buttons.length);
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    focusButton((currentIndex - 1 + buttons.length) % buttons.length);
+                    break;
+                case 'Enter':
+                case ' ':
+                    e.preventDefault();
+                    const button = buttons[currentIndex];
+                    button.classList.toggle('active');
+                    const checkmark = button.querySelector('.checkmark');
+                    if (button.classList.contains('active')) {
+                        if (!checkmark) {
+                            const check = document.createElement('span');
+                            check.className = 'checkmark';
+                            check.textContent = '✓';
+                            button.appendChild(check);
+                        }
+                    } else {
+                        if (checkmark) {
+                            checkmark.remove();
+                        }
+                    }
+                    break;
+            }
+        });
+        
+        // Focus first button initially
+        focusButton(0);
+    </script>
+</body>
+</html>

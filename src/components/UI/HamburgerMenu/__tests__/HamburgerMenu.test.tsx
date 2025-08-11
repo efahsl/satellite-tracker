@@ -1,23 +1,66 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { HamburgerMenu } from '../HamburgerMenu';
 import { useDevice } from '../../../../state/DeviceContext';
+import { useTVFocusManager, findFocusableElements } from '../../../../hooks/useTVFocusManager';
 
 // Mock the DeviceContext
 vi.mock('../../../../state/DeviceContext');
 const mockUseDevice = vi.mocked(useDevice);
+const mockUseTVFocusManager = vi.mocked(useTVFocusManager);
+const mockFindFocusableElements = vi.mocked(findFocusableElements);
 
-// Mock the control components
+// Mock the control components with focusable buttons
 vi.mock('../../../Controls', () => ({
-  ISSFollowControls: () => <div data-testid="iss-follow-controls">ISS Follow Controls</div>,
-  PerformanceControls: () => <div data-testid="performance-controls">Performance Controls</div>,
-  DisplayControls: () => <div data-testid="display-controls">Display Controls</div>,
+  ISSFollowControls: () => (
+    <div data-testid="iss-follow-controls">
+      <button data-testid="iss-button-1">Follow ISS</button>
+      <button data-testid="iss-button-2">Manual</button>
+    </div>
+  ),
+  PerformanceControls: () => (
+    <div data-testid="performance-controls">
+      <button data-testid="perf-button-1">High Quality</button>
+      <button data-testid="perf-button-2">Low Quality</button>
+    </div>
+  ),
+  DisplayControls: () => (
+    <div data-testid="display-controls">
+      <button data-testid="display-button-1">Show Info</button>
+      <button data-testid="display-button-2">Hide Info</button>
+    </div>
+  ),
+}));
+
+// Mock the TV focus manager hook
+vi.mock('../../../../hooks/useTVFocusManager', () => ({
+  useTVFocusManager: vi.fn(),
+  findFocusableElements: vi.fn(),
 }));
 
 describe('HamburgerMenu', () => {
+  const mockFocusElement = vi.fn();
+  const mockHandleKeyDown = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
+    
+    // Default mock for TV focus manager
+    mockUseTVFocusManager.mockReturnValue({
+      currentFocusIndex: 0,
+      handleKeyDown: mockHandleKeyDown,
+      focusElement: mockFocusElement,
+      focusNext: vi.fn(),
+      focusPrevious: vi.fn(),
+      focusUp: vi.fn(),
+      focusDown: vi.fn(),
+      focusLeft: vi.fn(),
+      focusRight: vi.fn(),
+    });
+
+    // Default mock for finding focusable elements
+    mockFindFocusableElements.mockReturnValue([]);
   });
 
   describe('TV Mode Detection', () => {
@@ -233,6 +276,224 @@ describe('HamburgerMenu', () => {
 
       // In TV mode, the menu might close but should still have TV classes
       expect(menuContent.className).toContain('contentTV');
+    });
+  });
+
+  describe('TV Keyboard Navigation', () => {
+    beforeEach(() => {
+      mockUseDevice.mockReturnValue({
+        isMobile: false,
+        isDesktop: false,
+        isTVProfile: true,
+        screenWidth: 1920,
+        screenHeight: 1080,
+      });
+    });
+
+    it('should initialize TV focus manager when in TV mode', () => {
+      render(<HamburgerMenu />);
+
+      expect(mockUseTVFocusManager).toHaveBeenCalledWith({
+        isEnabled: true,
+        focusableElements: [],
+        onEscape: expect.any(Function),
+        initialFocusIndex: 0,
+      });
+    });
+
+    it('should not initialize TV focus manager when not in TV mode', () => {
+      mockUseDevice.mockReturnValue({
+        isMobile: true,
+        isDesktop: false,
+        isTVProfile: false,
+        screenWidth: 375,
+        screenHeight: 667,
+      });
+
+      render(<HamburgerMenu />);
+
+      expect(mockUseTVFocusManager).toHaveBeenCalledWith({
+        isEnabled: false,
+        focusableElements: [],
+        onEscape: expect.any(Function),
+        initialFocusIndex: 0,
+      });
+    });
+
+    it('should find and set focusable elements when menu opens in TV mode', async () => {
+      const mockButtons = [
+        document.createElement('button'),
+        document.createElement('button'),
+        document.createElement('button'),
+      ];
+      mockFindFocusableElements.mockReturnValue(mockButtons);
+
+      render(<HamburgerMenu />);
+
+      await waitFor(() => {
+        expect(mockFindFocusableElements).toHaveBeenCalled();
+      });
+
+      // Should call useTVFocusManager with the found elements
+      expect(mockUseTVFocusManager).toHaveBeenCalledWith({
+        isEnabled: true,
+        focusableElements: mockButtons,
+        onEscape: expect.any(Function),
+        initialFocusIndex: 0,
+      });
+    });
+
+    it('should focus first element when menu opens in TV mode', async () => {
+      const mockButtons = [
+        document.createElement('button'),
+        document.createElement('button'),
+      ];
+      mockFindFocusableElements.mockReturnValue(mockButtons);
+
+      render(<HamburgerMenu />);
+
+      await waitFor(() => {
+        expect(mockFocusElement).toHaveBeenCalledWith(0);
+      }, { timeout: 200 });
+    });
+
+    it('should handle keyboard events through TV focus manager', () => {
+      render(<HamburgerMenu />);
+
+      // Simulate a keyboard event on the document
+      const keyEvent = new KeyboardEvent('keydown', { key: 'ArrowDown' });
+      document.dispatchEvent(keyEvent);
+
+      // The TV focus manager should handle the event
+      // Note: This tests that the hook is properly set up, the actual key handling is tested in the hook's own tests
+      expect(mockUseTVFocusManager).toHaveBeenCalledWith(
+        expect.objectContaining({
+          isEnabled: true,
+        })
+      );
+    });
+
+    it('should provide escape handler that does not close menu in TV mode', () => {
+      render(<HamburgerMenu />);
+
+      // Get the onEscape callback that was passed to useTVFocusManager
+      const onEscapeCallback = mockUseTVFocusManager.mock.calls[0][0].onEscape;
+
+      // Menu should be open initially in TV mode
+      const menuContent = screen.getByRole('dialog');
+      expect(menuContent.className).toContain('contentOpen');
+
+      // Call the escape handler
+      if (onEscapeCallback) {
+        onEscapeCallback();
+      }
+
+      // Menu should still be open in TV mode (escape doesn't close persistent menu)
+      expect(menuContent.className).toContain('contentOpen');
+    });
+
+    it('should call findFocusableElements when TV mode is enabled', () => {
+      render(<HamburgerMenu />);
+
+      // Should find elements when TV mode is enabled and menu is open
+      expect(mockFindFocusableElements).toHaveBeenCalled();
+    });
+
+    it('should clear focusable elements when switching from TV to non-TV mode', () => {
+      const { rerender } = render(<HamburgerMenu />);
+
+      // Initially in TV mode with elements
+      expect(mockUseTVFocusManager).toHaveBeenCalledWith(
+        expect.objectContaining({
+          isEnabled: true,
+        })
+      );
+
+      // Switch to mobile mode
+      mockUseDevice.mockReturnValue({
+        isMobile: true,
+        isDesktop: false,
+        isTVProfile: false,
+        screenWidth: 375,
+        screenHeight: 667,
+      });
+
+      rerender(<HamburgerMenu />);
+
+      // Should disable TV focus manager
+      expect(mockUseTVFocusManager).toHaveBeenCalledWith(
+        expect.objectContaining({
+          isEnabled: false,
+          focusableElements: [],
+        })
+      );
+    });
+  });
+
+  describe('TV Focus Visual Indicators', () => {
+    beforeEach(() => {
+      mockUseDevice.mockReturnValue({
+        isMobile: false,
+        isDesktop: false,
+        isTVProfile: true,
+        screenWidth: 1920,
+        screenHeight: 1080,
+      });
+    });
+
+    it('should apply TV-specific CSS classes for focus styling', () => {
+      render(<HamburgerMenu />);
+
+      const menuContent = screen.getByRole('dialog');
+      expect(menuContent.className).toContain('contentTV');
+
+      // Check that the controls container has the TV class using a more specific selector
+      const controlsContainer = menuContent.querySelector('[class*="controls"]');
+      expect(controlsContainer).toBeTruthy();
+      if (controlsContainer) {
+        expect(controlsContainer.className).toContain('tv-menu-controls');
+      }
+    });
+
+    it('should render all focusable buttons with proper test IDs', () => {
+      render(<HamburgerMenu />);
+
+      // Check that all mock buttons are rendered
+      expect(screen.getByTestId('iss-button-1')).toBeInTheDocument();
+      expect(screen.getByTestId('iss-button-2')).toBeInTheDocument();
+      expect(screen.getByTestId('perf-button-1')).toBeInTheDocument();
+      expect(screen.getByTestId('perf-button-2')).toBeInTheDocument();
+      expect(screen.getByTestId('display-button-1')).toBeInTheDocument();
+      expect(screen.getByTestId('display-button-2')).toBeInTheDocument();
+    });
+
+    it('should have proper focus styling applied via CSS', () => {
+      render(<HamburgerMenu />);
+
+      const button = screen.getByTestId('iss-button-1');
+      
+      // Focus the button to test focus styles
+      button.focus();
+
+      // The actual focus styling is applied via CSS, so we just verify the element can receive focus
+      expect(document.activeElement).toBe(button);
+    });
+
+    it('should apply enhanced styling to active buttons in TV mode', () => {
+      render(<HamburgerMenu />);
+
+      // Check that buttons with active classes would receive enhanced styling
+      // The actual styling is applied via CSS selectors, so we verify the structure is correct
+      const menuContent = screen.getByRole('dialog');
+      expect(menuContent.className).toContain('contentTV');
+      
+      // Verify that the controls container exists for CSS targeting
+      const controlsContainer = menuContent.querySelector('[class*="controls"]');
+      expect(controlsContainer).toBeTruthy();
+      
+      // Verify buttons exist that could have active classes
+      const buttons = screen.getAllByRole('button');
+      expect(buttons.length).toBeGreaterThan(0);
     });
   });
 });

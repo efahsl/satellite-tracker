@@ -1,6 +1,7 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ISSFollowControls, PerformanceControls, DisplayControls } from '../../Controls';
 import { useDevice } from '../../../state/DeviceContext';
+import { useTVFocusManager, findFocusableElements } from '../../../hooks/useTVFocusManager';
 import styles from './HamburgerMenu.module.css';
 
 interface HamburgerMenuProps {
@@ -10,6 +11,8 @@ interface HamburgerMenuProps {
 export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) => {
   const { isMobile, isTVProfile } = useDevice();
   const [isOpen, setIsOpen] = useState(false);
+  const [focusableElements, setFocusableElements] = useState<HTMLElement[]>([]);
+  const menuContentRef = useRef<HTMLDivElement>(null);
 
   // Auto-open menu when TV profile is detected
   useEffect(() => {
@@ -17,6 +20,27 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
       setIsOpen(true);
     }
   }, [isTVProfile]);
+
+  // Update focusable elements when menu opens/closes or content changes
+  useEffect(() => {
+    if (isTVProfile && isOpen && menuContentRef.current) {
+      const elements = findFocusableElements(menuContentRef.current);
+      setFocusableElements(elements);
+    } else {
+      setFocusableElements([]);
+    }
+  }, [isTVProfile, isOpen]);
+
+  // TV focus manager for keyboard navigation
+  const { currentFocusIndex, focusElement } = useTVFocusManager({
+    isEnabled: isTVProfile && isOpen,
+    focusableElements,
+    onEscape: () => {
+      // In TV mode, escape key should not close the menu since it's persistent
+      // This is handled by the global back/escape key listener for menu reopening
+    },
+    initialFocusIndex: 0
+  });
 
   const handleToggle = useCallback(() => {
     console.log('Hamburger menu toggle clicked, current state:', isOpen);
@@ -40,6 +64,18 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
     }
   }, [isMobile, isTVProfile]);
 
+  // Focus first element when menu opens in TV mode
+  useEffect(() => {
+    if (isTVProfile && isOpen && focusableElements.length > 0) {
+      // Small delay to ensure elements are rendered and focusable
+      const timeoutId = setTimeout(() => {
+        focusElement(0);
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isTVProfile, isOpen, focusableElements.length, focusElement]);
+
   return (
     <div className={`${styles.hamburgerMenu} ${className}`} onKeyDown={handleKeyDown}>
       {/* Hamburger Button - Hidden in TV mode */}
@@ -62,6 +98,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
 
       {/* Menu Content */}
       <div 
+        ref={menuContentRef}
         id="hamburger-menu-content"
         className={`${styles.content} ${(isOpen || isTVProfile) ? styles.contentOpen : ''} ${
           isTVProfile ? styles.contentTV : 
