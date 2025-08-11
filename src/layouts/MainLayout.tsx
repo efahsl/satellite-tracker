@@ -11,7 +11,7 @@ const MainLayout: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-space-black text-iss-white">
       
       {/* Header */}
-      <header className="bg-space-blue shadow-md">
+      <header className="shadow-md">
         <ResponsiveContainer maxWidth="full" padding="sm">
           <DeviceStyle
             baseClassName="flex justify-between items-center"
@@ -82,7 +82,7 @@ const MainLayout: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-space-blue py-4 text-center">
+      <footer className="py-4 text-center">
         <ResponsiveContainer maxWidth="full" padding="md">
           <ResponsiveText
             mobileSize="xs"

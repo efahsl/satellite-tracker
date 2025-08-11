@@ -4,13 +4,18 @@ import React, { createContext, useContext, useReducer, ReactNode, useMemo } from
 interface UIState {
   fpsMonitorVisible: boolean;
   infoPanelVisible: boolean;
+  hamburgerMenuVisible: boolean;
+  hamburgerMenuFocusIndex: number;
 }
 
 type UIAction = 
   | { type: 'TOGGLE_FPS_MONITOR' }
   | { type: 'TOGGLE_INFO_PANEL' }
   | { type: 'SET_FPS_MONITOR_VISIBLE'; payload: boolean }
-  | { type: 'SET_INFO_PANEL_VISIBLE'; payload: boolean };
+  | { type: 'SET_INFO_PANEL_VISIBLE'; payload: boolean }
+  | { type: 'SET_HAMBURGER_MENU_VISIBLE'; payload: boolean }
+  | { type: 'SET_HAMBURGER_MENU_FOCUS'; payload: number }
+  | { type: 'CLOSE_HAMBURGER_MENU_FOR_MANUAL' };
 
 interface UIContextType {
   state: UIState;
@@ -19,6 +24,9 @@ interface UIContextType {
   toggleInfoPanel: () => void;
   setFPSMonitorVisible: (visible: boolean) => void;
   setInfoPanelVisible: (visible: boolean) => void;
+  setHamburgerMenuVisible: (visible: boolean) => void;
+  setHamburgerMenuFocus: (index: number) => void;
+  closeHamburgerMenuForManual: () => void;
 }
 
 // Initial state
