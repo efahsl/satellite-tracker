@@ -15,6 +15,49 @@
   --color-white10: rgba(255, 255, 255, 0.1);
   --color-white20: rgba(255, 255, 255, 0.2);
   --color-gray-400: #9ca3af;
+
+  /* TV Interface CSS Custom Properties */
+  /* TV Safe Zone Variables */
+  --tv-safe-zone-padding: 5%;
+  --tv-safe-zone-top: 5vh;
+  --tv-safe-zone-bottom: 5vh;
+  --tv-safe-zone-left: 5vw;
+  --tv-safe-zone-right: 5vw;
+  
+  /* TV Menu Variables */
+  --tv-menu-width: 320px;
+  --tv-animation-duration: 300ms;
+  
+  /* TV Typography Variables */
+  --tv-min-font-size: 32px;
+  --tv-font-scale-factor: 1.5;
+  --tv-line-height-factor: 1.2;
+  
+  /* TV Button Variables */
+  --tv-button-min-height: 48px;
+  --tv-button-min-width: 200px;
+  
+  /* TV Focus State Variables */
+  --tv-focus-border-width: 3px;
+  --tv-focus-border-color: #4A90E2;
+  --tv-focus-border-radius: 8px;
+  --tv-focus-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
+  --tv-focus-scale: 1.05;
+  --tv-focus-transition: all 150ms ease-in-out;
+  
+  /* TV High Contrast Colors */
+  --tv-high-contrast-text: #ffffff;
+  --tv-high-contrast-background: #000000;
+  --tv-high-contrast-border: #ffffff;
+  --tv-high-contrast-accent: #4A90E2;
+  
+  /* TV Animation Variables */
+  --tv-slide-in-duration: 300ms;
+  --tv-slide-out-duration: 300ms;
+  --tv-fade-duration: 200ms;
+  --tv-scale-duration: 150ms;
+  --tv-easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --tv-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 body {
@@ -979,4 +1022,288 @@ code {
 
 .bg-space-blue\/30 {
   background-color: rgba(30, 58, 138, 0.3);
+}
+
+/* TV Interface Utilities */
+/* TV Safe Zone Classes */
+.tv-safe-zone {
+  padding: var(--tv-safe-zone-padding);
+}
+
+.tv-safe-zone-top {
+  padding-top: var(--tv-safe-zone-top);
+}
+
+.tv-safe-zone-bottom {
+  padding-bottom: var(--tv-safe-zone-bottom);
+}
+
+.tv-safe-zone-left {
+  padding-left: var(--tv-safe-zone-left);
+}
+
+.tv-safe-zone-right {
+  padding-right: var(--tv-safe-zone-right);
+}
+
+.tv-safe-zone-horizontal {
+  padding-left: var(--tv-safe-zone-left);
+  padding-right: var(--tv-safe-zone-right);
+}
+
+.tv-safe-zone-vertical {
+  padding-top: var(--tv-safe-zone-top);
+  padding-bottom: var(--tv-safe-zone-bottom);
+}
+
+/* TV Typography Classes */
+.tv-text-base {
+  font-size: var(--tv-min-font-size);
+  line-height: calc(var(--tv-min-font-size) * var(--tv-line-height-factor));
+}
+
+.tv-text-lg {
+  font-size: calc(var(--tv-min-font-size) * 1.125);
+  line-height: calc(var(--tv-min-font-size) * 1.125 * var(--tv-line-height-factor));
+}
+
+.tv-text-xl {
+  font-size: calc(var(--tv-min-font-size) * 1.25);
+  line-height: calc(var(--tv-min-font-size) * 1.25 * var(--tv-line-height-factor));
+}
+
+.tv-text-2xl {
+  font-size: calc(var(--tv-min-font-size) * 1.5);
+  line-height: calc(var(--tv-min-font-size) * 1.5 * var(--tv-line-height-factor));
+}
+
+.tv-high-contrast {
+  color: var(--tv-high-contrast-text);
+  background-color: var(--tv-high-contrast-background);
+}
+
+.tv-high-contrast-text {
+  color: var(--tv-high-contrast-text);
+}
+
+.tv-high-contrast-border {
+  border-color: var(--tv-high-contrast-border);
+}
+
+/* TV Button Classes */
+.tv-button {
+  min-height: var(--tv-button-min-height);
+  min-width: var(--tv-button-min-width);
+  font-size: var(--tv-min-font-size);
+  padding: 12px 24px;
+  border-radius: var(--tv-focus-border-radius);
+  transition: var(--tv-focus-transition);
+}
+
+.tv-button:focus {
+  outline: none;
+  border: var(--tv-focus-border-width) solid var(--tv-focus-border-color);
+  box-shadow: var(--tv-focus-shadow);
+  transform: scale(var(--tv-focus-scale));
+}
+
+/* TV Focus State Classes */
+.tv-focusable {
+  transition: var(--tv-focus-transition);
+  border-radius: var(--tv-focus-border-radius);
+}
+
+.tv-focusable:focus,
+.tv-focusable.tv-focused {
+  outline: none;
+  border: var(--tv-focus-border-width) solid var(--tv-focus-border-color);
+  box-shadow: var(--tv-focus-shadow);
+  transform: scale(var(--tv-focus-scale));
+  z-index: 10;
+}
+
+.tv-focus-ring {
+  position: relative;
+}
+
+.tv-focus-ring::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border: var(--tv-focus-border-width) solid transparent;
+  border-radius: var(--tv-focus-border-radius);
+  transition: var(--tv-focus-transition);
+  pointer-events: none;
+}
+
+.tv-focus-ring:focus::after,
+.tv-focus-ring.tv-focused::after {
+  border-color: var(--tv-focus-border-color);
+  box-shadow: var(--tv-focus-shadow);
+}
+
+/* TV Menu Classes */
+.tv-menu {
+  width: var(--tv-menu-width);
+  transition: transform var(--tv-slide-in-duration) var(--tv-easing-smooth);
+}
+
+.tv-menu-slide-in {
+  transform: translateX(0);
+}
+
+.tv-menu-slide-out {
+  transform: translateX(-100%);
+}
+
+/* TV Animation Classes */
+.tv-slide-in-left {
+  animation: tv-slide-in-left var(--tv-slide-in-duration) var(--tv-easing-smooth);
+}
+
+.tv-slide-out-left {
+  animation: tv-slide-out-left var(--tv-slide-out-duration) var(--tv-easing-smooth);
+}
+
+.tv-fade-in {
+  animation: tv-fade-in var(--tv-fade-duration) ease-in-out;
+}
+
+.tv-fade-out {
+  animation: tv-fade-out var(--tv-fade-duration) ease-in-out;
+}
+
+.tv-scale-focus {
+  animation: tv-scale-focus var(--tv-scale-duration) var(--tv-easing-bounce);
+}
+
+/* TV Animation Keyframes */
+@keyframes tv-slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes tv-slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes tv-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tv-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes tv-scale-focus {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(var(--tv-focus-scale));
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* TV Mode Responsive Utilities */
+/* TV Profile Detection - Only applies when screen width is exactly 1920px */
+@media (width: 1920px) {
+  .tv-only {
+    display: block !important;
+  }
+  
+  .tv-hidden {
+    display: none !important;
+  }
+  
+  .tv-flex {
+    display: flex !important;
+  }
+  
+  .tv-grid {
+    display: grid !important;
+  }
+  
+  /* Apply TV typography scaling automatically */
+  .tv-auto-scale {
+    font-size: calc(1rem * var(--tv-font-scale-factor));
+    line-height: calc(1.5 * var(--tv-line-height-factor));
+  }
+  
+  /* Apply TV safe zones automatically */
+  .tv-auto-safe-zone {
+    padding: var(--tv-safe-zone-padding);
+  }
+  
+  /* TV-specific layout adjustments */
+  .tv-layout {
+    padding: var(--tv-safe-zone-padding);
+    font-size: calc(1rem * var(--tv-font-scale-factor));
+  }
+}
+
+/* Reduced Motion Support for TV Animations */
+@media (prefers-reduced-motion: reduce) {
+  .tv-menu,
+  .tv-focusable,
+  .tv-button,
+  .tv-focus-ring::after {
+    transition: none;
+  }
+  
+  .tv-slide-in-left,
+  .tv-slide-out-left,
+  .tv-fade-in,
+  .tv-fade-out,
+  .tv-scale-focus {
+    animation: none;
+  }
+  
+  .tv-focusable:focus,
+  .tv-focusable.tv-focused,
+  .tv-button:focus {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --tv-focus-border-color: #ffffff;
+    --tv-high-contrast-text: #ffffff;
+    --tv-high-contrast-background: #000000;
+    --tv-high-contrast-border: #ffffff;
+    --tv-high-contrast-accent: #ffffff;
+  }
+  
+  .tv-focusable:focus,
+  .tv-focusable.tv-focused,
+  .tv-button:focus {
+    border-color: var(--tv-focus-border-color);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+  }
 }

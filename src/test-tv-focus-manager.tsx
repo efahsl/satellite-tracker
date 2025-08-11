@@ -44,14 +44,11 @@ const TestTVFocusManager: React.FC = () => {
   });
 
   return (
-    <div style={{ 
+    <div className="tv-safe-zone tv-high-contrast" style={{ 
       fontFamily: 'Arial, sans-serif', 
-      padding: '20px',
-      backgroundColor: '#000000',
-      color: '#ffffff',
       minHeight: '100vh'
     }}>
-      <h1 style={{ color: '#ffffff', marginBottom: '30px' }}>TV Focus Manager Test Page</h1>
+      <h1 className="tv-text-2xl tv-high-contrast-text" style={{ marginBottom: '30px' }}>TV Focus Manager Test Page</h1>
       
       {/* Control Panel */}
       <div style={{ 
@@ -284,19 +281,10 @@ const TestTVFocusManager: React.FC = () => {
               <button
                 key={label}
                 onClick={() => handleButtonClick(label)}
+                className={`tv-button tv-focusable ${currentFocusIndex === index ? 'tv-focused' : ''}`}
                 style={{
-                  padding: '16px 20px',
-                  fontSize: '16px',
-                  fontWeight: '500',
-                  backgroundColor: currentFocusIndex === index ? '#4A90E2' : '#333',
-                  color: '#ffffff',
-                  border: currentFocusIndex === index ? '3px solid #4A90E2' : '1px solid #555',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  transform: currentFocusIndex === index ? 'scale(1.05)' : 'scale(1)',
-                  transition: 'all 0.2s ease',
-                  boxShadow: currentFocusIndex === index ? '0 4px 12px rgba(74, 144, 226, 0.6)' : '0 2px 4px rgba(0, 0, 0, 0.3)',
-                  minHeight: '60px',
+                  backgroundColor: currentFocusIndex === index ? 'var(--tv-focus-border-color)' : '#333',
+                  color: 'var(--tv-high-contrast-text)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

@@ -77,22 +77,47 @@ export const EARTH_ROTATE_TRANSITION_SPEED = 0.05; // Lerp factor for smooth tra
 
 // TV Interface Configuration
 export const TV_CONFIG = {
+  // Device detection
   DETECTION_WIDTH: 1920,
+  
+  // Layout and spacing
   SAFE_ZONE_PADDING: '5%',
   MENU_WIDTH: '320px',
-  ANIMATION_DURATION: 300,
-  FOCUS_BORDER_WIDTH: '3px',
-  FOCUS_BORDER_COLOR: '#4A90E2',
+  
+  // Typography
   MIN_FONT_SIZE: '32px', // Following TV UX guidelines for 10-foot viewing
-  BUTTON_MIN_HEIGHT: '48px',
-  BUTTON_MIN_WIDTH: '200px',
-  // Typography scaling factors for TV
   FONT_SCALE_FACTOR: 1.5, // 50% larger fonts for TV
   LINE_HEIGHT_FACTOR: 1.2, // Increased line height for readability
+  
+  // Button dimensions
+  BUTTON_MIN_HEIGHT: '48px',
+  BUTTON_MIN_WIDTH: '200px',
+  
+  // Focus state styling
+  FOCUS_BORDER_WIDTH: '3px',
+  FOCUS_BORDER_COLOR: '#4A90E2',
+  FOCUS_BORDER_RADIUS: '8px',
+  FOCUS_SHADOW: '0 0 0 3px rgba(74, 144, 226, 0.3)',
+  FOCUS_SCALE: 1.05,
+  FOCUS_TRANSITION: 'all 150ms ease-in-out',
+  
+  // Animation durations
+  ANIMATION_DURATION: 300,
+  SLIDE_IN_DURATION: 300,
+  SLIDE_OUT_DURATION: 300,
+  FADE_DURATION: 200,
+  SCALE_DURATION: 150,
+  
+  // Animation easing functions
+  EASING_SMOOTH: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  EASING_BOUNCE: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+  
   // High contrast colors for TV visibility
   HIGH_CONTRAST_TEXT: '#ffffff',
   HIGH_CONTRAST_BACKGROUND: '#000000',
   HIGH_CONTRAST_BORDER: '#ffffff',
+  HIGH_CONTRAST_ACCENT: '#4A90E2',
+  
   // Safe zone measurements
   SAFE_ZONE_TOP: '5vh',
   SAFE_ZONE_BOTTOM: '5vh',
