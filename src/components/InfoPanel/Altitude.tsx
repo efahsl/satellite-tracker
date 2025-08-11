@@ -27,7 +27,7 @@ const Altitude: React.FC = memo(() => {
 
   if (!position) {
     return (
-      <div className={`bg-space-blue/30 backdrop-blur-sm rounded-lg ${isTVProfile ? 'p-5 mb-5' : 'p-3 mb-3'} ${isTVProfile ? 'tv-typography' : ''}`}>
+      <div className={`backdrop-blur-sm rounded-lg ${isTVProfile ? 'p-5 mb-5' : 'p-3 mb-3'} ${isTVProfile ? 'tv-typography' : ''}`}>
         <h3 className={`${isTVProfile ? 'text-lg' : 'text-sm'} font-semibold mb-1 mt-1`}>Altitude & Velocity</h3>
         <p className={`text-gray-300 ${isTVProfile ? 'text-base' : 'text-xs'}`}>Loading data...</p>
       </div>
@@ -35,7 +35,7 @@ const Altitude: React.FC = memo(() => {
   }
 
   return (
-    <div className={`bg-space-blue/30 backdrop-blur-sm rounded-lg ${isTVProfile ? 'p-5 mb-5' : 'p-3 mb-3'} ${isTVProfile ? 'tv-typography' : ''}`}>
+    <div className={`backdrop-blur-sm rounded-lg ${isTVProfile ? 'p-5 mb-5' : 'p-3 mb-3'} ${isTVProfile ? 'tv-typography' : ''}`}>
       <h3 className={`${isTVProfile ? 'text-lg' : 'text-sm'} font-semibold mb-1 mt-1`}>Altitude & Velocity</h3>
       <div className={`grid grid-cols-2 ${isTVProfile ? 'gap-4' : 'gap-2'}`}>
         <div>

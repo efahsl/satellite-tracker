@@ -11,6 +11,12 @@ const MainLayout: React.FC = () => {
     <div className={`flex flex-col min-h-screen bg-space-black text-iss-white ${isTVProfile ? 'tv-safe-zone tv-typography tv-high-contrast' : ''}`}>
       
       {/* Header */}
+      
+      {isTVProfile && (
+        <HamburgerMenu />
+      )}
+      
+    {!isTVProfile && (
       <header className="bg-space-blue shadow-md">
         <ResponsiveContainer maxWidth="full" padding={isTVProfile ? "lg" : "sm"}>
           <DeviceStyle
@@ -69,6 +75,7 @@ const MainLayout: React.FC = () => {
           </DeviceStyle>
         </ResponsiveContainer>
       </header>
+      )}
 
       {/* Main Content */}
       <main className={`flex-grow ${isTVProfile ? 'tv-typography' : ''}`}>

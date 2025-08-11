@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { ISSFollowControls, PerformanceControls, DisplayControls } from '../../Controls';
 import { useDevice } from '../../../state/DeviceContext';
 import styles from './HamburgerMenu.module.css';
@@ -8,8 +8,15 @@ interface HamburgerMenuProps {
 }
 
 export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) => {
+  const { isMobile, isTVProfile } = useDevice();
   const [isOpen, setIsOpen] = useState(false);
-  const { isMobile } = useDevice();
+
+  // Auto-open menu when TV profile is detected
+  useEffect(() => {
+    if (isTVProfile) {
+      setIsOpen(true);
+    }
+  }, [isTVProfile]);
 
   const handleToggle = useCallback(() => {
     console.log('Hamburger menu toggle clicked, current state:', isOpen);
@@ -26,36 +33,41 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
     setIsOpen(false);
   }, []);
 
-  // Close menu when clicking on a control (better UX on mobile)
+  // Close menu when clicking on a control (better UX on mobile, but keep open on TV)
   const handleControlInteraction = useCallback(() => {
-    if (isMobile) {
+    if (isMobile && !isTVProfile) {
       setIsOpen(false);
     }
-  }, [isMobile]);
+  }, [isMobile, isTVProfile]);
 
   return (
     <div className={`${styles.hamburgerMenu} ${className}`} onKeyDown={handleKeyDown}>
-      {/* Hamburger Button */}
-      <button
-        className={`${styles.button} ${isOpen ? styles.buttonActive : ''}`}
-        onClick={handleToggle}
-        aria-label={isOpen ? 'Close menu' : 'Open menu'}
-        aria-expanded={isOpen}
-        aria-controls="hamburger-menu-content"
-        type="button"
-      >
-        <span className={styles.icon}>
-          <span className={styles.line}></span>
-          <span className={styles.line}></span>
-          <span className={styles.line}></span>
-        </span>
-      </button>
+      {/* Hamburger Button - Hidden in TV mode */}
+      {!isTVProfile && (
+        <button
+          className={`${styles.button} ${isOpen ? styles.buttonActive : ''}`}
+          onClick={handleToggle}
+          aria-label={isOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={isOpen}
+          aria-controls="hamburger-menu-content"
+          type="button"
+        >
+          <span className={styles.icon}>
+            <span className={styles.line}></span>
+            <span className={styles.line}></span>
+            <span className={styles.line}></span>
+          </span>
+        </button>
+      )}
 
       {/* Menu Content */}
       <div 
         id="hamburger-menu-content"
-        className={`${styles.content} ${isOpen ? styles.contentOpen : ''} ${isMobile ? styles.contentMobile : ''}`}
-        aria-hidden={!isOpen}
+        className={`${styles.content} ${(isOpen || isTVProfile) ? styles.contentOpen : ''} ${
+          isTVProfile ? styles.contentTV : 
+          isMobile ? styles.contentMobile : ''
+        }`}
+        aria-hidden={!isOpen && !isTVProfile}
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
@@ -67,8 +79,8 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
         </div>
       </div>
 
-      {/* Backdrop */}
-      {isOpen && (
+      {/* Backdrop - Only show for mobile/desktop, not TV */}
+      {isOpen && !isTVProfile && (
         <div 
           className={styles.backdrop}
           onClick={handleBackdropClick}

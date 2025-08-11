@@ -27,6 +27,7 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
     <div className={`${styles.issFollowControls} ${isTVProfile ? 'tv-typography' : ''} ${className}`}>
       <div className={styles.header}>
         <h3>Camera Tracking</h3>
+        {!isTVProfile && (
         <p className={styles.description}>
           {state.followISS
             ? "Camera is automatically tracking the ISS"
@@ -34,6 +35,7 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
             ? "Camera is rotating around Earth"
             : "Camera is in manual mode - you can pan and zoom freely"}
         </p>
+)}
       </div>
 
       <div className={styles.buttonContainer}>

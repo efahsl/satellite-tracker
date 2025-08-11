@@ -1,5 +1,6 @@
 import React from "react";
 import { useUI } from "../../state/UIContext";
+import { useDevice } from "../../state/DeviceContext";
 import styles from "./DisplayControls.module.css";
 
 interface DisplayControlsProps {
@@ -8,14 +9,17 @@ interface DisplayControlsProps {
 
 export function DisplayControls({ className = "" }: DisplayControlsProps) {
   const { state, toggleFPSMonitor, toggleInfoPanel } = useUI();
+  const { isTV } = useDevice();
 
   return (
     <div className={`${styles.displayControls} ${className}`}>
       <div className={styles.header}>
         <h3>Display Options</h3>
-        <p className={styles.description}>
-          Control which information panels are visible on screen
-        </p>
+        {!isTV && (
+          <p className={styles.description}>
+            Control which information panels are visible on screen
+          </p>
+        )}
       </div>
 
       <div className={styles.buttonContainer}>

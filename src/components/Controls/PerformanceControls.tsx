@@ -3,6 +3,7 @@ import {
   usePerformance,
   PerformanceTier,
 } from "../../state/PerformanceContext";
+import { useDevice } from "../../state/DeviceContext";
 import styles from "./PerformanceControls.module.css";
 
 interface PerformanceControlsProps {
@@ -14,6 +15,7 @@ export function PerformanceControls({
 }: PerformanceControlsProps) {
   const { state, setTier } = usePerformance();
   const { tier } = state;
+  const { isTV } = useDevice();
   const [showDetails, setShowDetails] = useState(true);
 
   const handleTierChange = (newTier: PerformanceTier) => {
@@ -67,9 +69,9 @@ export function PerformanceControls({
     <div className={`${styles.performanceControls} ${className}`}>
       <div className={styles.header}>
         <h3>Performance Tier</h3>
-        <p className={styles.description}>
-          {getTierDescription(tier)}
-        </p>
+        {!isTV && (
+        <p className={styles.description}>{getTierDescription(tier)}</p>
+        )}
       </div>
 
       <div className={styles.buttons}>
@@ -91,38 +93,34 @@ export function PerformanceControls({
           </button>
         ))}
       </div>
-      {/* Details Toggle */}
-      <div className={styles.detailsToggle}>
-        <button
-          onClick={() => setShowDetails(!showDetails)}
-          className={styles.detailsButton}
-        >
-          <span>{showDetails ? "Hide" : "Show"} Details</span>
-          <span
-            className={`${styles.detailsArrow} ${
-              showDetails ? styles.detailsArrowExpanded : ""
-            }`}
+      {/* Details Toggle - Hidden in TV mode */}
+      {!isTV && (
+        <div className={styles.detailsToggle}>
+          <button
+            onClick={() => setShowDetails(!showDetails)}
+            className={styles.detailsButton}
           >
-            ▼
-          </span>
-        </button>
-      </div>
+            <span>{showDetails ? "Hide" : "Show"} Details</span>
+            <span
+              className={`${styles.detailsArrow} ${
+                showDetails ? styles.detailsArrowExpanded : ""
+              }`}
+            >
+              ▼
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* Details Section */}
-      {showDetails && (
+      {!isTV && showDetails && (
         <div className={styles.details}>
-          <h4 className={styles.detailsTitle}>
-            Current Tier Settings
-          </h4>
+          <h4 className={styles.detailsTitle}>Current Tier Settings</h4>
           <div className={styles.detailsGrid}>
             {getTierDetails(tier).map((detail, index) => (
               <div key={index} className={styles.detailItem}>
-                <span className={styles.detailLabel}>
-                  {detail.label}:
-                </span>
-                <span className={styles.detailValue}>
-                  {detail.value}
-                </span>
+                <span className={styles.detailLabel}>{detail.label}:</span>
+                <span className={styles.detailValue}>{detail.value}</span>
               </div>
             ))}
           </div>

@@ -115,6 +115,37 @@
   /* gap: var(--spacing-lg); */
 }
 
+/* TV mode controls styling */
+@media (width: 1920px) {
+  .contentTV .controls {
+    gap: 1.5rem;
+    padding-top: 2rem;
+  }
+  
+  /* Apply TV typography and spacing to all controls in TV mode */
+  .contentTV .controls * {
+    font-size: var(--tv-min-font-size);
+    line-height: calc(var(--tv-min-font-size) * var(--tv-line-height-factor));
+  }
+  
+  /* TV-specific button styling within menu */
+  .contentTV .controls button {
+    min-height: var(--tv-button-min-height);
+    min-width: var(--tv-button-min-width);
+    padding: 12px 24px;
+    font-size: var(--tv-min-font-size);
+    border-radius: var(--tv-focus-border-radius);
+    transition: var(--tv-focus-transition);
+  }
+  
+  .contentTV .controls button:focus {
+    outline: none;
+    border: var(--tv-focus-border-width) solid var(--tv-focus-border-color);
+    box-shadow: var(--tv-focus-shadow);
+    transform: scale(var(--tv-focus-scale));
+  }
+}
+
 /* Backdrop */
 .backdrop {
   position: fixed;
@@ -135,6 +166,63 @@
   max-width: calc(100vw - 2rem);
   left: 0;
   right: auto;
+}
+
+/* TV-specific styles */
+.contentTV {
+  /* Full-height sidebar positioned on left side */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--tv-menu-width);
+  height: 100vh;
+  max-height: none;
+  transform: translateX(0); /* Always visible in TV mode */
+  opacity: 1;
+  visibility: visible;
+  border-radius: 0;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(15px);
+  z-index: 10000;
+  overflow-y: auto;
+  /* Reduced TV safe zone padding - only apply minimal padding */
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.contentTV.contentOpen {
+  transform: translateX(0);
+  transition: transform var(--tv-slide-in-duration) var(--tv-easing-smooth);
+}
+
+.contentTV:not(.contentOpen) {
+  transition: transform var(--tv-slide-out-duration) var(--tv-easing-smooth);
+}
+
+/* TV mode - hamburger button is hidden, so no positioning needed */
+@media (width: 1920px) {
+  .hamburgerMenu {
+    /* No positioning needed since button is hidden in TV mode */
+  }
+  
+  .buttonActive {
+    background: rgba(74, 144, 226, 0.3);
+    border-color: var(--tv-focus-border-color);
+  }
+  
+  .icon {
+    width: 24px;
+    height: 20px;
+  }
+  
+  .line {
+    height: 3px;
+    background: var(--tv-high-contrast-text);
+  }
 }
 
 /* Responsive Design */
@@ -220,5 +308,29 @@
   .line,
   .backdrop {
     transition: none;
+  }
+  
+  .contentTV.contentOpen,
+  .contentTV:not(.contentOpen) {
+    transition: none;
+  }
+}
+
+/* TV-specific high contrast support */
+@media (width: 1920px) and (prefers-contrast: high) {
+  .button {
+    border-width: var(--tv-focus-border-width);
+    background: var(--tv-high-contrast-background);
+    border-color: var(--tv-high-contrast-border);
+  }
+  
+  .line {
+    height: 4px;
+    background: var(--tv-high-contrast-text);
+  }
+  
+  .contentTV {
+    background: var(--tv-high-contrast-background);
+    border-right-color: var(--tv-high-contrast-border);
   }
 }
