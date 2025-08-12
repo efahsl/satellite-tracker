@@ -31,6 +31,32 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
     console.log('HamburgerMenu: isOpen state changed to:', isOpen);
   }, [isOpen]);
 
+  // Global keyboard event listener for back/escape key menu reopening in TV mode
+  useEffect(() => {
+    if (!isTVProfile) return; // Only add listener in TV mode
+
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      // Handle back button (Android TV) and Escape key
+      if (event.key === 'Escape' || event.key === 'Backspace' || event.key === 'GoBack') {
+        // Only reopen menu if it's currently closed
+        if (!uiState.hamburgerMenuVisible) {
+          console.log('Global key pressed to reopen menu:', event.key);
+          event.preventDefault();
+          event.stopPropagation();
+          setHamburgerMenuVisible(true);
+        }
+      }
+    };
+
+    // Add global event listener
+    document.addEventListener('keydown', handleGlobalKeyDown, true);
+
+    // Cleanup function
+    return () => {
+      document.removeEventListener('keydown', handleGlobalKeyDown, true);
+    };
+  }, [isTVProfile, uiState.hamburgerMenuVisible, setHamburgerMenuVisible]);
+
   // Auto-open menu when TV profile is first detected (only once)
   useEffect(() => {
     if (isTVProfile && !tvMenuInitialized.current) {
@@ -46,6 +72,14 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
     if (isTVProfile && isOpen && menuContentRef.current) {
       const elements = findFocusableElements(menuContentRef.current);
       setFocusableElements(elements);
+      
+      // When menu reopens, focus the first button after a short delay to allow animation
+      if (elements.length > 0) {
+        setTimeout(() => {
+          console.log('HamburgerMenu: Focusing first element after menu reopen');
+          elements[0].focus();
+        }, 100); // Small delay to ensure menu is visible
+      }
     } else {
       setFocusableElements([]);
     }
