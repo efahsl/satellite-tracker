@@ -1,6 +1,7 @@
 import React from "react";
 import { Outlet, Link } from "react-router-dom";
 import HamburgerMenu from "../components/UI/HamburgerMenu/HamburgerMenu";
+import { DeviceDebugInfo } from "../components/UI/DeviceDebugInfo";
 import { useDevice } from "../state/DeviceContext";
 import { ResponsiveContainer, ResponsiveText, DeviceStyle } from "../components/UI/ResponsiveLayout";
 
@@ -95,6 +96,9 @@ const MainLayout: React.FC = () => {
           </ResponsiveText>
         </ResponsiveContainer>
       </footer>
+
+      {/* Debug info - only show in development */}
+      {process.env.NODE_ENV === 'development' && <DeviceDebugInfo />}
     </div>
   );
 };

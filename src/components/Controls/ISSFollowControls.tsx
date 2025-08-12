@@ -1,5 +1,6 @@
 import { useISS } from "../../state/ISSContext";
 import { useDevice } from "../../state/DeviceContext";
+import { useUI } from "../../state/UIContext";
 import { ToggleButton } from "../UI/ToggleButton";
 import styles from "./ISSFollowControls.module.css";
 
@@ -10,6 +11,7 @@ interface ISSFollowControlsProps {
 export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
   const { state, dispatch } = useISS();
   const { isTVProfile } = useDevice();
+  const { closeHamburgerMenuForManual } = useUI();
 
   const handleToggleFollow = () => {
     dispatch({ type: "TOGGLE_FOLLOW_ISS" });
@@ -21,6 +23,10 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
 
   const handleSetManualMode = () => {
     dispatch({ type: "SET_MANUAL_MODE" });
+    // Close hamburger menu when manual mode is activated (TV mode only)
+    if (isTVProfile) {
+      closeHamburgerMenuForManual();
+    }
   };
 
   return (

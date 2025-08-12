@@ -16,17 +16,30 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
   const [isAnimating, setIsAnimating] = useState(false);
   const [focusableElements, setFocusableElements] = useState<HTMLElement[]>([]);
   const menuContentRef = useRef<HTMLDivElement>(null);
+  const tvMenuInitialized = useRef(false);
 
-  // Sync local state with UIContext for TV mode and auto-open menu
+  // Sync local state with UIContext for TV mode
   useEffect(() => {
     if (isTVProfile) {
+      console.log('HamburgerMenu: Syncing state, hamburgerMenuVisible:', uiState.hamburgerMenuVisible, 'isOpen will be set to:', uiState.hamburgerMenuVisible);
       setIsOpen(uiState.hamburgerMenuVisible);
-      // Auto-open menu when TV profile is first detected
+    }
+  }, [isTVProfile, uiState.hamburgerMenuVisible]);
+
+  // Debug: Log when isOpen changes
+  useEffect(() => {
+    console.log('HamburgerMenu: isOpen state changed to:', isOpen);
+  }, [isOpen]);
+
+  // Auto-open menu when TV profile is first detected (only once)
+  useEffect(() => {
+    if (isTVProfile && !tvMenuInitialized.current) {
+      tvMenuInitialized.current = true;
       if (uiState.hamburgerMenuVisible === false) {
         setHamburgerMenuVisible(true);
       }
     }
-  }, [isTVProfile, uiState.hamburgerMenuVisible, setHamburgerMenuVisible]);
+  }, [isTVProfile, setHamburgerMenuVisible, uiState.hamburgerMenuVisible]);
 
   // Update focusable elements when menu opens/closes or content changes
   useEffect(() => {
@@ -124,11 +137,11 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
       <div 
         ref={menuContentRef}
         id="hamburger-menu-content"
-        className={`${styles.content} ${(isOpen || isTVProfile) ? styles.contentOpen : ''} ${
+        className={`${styles.content} ${isOpen ? styles.contentOpen : ''} ${
           isTVProfile ? styles.contentTV : 
           isMobile ? styles.contentMobile : ''
         } ${isAnimating ? styles.animating : ''}`}
-        aria-hidden={!isOpen && !isTVProfile}
+        aria-hidden={!isOpen}
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
