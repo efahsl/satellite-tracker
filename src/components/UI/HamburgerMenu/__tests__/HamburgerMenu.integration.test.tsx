@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { HamburgerMenu } from '../HamburgerMenu';
 import { useDevice } from '../../../../state/DeviceContext';
@@ -55,6 +55,7 @@ describe('HamburgerMenu TV Keyboard Navigation Integration', () => {
   afterEach(() => {
     // Clean up any global event listeners
     vi.clearAllMocks();
+    cleanup();
   });
 
   it('should navigate through buttons with arrow keys in TV mode', async () => {

@@ -1,12 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act, cleanup } from '@testing-library/react';
 import { HamburgerMenu } from '../HamburgerMenu';
 import { DeviceProvider } from '../../../../state/DeviceContext';
 import { UIProvider } from '../../../../state/UIContext';
 import { ISSProvider } from '../../../../state/ISSContext';
 import { PerformanceProvider } from '../../../../state/PerformanceContext';
 
-import { vi } from 'vitest';
+import { vi, beforeEach, afterEach } from 'vitest';
 
 // Mock the hooks
 vi.mock('../../../../hooks/useTVFocusManager', () => ({
@@ -57,6 +57,10 @@ describe('HamburgerMenu Animations', () => {
       configurable: true,
       value: 1920,
     });
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   describe('TV Mode Slide Animations', () => {

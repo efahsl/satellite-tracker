@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { HamburgerMenu } from '../HamburgerMenu';
 import { useDevice } from '../../../../state/DeviceContext';
@@ -16,20 +16,20 @@ const mockFindFocusableElements = vi.mocked(findFocusableElements);
 vi.mock('../../../Controls', () => ({
   ISSFollowControls: () => (
     <div data-testid="iss-follow-controls">
-      <button data-testid="iss-button-1">Follow ISS</button>
-      <button data-testid="iss-button-2">Manual</button>
+      <button data-testid="iss-follow-button">Follow ISS</button>
+      <button data-testid="iss-manual-button">Manual</button>
     </div>
   ),
   PerformanceControls: () => (
     <div data-testid="performance-controls">
-      <button data-testid="perf-button-1">High Quality</button>
-      <button data-testid="perf-button-2">Low Quality</button>
+      <button data-testid="perf-high-button">High Quality</button>
+      <button data-testid="perf-low-button">Low Quality</button>
     </div>
   ),
   DisplayControls: () => (
     <div data-testid="display-controls">
-      <button data-testid="display-button-1">Show Info</button>
-      <button data-testid="display-button-2">Hide Info</button>
+      <button data-testid="display-show-button">Show Info</button>
+      <button data-testid="display-hide-button">Hide Info</button>
     </div>
   ),
 }));
@@ -69,6 +69,10 @@ describe('HamburgerMenu', () => {
 
     // Default mock for finding focusable elements
     mockFindFocusableElements.mockReturnValue([]);
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   describe('TV Mode Detection', () => {
@@ -525,12 +529,12 @@ describe('HamburgerMenu', () => {
       );
 
       // Check that all mock buttons are rendered
-      expect(screen.getByTestId('iss-button-1')).toBeDefined();
-      expect(screen.getByTestId('iss-button-2')).toBeDefined();
-      expect(screen.getByTestId('perf-button-1')).toBeDefined();
-      expect(screen.getByTestId('perf-button-2')).toBeDefined();
-      expect(screen.getByTestId('display-button-1')).toBeDefined();
-      expect(screen.getByTestId('display-button-2')).toBeDefined();
+      expect(screen.getByTestId('iss-follow-button')).toBeDefined();
+      expect(screen.getByTestId('iss-manual-button')).toBeDefined();
+      expect(screen.getByTestId('perf-high-button')).toBeDefined();
+      expect(screen.getByTestId('perf-low-button')).toBeDefined();
+      expect(screen.getByTestId('display-show-button')).toBeDefined();
+      expect(screen.getByTestId('display-hide-button')).toBeDefined();
     });
 
     it('should have proper focus styling applied via CSS', () => {
@@ -540,7 +544,7 @@ describe('HamburgerMenu', () => {
         </TestWrapper>
       );
 
-      const button = screen.getByTestId('iss-button-1');
+      const button = screen.getByTestId('iss-follow-button');
       
       // Focus the button to test focus styles
       button.focus();
