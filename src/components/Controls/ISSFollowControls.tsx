@@ -1,6 +1,6 @@
-import React from "react";
 import { useISS } from "../../state/ISSContext";
 import { useDevice } from "../../state/DeviceContext";
+import { ToggleButton } from "../UI/ToggleButton";
 import styles from "./ISSFollowControls.module.css";
 
 interface ISSFollowControlsProps {
@@ -39,51 +39,32 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
       </div>
 
       <div className={styles.buttonContainer}>
-        <button
+        <ToggleButton
+          isActive={state.followISS}
           onClick={handleToggleFollow}
-          className={`${styles.button} ${
-            state.followISS ? styles.buttonActive : ""
-          } ${isTVProfile ? 'tv-button tv-focus-indicator' : ''}`}
-        >
-          <span className={styles.buttonLabel}>
-            {state.followISS ? "Following ISS" : "Follow ISS"}
-          </span>
-          {state.followISS && (
-            <span className={styles.buttonIndicator}>✓</span>
-          )}
-        </button>
+          activeText="Following ISS"
+          inactiveText="Follow ISS"
+          ariaLabel={`${state.followISS ? 'Stop following' : 'Start following'} the ISS`}
+          isTVMode={isTVProfile}
+        />
 
-        <button
+        <ToggleButton
+          isActive={state.earthRotateMode}
           onClick={handleToggleEarthRotate}
-          className={`${styles.button} ${
-            state.earthRotateMode
-              ? styles.buttonActiveEarthRotate
-              : ""
-          } ${isTVProfile ? 'tv-button tv-focus-indicator' : ''}`}
-        >
-          <span className={styles.buttonLabel}>
-            {state.earthRotateMode ? "Earth Rotating" : "Earth Rotate"}
-          </span>
-          {state.earthRotateMode && (
-            <span className={styles.buttonIndicator}>✓</span>
-          )}
-        </button>
+          activeText="Earth Rotating"
+          inactiveText="Earth Rotate"
+          ariaLabel={`${state.earthRotateMode ? 'Stop' : 'Start'} Earth rotation mode`}
+          isTVMode={isTVProfile}
+        />
 
-        <button
+        <ToggleButton
+          isActive={!state.followISS && !state.earthRotateMode}
           onClick={handleSetManualMode}
-          className={`${styles.button} ${
-            !state.followISS && !state.earthRotateMode
-              ? styles.buttonActiveManual
-              : ""
-          } ${isTVProfile ? 'tv-button tv-focus-indicator' : ''}`}
-        >
-          <span className={styles.buttonLabel}>
-            Manual
-          </span>
-          {!state.followISS && !state.earthRotateMode && (
-            <span className={styles.buttonIndicator}>✓</span>
-          )}
-        </button>
+          activeText="Manual"
+          inactiveText="Manual"
+          ariaLabel={`${!state.followISS && !state.earthRotateMode ? 'Exit' : 'Enter'} manual camera mode`}
+          isTVMode={isTVProfile}
+        />
       </div>
     </div>
   );

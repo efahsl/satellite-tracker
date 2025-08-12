@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   usePerformance,
   PerformanceTier,
 } from "../../state/PerformanceContext";
 import { useDevice } from "../../state/DeviceContext";
+import { ToggleButton } from "../UI/ToggleButton";
 import styles from "./PerformanceControls.module.css";
 
 interface PerformanceControlsProps {
@@ -76,21 +77,14 @@ export function PerformanceControls({
 
       <div className={styles.buttons}>
         {(["high", "medium", "low"] as PerformanceTier[]).map((tierOption) => (
-          <button
+          <ToggleButton
             key={tierOption}
-            className={`${styles.button} ${
-              tier === tierOption ? styles.buttonActive : ""
-            }`}
+            isActive={tier === tierOption}
             onClick={() => handleTierChange(tierOption)}
-            title={getTierDescription(tierOption)}
-          >
-            <span className={styles.buttonLabel}>
-              {getTierLabel(tierOption)}
-            </span>
-            {tier === tierOption && (
-              <span className={styles.buttonIndicator}>✓</span>
-            )}
-          </button>
+            activeText={getTierLabel(tierOption)}
+            inactiveText={getTierLabel(tierOption)}
+            ariaLabel={`Set performance tier to ${getTierLabel(tierOption)}: ${getTierDescription(tierOption)}`}
+          />
         ))}
       </div>
       {/* Details Toggle - Hidden in TV mode */}
