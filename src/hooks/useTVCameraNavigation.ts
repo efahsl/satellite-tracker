@@ -53,7 +53,6 @@ export const useTVCameraNavigation = (options: UseTVCameraNavigationOptions = {}
 
   // Local state
   const [activeDirections, setActiveDirections] = useState<Set<DirectionalInput>>(new Set());
-  const [keyHoldTimers, setKeyHoldTimers] = useState<Map<string, NodeJS.Timeout>>(new Map());
   const [keyAcceleration, setKeyAcceleration] = useState<Map<string, number>>(new Map());
   
   // Refs for managing state across event handlers
