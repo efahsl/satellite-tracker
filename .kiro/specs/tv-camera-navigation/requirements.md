@@ -66,4 +66,4 @@ This feature adds directional camera navigation controls and zoom functionality 
 2. WHEN the user switches to manual camera mode THEN the directional navigation controls SHALL become active and responsive
 3. WHEN the user is in manual camera mode AND uses directional navigation THEN the camera SHALL respond to the directional inputs
 4. WHEN the user is in manual camera mode AND uses zoom controls THEN the camera SHALL zoom in and out as expected
-5. WHEN the user switches from manual mode back to ISS follow mode THEN the directional controls SHALL be disabled or hidden again
+5. WHEN the user switches from manual mode back to ISS follow mode THEN the directional controls SHALL be disabled ing the mode setting
