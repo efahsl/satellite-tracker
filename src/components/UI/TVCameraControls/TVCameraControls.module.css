@@ -1,0 +1,110 @@
+/* TV Camera Controls Container */
+.container {
+  position: fixed;
+  left: var(--tv-camera-controls-left-offset, 80px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: var(--tv-camera-controls-z-index, 1000);
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tv-camera-controls-gap, 24px);
+  
+  /* Ensure controls are within TV safe zone */
+  margin-left: var(--tv-safe-zone-left, 0);
+  
+  /* Animation for show/hide */
+  opacity: 1;
+  transition: opacity var(--tv-camera-animation-duration, 200ms) ease-out,
+              transform var(--tv-camera-animation-duration, 200ms) ease-out;
+}
+
+.container[data-visible="false"] {
+  opacity: 0;
+  transform: translateY(-50%) translateX(-20px);
+  pointer-events: none;
+}
+
+/* Directional arrows container */
+.arrowsContainer {
+  display: grid;
+  grid-template-areas: 
+    ". up ."
+    "left . right"
+    ". down .";
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: var(--tv-camera-arrow-spacing, 20px);
+  
+  width: var(--tv-camera-container-width, 140px);
+  height: var(--tv-camera-container-height, 140px);
+  
+  align-items: center;
+  justify-items: center;
+}
+
+/* Individual arrow positioning */
+.arrowUp {
+  grid-area: up;
+}
+
+.arrowDown {
+  grid-area: down;
+}
+
+.arrowLeft {
+  grid-area: left;
+}
+
+.arrowRight {
+  grid-area: right;
+}
+
+/* Horizontal arrows container for better alignment */
+.horizontalArrows {
+  grid-area: left / left / right / right;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Responsive adjustments for different TV sizes */
+@media (max-width: 1280px) {
+  .container {
+    left: var(--tv-camera-controls-left-offset-small, 60px);
+  }
+  
+  .arrowsContainer {
+    width: var(--tv-camera-container-width-small, 120px);
+    height: var(--tv-camera-container-height-small, 120px);
+    gap: var(--tv-camera-arrow-spacing-small, 16px);
+  }
+}
+
+@media (max-width: 960px) {
+  .container {
+    left: var(--tv-camera-controls-left-offset-mobile, 40px);
+  }
+  
+  .arrowsContainer {
+    width: var(--tv-camera-container-width-mobile, 100px);
+    height: var(--tv-camera-container-height-mobile, 100px);
+    gap: var(--tv-camera-arrow-spacing-mobile, 12px);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .container {
+    filter: contrast(1.2);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .container {
+    transition: opacity 0.1s ease-out;
+  }
+}
