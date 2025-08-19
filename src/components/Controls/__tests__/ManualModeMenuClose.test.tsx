@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { vi, afterEach } from 'vitest';
 import { ISSFollowControls } from '../ISSFollowControls';
 import { ISSProvider } from '../../../state/ISSContext';
 import { UIProvider, useUI } from '../../../state/UIContext';
@@ -59,6 +59,11 @@ describe('Manual Mode Menu Close - TV Mode', () => {
     window.dispatchEvent(new Event('resize'));
   });
 
+  afterEach(() => {
+    // Clean up DOM after each test
+    cleanup();
+  });
+
   it('should close hamburger menu when manual mode is activated in TV mode (1920px width)', async () => {
     render(
       <TestWrapper>
@@ -104,19 +109,19 @@ describe('Manual Mode Menu Close - TV Mode', () => {
 
     // Wait for initial state to settle
     await waitFor(() => {
-      expect(screen.getByTestId('menu-visible')).toBeInTheDocument();
+      expect(screen.getAllByTestId('menu-visible')[0]).toBeInTheDocument();
     });
 
     // Get initial menu state
-    const initialMenuState = screen.getByTestId('menu-visible').textContent;
+    const initialMenuState = screen.getAllByTestId('menu-visible')[0].textContent;
 
     // Find and click the manual mode button
-    const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+    const manualButton = screen.getByRole('button', { name: /enter manual camera mode/i });
     fireEvent.click(manualButton);
 
     // Wait a bit and verify menu state hasn't changed
     await new Promise(resolve => setTimeout(resolve, 100));
-    expect(screen.getByTestId('menu-visible')).toHaveTextContent(initialMenuState || 'false');
+    expect(screen.getAllByTestId('menu-visible')[0]).toHaveTextContent(initialMenuState || 'false');
 
     // Verify manual mode is still active
     expect(manualButton).toHaveAttribute('aria-pressed', 'true');
@@ -138,7 +143,7 @@ describe('Manual Mode Menu Close - TV Mode', () => {
     );
 
     // In TV mode, the component should have tv-typography class
-    const container = screen.getByRole('button', { name: /manual camera mode/i }).closest('[class*="issFollowControls"]');
+    const container = screen.getByRole('button', { name: /enter manual camera mode/i }).closest('[class*="issFollowControls"]');
     expect(container).toHaveClass('tv-typography');
   });
 });

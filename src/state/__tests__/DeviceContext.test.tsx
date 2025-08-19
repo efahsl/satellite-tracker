@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, act, cleanup } from '@testing-library/react';
+import { render, screen, act, cleanup, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { DeviceProvider, useDevice, DeviceType } from '../DeviceContext';
 
@@ -237,7 +237,7 @@ describe('DeviceContext', () => {
   });
 
   describe('State Persistence and Updates', () => {
-    it('should update TV profile state when screen width changes to 1920px', () => {
+    it('should update TV profile state when screen width changes to 1920px', async () => {
       // Start with desktop resolution
       mockWindowDimensions(1024, 768);
       
@@ -256,13 +256,13 @@ describe('DeviceContext', () => {
       });
 
       // Wait for state update
-      setTimeout(() => {
+      await waitFor(() => {
         expect(screen.getByTestId('is-tv-profile')).toHaveTextContent('true');
         expect(screen.getByTestId('screen-width')).toHaveTextContent('1920');
-      }, 200); // Account for debounce delay
+      }, { timeout: 500 });
     });
 
-    it('should update TV profile state when screen width changes from 1920px', () => {
+    it('should update TV profile state when screen width changes from 1920px', async () => {
       // Start with TV profile resolution
       mockWindowDimensions(1920, 1080);
       
@@ -281,10 +281,10 @@ describe('DeviceContext', () => {
       });
 
       // Wait for state update
-      setTimeout(() => {
+      await waitFor(() => {
         expect(screen.getByTestId('is-tv-profile')).toHaveTextContent('false');
         expect(screen.getByTestId('screen-width')).toHaveTextContent('1024');
-      }, 200); // Account for debounce delay
+      }, { timeout: 500 });
     });
 
     it('should persist TV profile state during session', () => {

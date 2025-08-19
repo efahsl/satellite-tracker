@@ -8,7 +8,7 @@
   - Write unit tests for new state management functionality
   - _Requirements: 1.1, 1.4, 3.1, 3.3_
 
-- [ ] 2. Create TV camera configuration constants
+- [x] 2. Create TV camera configuration constants
 
   - Define TV_CAMERA_CONFIG object with rotation speeds, zoom settings, and visual feedback parameters
   - Add directional input constants and camera rotation limits

@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { vi, afterEach } from 'vitest';
 import { ISSFollowControls } from '../ISSFollowControls';
 import { ISSProvider } from '../../../state/ISSContext';
 import { UIProvider } from '../../../state/UIContext';
@@ -40,6 +40,11 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
   beforeEach(() => {
     // Reset all mocks before each test
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Clean up DOM after each test
+    cleanup();
   });
 
   describe('Manual Mode Button Integration', () => {
@@ -273,7 +278,7 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
         </TestWrapper>
       );
 
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      const manualButton = screen.getByRole('button', { name: /enter manual camera mode/i });
 
       // Should be focusable
       manualButton.focus();
@@ -315,7 +320,7 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
         </TestWrapper>
       );
 
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      const manualButton = screen.getByRole('button', { name: /enter manual camera mode/i });
 
       // Multiple rapid clicks should not cause errors
       fireEvent.click(manualButton);
