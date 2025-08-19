@@ -3,51 +3,46 @@ import { TVCameraControls } from './TVCameraControls';
 import { useDevice } from '../../../state/DeviceContext';
 import { useUI } from '../../../state/UIContext';
 import { useISS } from '../../../state/ISSContext';
+import { useTVCameraNavigation } from '../../../hooks/useTVCameraNavigation';
 import { DIRECTIONAL_INPUTS, ZOOM_MODES, type DirectionalInput } from '../../../utils/tvCameraConfig';
 
 export interface TVCameraControlsContainerProps {
-  activeDirections?: Set<DirectionalInput>;
-  onDirectionalInput?: (direction: DirectionalInput) => void;
+  // Optional external callbacks for camera control integration
+  onDirectionalInput?: (direction: DirectionalInput, isActive: boolean) => void;
   onZoomStart?: () => void;
   onZoomEnd?: () => void;
+  onZoomModeChange?: (mode: 'in' | 'out') => void;
 }
 
 /**
- * Container component that manages TV camera controls visibility based on:
- * 1. Device profile (must be TV profile - exactly 1920px width)
- * 2. Hamburger menu state (controls hidden when menu is visible)
- * 3. Manual mode requirement (controls only shown in manual camera mode)
+ * Container component that manages TV camera controls visibility and input handling.
+ * 
+ * Features:
+ * - Automatic visibility management based on device profile, menu state, and camera mode
+ * - Integrated keyboard input handling for directional navigation and zoom
+ * - Forwards external callbacks for camera control integration
+ * - Manages UI state synchronization
  */
 export const TVCameraControlsContainer: React.FC<TVCameraControlsContainerProps> = ({
-  activeDirections = new Set(),
   onDirectionalInput,
   onZoomStart,
-  onZoomEnd
+  onZoomEnd,
+  onZoomModeChange
 }) => {
   const { isTVProfile } = useDevice();
   const { state: uiState, setTVCameraControlsVisible } = useUI();
   const { state: issState } = useISS();
 
-  // Determine if controls should be visible based on all conditions
-  const shouldShowControls = useMemo(() => {
-    // Must be TV profile (exactly 1920px width)
-    if (!isTVProfile) {
-      return false;
-    }
+  // Use the TV camera navigation hook for input handling
+  const { state: navigationState, callbacks } = useTVCameraNavigation({
+    onDirectionalInput,
+    onZoomStart,
+    onZoomEnd,
+    onZoomModeChange
+  });
 
-    // Must not have hamburger menu visible (back button hides controls)
-    if (uiState.hamburgerMenuVisible) {
-      return false;
-    }
-
-    // Must be in manual mode (not following ISS or rotating Earth)
-    const isManualMode = !issState.followISS && !issState.earthRotateMode;
-    if (!isManualMode) {
-      return false;
-    }
-
-    return true;
-  }, [isTVProfile, uiState.hamburgerMenuVisible, issState.followISS, issState.earthRotateMode]);
+  // The navigation hook already handles the visibility logic, so we use its state
+  const shouldShowControls = navigationState.isEnabled;
 
   // Update UI context when visibility changes
   useEffect(() => {
@@ -62,7 +57,8 @@ export const TVCameraControlsContainer: React.FC<TVCameraControlsContainerProps>
       followISS: issState.followISS,
       earthRotateMode: issState.earthRotateMode,
       shouldShowControls,
-      finalVisible: uiState.tvCameraControlsVisible
+      finalVisible: uiState.tvCameraControlsVisible,
+      navigationEnabled: navigationState.isEnabled
     });
   }, [
     isTVProfile,
@@ -70,7 +66,8 @@ export const TVCameraControlsContainer: React.FC<TVCameraControlsContainerProps>
     uiState.tvCameraControlsVisible,
     issState.followISS,
     issState.earthRotateMode,
-    shouldShowControls
+    shouldShowControls,
+    navigationState.isEnabled
   ]);
 
   // Don't render anything if not in TV profile
@@ -81,12 +78,12 @@ export const TVCameraControlsContainer: React.FC<TVCameraControlsContainerProps>
   return (
     <TVCameraControls
       visible={uiState.tvCameraControlsVisible}
-      zoomMode={uiState.zoomMode}
-      isZooming={uiState.isZooming}
-      activeDirections={activeDirections}
-      onDirectionalInput={onDirectionalInput}
-      onZoomStart={onZoomStart}
-      onZoomEnd={onZoomEnd}
+      zoomMode={navigationState.zoomMode}
+      isZooming={navigationState.isZooming}
+      activeDirections={navigationState.activeDirections}
+      onDirectionalInput={callbacks.onDirectionalInput}
+      onZoomStart={callbacks.onZoomStart}
+      onZoomEnd={callbacks.onZoomEnd}
     />
   );
 };
