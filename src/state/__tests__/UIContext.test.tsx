@@ -17,6 +17,9 @@ describe('UIContext', () => {
       expect(result.current.state.infoPanelVisible).toBe(true);
       expect(result.current.state.hamburgerMenuVisible).toBe(true);
       expect(result.current.state.hamburgerMenuFocusIndex).toBe(0);
+      expect(result.current.state.tvCameraControlsVisible).toBe(false);
+      expect(result.current.state.zoomMode).toBe('in');
+      expect(result.current.state.isZooming).toBe(false);
     });
   });
 
@@ -297,6 +300,328 @@ describe('UIContext', () => {
 
       expect(result.current.state.hamburgerMenuVisible).toBe(false);
       expect(result.current.state.hamburgerMenuFocusIndex).toBe(0);
+    });
+  });
+
+  describe('TV Camera Controls Visibility', () => {
+    it('should set TV camera controls visibility to true', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.setTVCameraControlsVisible(true);
+      });
+
+      expect(result.current.state.tvCameraControlsVisible).toBe(true);
+    });
+
+    it('should set TV camera controls visibility to false', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.setTVCameraControlsVisible(false);
+      });
+
+      expect(result.current.state.tvCameraControlsVisible).toBe(false);
+    });
+
+    it('should toggle TV camera controls visibility correctly', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      // Start with false (default)
+      expect(result.current.state.tvCameraControlsVisible).toBe(false);
+
+      act(() => {
+        result.current.setTVCameraControlsVisible(true);
+      });
+
+      expect(result.current.state.tvCameraControlsVisible).toBe(true);
+
+      act(() => {
+        result.current.setTVCameraControlsVisible(false);
+      });
+
+      expect(result.current.state.tvCameraControlsVisible).toBe(false);
+    });
+
+    it('should support direct dispatch for SET_TV_CAMERA_CONTROLS_VISIBLE', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.dispatch({ type: 'SET_TV_CAMERA_CONTROLS_VISIBLE', payload: true });
+      });
+
+      expect(result.current.state.tvCameraControlsVisible).toBe(true);
+
+      act(() => {
+        result.current.dispatch({ type: 'SET_TV_CAMERA_CONTROLS_VISIBLE', payload: false });
+      });
+
+      expect(result.current.state.tvCameraControlsVisible).toBe(false);
+    });
+  });
+
+  describe('Zoom Mode Management', () => {
+    it('should set zoom mode to "in"', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.setZoomMode('in');
+      });
+
+      expect(result.current.state.zoomMode).toBe('in');
+    });
+
+    it('should set zoom mode to "out"', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.setZoomMode('out');
+      });
+
+      expect(result.current.state.zoomMode).toBe('out');
+    });
+
+    it('should toggle between zoom modes correctly', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      // Start with 'in' (default)
+      expect(result.current.state.zoomMode).toBe('in');
+
+      act(() => {
+        result.current.setZoomMode('out');
+      });
+
+      expect(result.current.state.zoomMode).toBe('out');
+
+      act(() => {
+        result.current.setZoomMode('in');
+      });
+
+      expect(result.current.state.zoomMode).toBe('in');
+    });
+
+    it('should support direct dispatch for SET_ZOOM_MODE', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.dispatch({ type: 'SET_ZOOM_MODE', payload: 'out' });
+      });
+
+      expect(result.current.state.zoomMode).toBe('out');
+
+      act(() => {
+        result.current.dispatch({ type: 'SET_ZOOM_MODE', payload: 'in' });
+      });
+
+      expect(result.current.state.zoomMode).toBe('in');
+    });
+  });
+
+  describe('Zooming State Management', () => {
+    it('should set zooming state to true', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.setZooming(true);
+      });
+
+      expect(result.current.state.isZooming).toBe(true);
+    });
+
+    it('should set zooming state to false', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.setZooming(false);
+      });
+
+      expect(result.current.state.isZooming).toBe(false);
+    });
+
+    it('should toggle zooming state correctly', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      // Start with false (default)
+      expect(result.current.state.isZooming).toBe(false);
+
+      act(() => {
+        result.current.setZooming(true);
+      });
+
+      expect(result.current.state.isZooming).toBe(true);
+
+      act(() => {
+        result.current.setZooming(false);
+      });
+
+      expect(result.current.state.isZooming).toBe(false);
+    });
+
+    it('should support direct dispatch for SET_ZOOMING', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.dispatch({ type: 'SET_ZOOMING', payload: true });
+      });
+
+      expect(result.current.state.isZooming).toBe(true);
+
+      act(() => {
+        result.current.dispatch({ type: 'SET_ZOOMING', payload: false });
+      });
+
+      expect(result.current.state.isZooming).toBe(false);
+    });
+  });
+
+  describe('TV Camera Controls State Persistence', () => {
+    it('should maintain TV camera controls state across multiple operations', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      // Perform multiple TV camera controls state changes
+      act(() => {
+        result.current.setTVCameraControlsVisible(true);
+        result.current.setZoomMode('out');
+        result.current.setZooming(true);
+      });
+
+      expect(result.current.state.tvCameraControlsVisible).toBe(true);
+      expect(result.current.state.zoomMode).toBe('out');
+      expect(result.current.state.isZooming).toBe(true);
+
+      // Change other state, TV camera controls state should persist
+      act(() => {
+        result.current.setHamburgerMenuVisible(false);
+        result.current.setFPSMonitorVisible(false);
+      });
+
+      expect(result.current.state.tvCameraControlsVisible).toBe(true);
+      expect(result.current.state.zoomMode).toBe('out');
+      expect(result.current.state.isZooming).toBe(true);
+      expect(result.current.state.hamburgerMenuVisible).toBe(false);
+      expect(result.current.state.fpsMonitorVisible).toBe(false);
+    });
+
+    it('should not affect existing state when TV camera controls state changes', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      // Set initial existing state
+      act(() => {
+        result.current.setHamburgerMenuVisible(false);
+        result.current.setHamburgerMenuFocus(3);
+        result.current.setFPSMonitorVisible(false);
+        result.current.setInfoPanelVisible(false);
+      });
+
+      // Change TV camera controls state
+      act(() => {
+        result.current.setTVCameraControlsVisible(true);
+        result.current.setZoomMode('out');
+        result.current.setZooming(true);
+      });
+
+      // Existing state should remain unchanged
+      expect(result.current.state.hamburgerMenuVisible).toBe(false);
+      expect(result.current.state.hamburgerMenuFocusIndex).toBe(3);
+      expect(result.current.state.fpsMonitorVisible).toBe(false);
+      expect(result.current.state.infoPanelVisible).toBe(false);
+
+      // TV camera controls state should be updated
+      expect(result.current.state.tvCameraControlsVisible).toBe(true);
+      expect(result.current.state.zoomMode).toBe('out');
+      expect(result.current.state.isZooming).toBe(true);
+    });
+  });
+
+  describe('TV Camera Controls Action Creators Memoization', () => {
+    it('should maintain stable references for TV camera controls action creators', () => {
+      const { result, rerender } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      const initialSetTVCameraControlsVisible = result.current.setTVCameraControlsVisible;
+      const initialSetZoomMode = result.current.setZoomMode;
+      const initialSetZooming = result.current.setZooming;
+
+      // Trigger a state change
+      act(() => {
+        result.current.setTVCameraControlsVisible(true);
+      });
+
+      // Rerender and check if references are stable
+      rerender();
+
+      expect(result.current.setTVCameraControlsVisible).toBe(initialSetTVCameraControlsVisible);
+      expect(result.current.setZoomMode).toBe(initialSetZoomMode);
+      expect(result.current.setZooming).toBe(initialSetZooming);
+    });
+  });
+
+  describe('TV Camera Controls Complex State Scenarios', () => {
+    it('should handle rapid state changes correctly', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      // Rapid state changes
+      act(() => {
+        result.current.setTVCameraControlsVisible(true);
+        result.current.setZoomMode('out');
+        result.current.setZooming(true);
+        result.current.setZoomMode('in');
+        result.current.setZooming(false);
+        result.current.setTVCameraControlsVisible(false);
+      });
+
+      expect(result.current.state.tvCameraControlsVisible).toBe(false);
+      expect(result.current.state.zoomMode).toBe('in');
+      expect(result.current.state.isZooming).toBe(false);
+    });
+
+    it('should handle zoom mode changes during zooming', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      // Start zooming in 'in' mode
+      act(() => {
+        result.current.setZoomMode('in');
+        result.current.setZooming(true);
+      });
+
+      expect(result.current.state.zoomMode).toBe('in');
+      expect(result.current.state.isZooming).toBe(true);
+
+      // Change zoom mode while zooming
+      act(() => {
+        result.current.setZoomMode('out');
+      });
+
+      expect(result.current.state.zoomMode).toBe('out');
+      expect(result.current.state.isZooming).toBe(true);
+
+      // Stop zooming
+      act(() => {
+        result.current.setZooming(false);
+      });
+
+      expect(result.current.state.zoomMode).toBe('out');
+      expect(result.current.state.isZooming).toBe(false);
+    });
+
+    it('should handle controls visibility changes during zooming', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      // Start with controls visible and zooming
+      act(() => {
+        result.current.setTVCameraControlsVisible(true);
+        result.current.setZooming(true);
+      });
+
+      expect(result.current.state.tvCameraControlsVisible).toBe(true);
+      expect(result.current.state.isZooming).toBe(true);
+
+      // Hide controls while zooming
+      act(() => {
+        result.current.setTVCameraControlsVisible(false);
+      });
+
+      expect(result.current.state.tvCameraControlsVisible).toBe(false);
+      expect(result.current.state.isZooming).toBe(true);
     });
   });
 });
