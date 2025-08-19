@@ -20,7 +20,7 @@ This feature adds directional camera navigation controls and zoom functionality 
 
 ### Requirement 2
 
-**User Story:** As a TV user, I want to rotate the camera view to the north when I press the up arrow, so that I can navigate to different regions of the Earth.
+**User Story:** As a TV user, I want to rotate the camera view when I press the different d-pad arrows, so that I can navigate to different regions of the Earth.
 
 #### Acceptance Criteria
 
@@ -33,7 +33,7 @@ This feature adds directional camera navigation controls and zoom functionality 
 
 ### Requirement 3
 
-**User Story:** As a TV user, I want to zoom into the Earth view by holding the SELECT button, so that I can get a closer look at specific regions.
+**User Story:** As a TV user, I want change the zoom of the Earth view by holding the SELECT button, so that I can get a closer look at specific regions.
 
 #### Acceptance Criteria
 
@@ -58,12 +58,12 @@ This feature adds directional camera navigation controls and zoom functionality 
 
 ### Requirement 5
 
-**User Story:** As a TV user, I want the camera navigation to work independently of the ISS tracking mode, so that I can explore the Earth regardless of whether I'm following the ISS or in manual mode.
+**User Story:** As a TV user, I want the camera navigation controls to only work when I'm in manual camera mode, so that they don't interfere with ISS tracking when I want to follow the ISS.
 
 #### Acceptance Criteria
 
-1. WHEN the user is in ISS follow mode AND uses directional navigation THEN the camera SHALL move independently of ISS tracking
-2. WHEN the user switches back to ISS follow mode THEN the camera SHALL resume following the ISS position
+1. WHEN the user is in ISS follow mode THEN the directional navigation controls SHALL be disabled or hidden
+2. WHEN the user switches to manual camera mode THEN the directional navigation controls SHALL become active and responsive
 3. WHEN the user is in manual camera mode AND uses directional navigation THEN the camera SHALL respond to the directional inputs
-4. WHEN using zoom controls THEN the zoom level SHALL be maintained when switching between ISS follow and manual modes
-5. WHEN directional navigation is used THEN it SHALL temporarily override ISS follow mode without permanently changing the mode setting
+4. WHEN the user is in manual camera mode AND uses zoom controls THEN the camera SHALL zoom in and out as expected
+5. WHEN the user switches from manual mode back to ISS follow mode THEN the directional controls SHALL be disabled or hidden again
