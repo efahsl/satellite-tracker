@@ -40,7 +40,7 @@
   - Implement input debouncing and acceleration for smooth camera movement
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.2, 3.4_
 
-- [ ] 6. Implement directional camera rotation logic
+- [x] 6. Implement directional camera rotation logic
 
   - Extend Controls component to accept directional rotation inputs
   - Add camera rotation functions for north, south, east, west directions

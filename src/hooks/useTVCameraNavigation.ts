@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDevice } from '../state/DeviceContext';
 import { useUI } from '../state/UIContext';
 import { useISS } from '../state/ISSContext';
+import { useCameraControls } from '../state/CameraControlsContext';
 import { 
   TV_CAMERA_KEYS, 
   TV_CAMERA_DIRECTIONS, 
@@ -76,6 +77,7 @@ export const useTVCameraNavigation = ({
   const { isTVProfile } = useDevice();
   const { state: uiState, setZoomMode, setZooming } = useUI();
   const { state: issState } = useISS();
+  const { getControlsRef } = useCameraControls();
 
   // Local state
   const [directionalInput, setDirectionalInput] = useState<DirectionalInputState>({
@@ -166,7 +168,7 @@ export const useTVCameraNavigation = ({
         hasActiveInput = true;
         const accelerationData = inputAcceleration.current.get(direction);
         
-        if (accelerationData && onCameraRotation) {
+        if (accelerationData) {
           let speed = accelerationData.currentSpeed;
           
           // Apply acceleration if enough time has passed
@@ -183,8 +185,16 @@ export const useTVCameraNavigation = ({
             accelerationData.currentSpeed = speed;
           }
 
-          // Call camera rotation callback
-          onCameraRotation(direction as 'up' | 'down' | 'left' | 'right', speed);
+          // Use controls ref to rotate camera directly
+          const controlsRef = getControlsRef();
+          if (controlsRef?.handleDirectionalRotation) {
+            controlsRef.handleDirectionalRotation(direction, speed);
+          }
+
+          // Call camera rotation callback if provided
+          if (onCameraRotation) {
+            onCameraRotation(direction as 'up' | 'down' | 'left' | 'right', speed);
+          }
         }
       }
     });
@@ -211,6 +221,16 @@ export const useTVCameraNavigation = ({
     if (!isControlsEnabled) return;
 
     setZooming(true);
+    
+    // Determine zoom direction based on current mode
+    const zoomIn = uiState.zoomMode === TV_CAMERA_ZOOM_MODES.IN;
+    
+    // Use controls ref to handle zoom
+    const controlsRef = getControlsRef();
+    if (controlsRef?.handleZoomChange) {
+      controlsRef.handleZoomChange(zoomIn, TV_CAMERA_CONFIG.ZOOM_SPEED);
+    }
+    
     if (onZoomStart) {
       onZoomStart();
     }
@@ -220,7 +240,7 @@ export const useTVCameraNavigation = ({
       ? TV_CAMERA_ZOOM_MODES.OUT 
       : TV_CAMERA_ZOOM_MODES.IN;
     setZoomMode(newZoomMode);
-  }, [isControlsEnabled, uiState.zoomMode, setZooming, setZoomMode, onZoomStart]);
+  }, [isControlsEnabled, uiState.zoomMode, setZooming, setZoomMode, onZoomStart, getControlsRef]);
 
   const handleZoomEnd = useCallback(() => {
     if (!isControlsEnabled) return;

@@ -4,10 +4,12 @@ import FloatingInfoPanel from '../components/UI/FloatingInfoPanel/FloatingInfoPa
 import FPSMonitor from '../components/Globe/FPSMonitor';
 import { useDevice } from '../state/DeviceContext';
 import { useUI } from '../state/UIContext';
+import { useCameraControls } from '../state/CameraControlsContext';
 
 const Home: React.FC = () => {
   const { isMobile, isDesktop } = useDevice();
   const { state: uiState } = useUI();
+  const { globeRef } = useCameraControls();
 
   return (
     <div 
@@ -36,7 +38,7 @@ const Home: React.FC = () => {
           minHeight: '100vh'
         }}
       >
-        <Globe width="100%" height="100%" />
+        <Globe ref={globeRef} width="100%" height="100%" />
       </div>
       
       {/* FPS Monitor - positioned in top-right corner with responsive positioning */}

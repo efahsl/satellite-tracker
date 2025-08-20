@@ -4,6 +4,7 @@ import { useTVCameraNavigation } from '../useTVCameraNavigation';
 import { DeviceProvider } from '../../state/DeviceContext';
 import { UIProvider } from '../../state/UIContext';
 import { ISSProvider } from '../../state/ISSContext';
+import { CameraControlsProvider } from '../../state/CameraControlsContext';
 import { TV_CAMERA_KEYS } from '../../utils/tvConstants';
 
 // Test wrapper component
@@ -11,7 +12,9 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <DeviceProvider>
     <UIProvider>
       <ISSProvider>
-        {children}
+        <CameraControlsProvider>
+          {children}
+        </CameraControlsProvider>
       </ISSProvider>
     </UIProvider>
   </DeviceProvider>

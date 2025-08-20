@@ -1,4 +1,4 @@
-import React, { Suspense, memo, useState, useEffect } from 'react';
+import React, { Suspense, memo, useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Stars } from '@react-three/drei';
 import { Vector3 } from 'three';
@@ -6,9 +6,10 @@ import Earth from './Earth';
 import ISS from './ISS';
 import EnhancedISS from './ISS-Enhanced';
 import Sun from './Sun';
-import Controls from './Controls';
+import Controls, { ControlsRef } from './Controls';
 import { useISS } from '../../state/ISSContext';
 import { usePerformance } from '../../state/PerformanceContext';
+import { useDevice } from '../../state/DeviceContext';
 import { 
   EARTH_DAY_MAP, 
   EARTH_NIGHT_MAP, 
@@ -23,20 +24,34 @@ import { calculateSunPosition } from '../../utils/sunPosition';
 interface GlobeProps {
   width?: string;
   height?: string;
+  onCameraRotate?: (direction: string, delta: number) => void;
+  onZoomChange?: (zoomIn: boolean, delta: number) => void;
 }
 
-const Globe: React.FC<GlobeProps> = memo(({ 
+export interface GlobeRef {
+  getControlsRef: () => ControlsRef | null;
+}
+
+const Globe = memo(forwardRef<GlobeRef, GlobeProps>(({ 
   width = '100%', 
-  height = '100%' 
-}) => {
+  height = '100%',
+  onCameraRotate,
+  onZoomChange
+}, ref) => {
   // Add ISS context hook to access earthRotateMode state
   const { state } = useISS();
   
   // Add performance context hook to access performance tier
   const { state: performanceState } = usePerformance();
   
+  // Add device context hook to check TV profile
+  const { isTVProfile } = useDevice();
+  
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
+  
+  // Controls ref for TV camera navigation
+  const controlsRef = useRef<ControlsRef>(null);
 
   // Update sun position periodically
   useEffect(() => {
@@ -50,6 +65,11 @@ const Globe: React.FC<GlobeProps> = memo(({
 
     return () => clearInterval(interval);
   }, []);
+
+  // Expose controls ref for external access
+  useImperativeHandle(ref, () => ({
+    getControlsRef: () => controlsRef.current,
+  }), []);
 
   return (
     <div style={{ width, height, position: 'relative' }}>
@@ -107,10 +127,14 @@ const Globe: React.FC<GlobeProps> = memo(({
           
           {/* Enhanced camera controls */}
           <Controls 
+            ref={controlsRef}
             enableZoom={true} 
             enablePan={true}
             dampingFactor={0.05}
             earthRotateMode={state.earthRotateMode}
+            tvCameraNavigation={isTVProfile}
+            onCameraRotate={onCameraRotate}
+            onZoomChange={onZoomChange}
           />
           
           {/* Enhanced star field with conditional rendering based on performance tier */}
@@ -151,6 +175,8 @@ const Globe: React.FC<GlobeProps> = memo(({
       </div>
     </div>
   );
-});
+}));
+
+Globe.displayName = 'Globe';
 
 export default Globe;
