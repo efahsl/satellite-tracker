@@ -122,6 +122,105 @@ export const isTVWidth = (): boolean => {
   return typeof window !== 'undefined' && window.innerWidth === TV_DETECTION_WIDTH;
 };
 
+// TV Camera Navigation Configuration
+export const TV_CAMERA_CONFIG = {
+  // Directional rotation settings
+  ROTATION_SPEED: 0.02, // Radians per frame for smooth rotation
+  ROTATION_ACCELERATION: 1.5, // Speed multiplier when holding key
+  MAX_ROTATION_SPEED: 0.05, // Maximum rotation speed
+  ROTATION_DAMPING: 0.95, // Damping factor for smooth deceleration
+  
+  // Camera rotation limits (in radians)
+  MIN_POLAR_ANGLE: Math.PI * 0.1, // Minimum vertical angle (prevent going too far up)
+  MAX_POLAR_ANGLE: Math.PI * 0.9, // Maximum vertical angle (prevent going too far down)
+  AZIMUTH_STEP: Math.PI / 90, // Step size for horizontal rotation (2 degrees)
+  POLAR_STEP: Math.PI / 90, // Step size for vertical rotation (2 degrees)
+  
+  // Zoom settings
+  ZOOM_SPEED: 0.02, // Zoom speed per frame
+  ZOOM_ACCELERATION: 1.3, // Speed multiplier for continuous zoom
+  MIN_ZOOM_DISTANCE: 6, // Minimum camera distance (closer than default)
+  MAX_ZOOM_DISTANCE: 20, // Maximum camera distance (further than default)
+  ZOOM_STEP: 0.1, // Discrete zoom step size
+  
+  // Visual feedback parameters
+  ARROW_ACTIVE_SCALE: 1.1, // Scale factor for active arrow
+  ARROW_ACTIVE_OPACITY: 1.0, // Opacity for active arrow
+  ARROW_INACTIVE_OPACITY: 0.7, // Opacity for inactive arrow
+  ARROW_HOVER_SCALE: 1.05, // Scale factor for hover state
+  
+  // Animation durations (in milliseconds)
+  TRANSITION_DURATION: 200, // Smooth transitions between states
+  ZOOM_TEXT_FADE_DURATION: 150, // Text change animation
+  ARROW_ANIMATION_DURATION: 100, // Arrow press animation
+  CONTROLS_FADE_DURATION: 300, // Controls show/hide animation
+  
+  // Positioning and layout
+  CONTROLS_LEFT_OFFSET: 80, // Distance from left edge in pixels
+  CONTROLS_VERTICAL_CENTER: '50vh', // Vertical center position
+  ARROW_SIZE: 60, // Size of directional arrows in pixels
+  ARROW_SPACING: 20, // Space between arrows in pixels
+  CONTROLS_CONTAINER_WIDTH: 140, // Total width of controls container
+  CONTROLS_CONTAINER_HEIGHT: 140, // Total height of controls container
+  
+  // Zoom instruction text positioning
+  ZOOM_TEXT_OFFSET_TOP: 160, // Distance below arrows for zoom text
+  ZOOM_TEXT_MAX_WIDTH: 200, // Maximum width for zoom instruction text
+  
+  // Animation easing
+  EASING_CAMERA_MOVEMENT: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smooth camera movement
+  EASING_UI_FEEDBACK: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)', // UI feedback animations
+  EASING_FADE: 'cubic-bezier(0.4, 0, 0.2, 1)', // Fade animations
+  
+  // Input handling
+  INPUT_DEBOUNCE_MS: 16, // Debounce time for input events (60fps)
+  HOLD_THRESHOLD_MS: 100, // Time before considering a key "held"
+  ACCELERATION_DELAY_MS: 500, // Time before acceleration kicks in
+  
+  // Visual styling
+  ARROW_BORDER_RADIUS: 8, // Border radius for arrow buttons
+  CONTROLS_BACKGROUND_OPACITY: 0.1, // Background opacity for controls container
+  CONTROLS_BACKDROP_BLUR: 4, // Backdrop blur effect in pixels
+} as const;
+
+// Directional input constants
+export const TV_CAMERA_DIRECTIONS = {
+  UP: 'up',
+  DOWN: 'down',
+  LEFT: 'left',
+  RIGHT: 'right',
+} as const;
+
+// Zoom mode constants
+export const TV_CAMERA_ZOOM_MODES = {
+  IN: 'in',
+  OUT: 'out',
+} as const;
+
+// Keyboard key mappings for TV camera navigation
+export const TV_CAMERA_KEYS = {
+  ARROW_UP: 'ArrowUp',
+  ARROW_DOWN: 'ArrowDown',
+  ARROW_LEFT: 'ArrowLeft',
+  ARROW_RIGHT: 'ArrowRight',
+  SELECT: 'Enter', // SELECT button on TV remote
+  BACK: 'Escape', // BACK button on TV remote
+} as const;
+
+// CSS class names for TV camera controls
+export const TV_CAMERA_CSS_CLASSES = {
+  CONTROLS_CONTAINER: 'tv-camera-controls',
+  DIRECTIONAL_ARROWS: 'tv-camera-arrows',
+  ARROW_BUTTON: 'tv-camera-arrow',
+  ARROW_ACTIVE: 'tv-camera-arrow--active',
+  ARROW_UP: 'tv-camera-arrow--up',
+  ARROW_DOWN: 'tv-camera-arrow--down',
+  ARROW_LEFT: 'tv-camera-arrow--left',
+  ARROW_RIGHT: 'tv-camera-arrow--right',
+  ZOOM_INSTRUCTIONS: 'tv-camera-zoom-text',
+  ZOOM_INSTRUCTIONS_ACTIVE: 'tv-camera-zoom-text--active',
+} as const;
+
 // Combined TV configuration object (for backward compatibility)
 export const TV_CONFIG = {
   DETECTION_WIDTH: TV_DETECTION_WIDTH,
