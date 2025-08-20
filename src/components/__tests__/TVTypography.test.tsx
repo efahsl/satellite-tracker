@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import { DeviceProvider } from '../../state/DeviceContext';
 import { Button } from '../UI/Button/Button';
 import { Card } from '../UI/Card/Card';
@@ -51,8 +52,12 @@ describe('TV Typography and Safe Zone Styling', () => {
   afterEach(() => {
     // Clean up
     mockWindowDimensions(1024, 768);
+    // Trigger resize event to reset DeviceContext
+    window.dispatchEvent(new Event('resize'));
     // Clear the document body to prevent test interference
     document.body.innerHTML = '';
+    // Clear any pending timers
+    vi.clearAllTimers();
   });
 
   it('should apply TV typography classes when TV profile is active', () => {

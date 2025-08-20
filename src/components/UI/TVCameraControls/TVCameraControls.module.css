@@ -17,12 +17,39 @@
   border-radius: 12px;
   padding: var(--spacing-md);
   
-  /* Animation */
+  /* Animation - coordinated with menu transitions */
   opacity: 1;
-  transition: opacity 300ms var(--tv-easing-fade, cubic-bezier(0.4, 0, 0.2, 1));
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+  transition: 
+    opacity var(--tv-fade-duration, 200ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    transform var(--tv-slide-in-duration, 300ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    visibility var(--tv-fade-duration, 200ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1));
   
   /* Ensure visibility in TV mode */
   pointer-events: none; /* Don't interfere with camera controls */
+}
+
+/* Hidden state - coordinated with menu open state */
+.container.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-50%) translateX(-20px);
+  transition: 
+    opacity var(--tv-fade-duration, 200ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    transform var(--tv-slide-out-duration, 300ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    visibility var(--tv-fade-duration, 200ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Visible state - coordinated with menu close state */
+.container.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+  transition: 
+    opacity var(--tv-fade-duration, 200ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    transform var(--tv-slide-in-duration, 300ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    visibility var(--tv-fade-duration, 200ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 .container:not(:global(.tv-camera-controls)) {

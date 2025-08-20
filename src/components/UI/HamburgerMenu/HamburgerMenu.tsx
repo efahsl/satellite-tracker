@@ -73,17 +73,22 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
       const elements = findFocusableElements(menuContentRef.current);
       setFocusableElements(elements);
       
-      // When menu reopens, focus the first button after a short delay to allow animation
+      // When menu reopens, focus the last active button or first button as fallback
       if (elements.length > 0) {
         setTimeout(() => {
-          console.log('HamburgerMenu: Focusing first element after menu reopen');
-          elements[0].focus();
+          // Use lastActiveButtonIndex if it's valid, otherwise use first element
+          const targetIndex = (uiState.lastActiveButtonIndex >= 0 && uiState.lastActiveButtonIndex < elements.length) 
+            ? uiState.lastActiveButtonIndex 
+            : 0;
+          console.log('HamburgerMenu: Focusing element at index', targetIndex, 'after menu reopen (lastActive:', uiState.lastActiveButtonIndex, ')');
+          // Use focusElement from useTVFocusManager to ensure internal state is updated
+          focusElement(targetIndex);
         }, 100); // Small delay to ensure menu is visible
       }
     } else {
       setFocusableElements([]);
     }
-  }, [isTVProfile, isOpen]);
+  }, [isTVProfile, isOpen, uiState.lastActiveButtonIndex]);
 
   // TV focus manager for keyboard navigation
   const { currentFocusIndex, focusElement } = useTVFocusManager({

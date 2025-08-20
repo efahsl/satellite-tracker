@@ -59,6 +59,11 @@ const TVModeTest: React.FC = () => {
           <div className="space-y-2 font-mono text-sm">
             <div>Menu Visible: {uiState.hamburgerMenuVisible ? '✅ Yes' : '❌ No'}</div>
             <div>Menu Focus Index: {uiState.hamburgerMenuFocusIndex}</div>
+            <div>Last Active Button: {uiState.lastActiveButtonIndex} (0=Follow ISS, 1=Earth Rotate, 2=Manual)</div>
+            <div className="text-yellow-400">Focus State: Visual and internal focus should match</div>
+            <div>TV Camera Controls: {uiState.tvCameraControlsVisible ? '✅ Visible' : '❌ Hidden'}</div>
+            <div>Zoom Mode: {uiState.zoomMode}</div>
+            <div>Is Zooming: {uiState.isZooming ? '✅ Yes' : '❌ No'}</div>
             <div>FPS Monitor: {uiState.fpsMonitorVisible ? 'Visible' : 'Hidden'}</div>
             <div>Info Panel: {uiState.infoPanelVisible ? 'Visible' : 'Hidden'}</div>
           </div>
@@ -107,14 +112,20 @@ const TVModeTest: React.FC = () => {
       </div>
 
       <div className="mt-8 p-4 bg-yellow-900 rounded">
-        <h3 className="text-lg font-semibold mb-2">Instructions for Testing</h3>
+        <h3 className="text-lg font-semibold mb-2">Instructions for Testing Focus Management</h3>
         <ol className="list-decimal list-inside space-y-2 text-sm">
           <li>Click "Force TV Mode" to simulate a 1920px wide screen</li>
           <li>Verify that "TV Profile" shows as "✅ Active"</li>
           <li>Verify that "Menu Visible" shows as "✅ Yes"</li>
           <li>Click the "Manual" button in the ISS Follow Controls</li>
+          <li>Verify that "Last Active Button" changes to "2" (Manual button)</li>
           <li>Verify that "Menu Visible" changes to "❌ No"</li>
-          <li>Use "Show Menu" button to reopen the menu if needed</li>
+          <li>Press Esc/Back key to reopen the menu</li>
+          <li>Verify that the "Manual" button is focused (should have focus ring)</li>
+          <li><strong>Test Boundary Behavior:</strong> Press Up arrow - focus should NOT wrap to bottom</li>
+          <li><strong>Test Boundary Behavior:</strong> Navigate to first item and press Up - should stay at first</li>
+          <li><strong>Test Boundary Behavior:</strong> Navigate to last item and press Down - should stay at last</li>
+          <li>Check that TV Camera Controls coordinate properly with menu state</li>
         </ol>
       </div>
     </div>

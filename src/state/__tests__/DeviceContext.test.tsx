@@ -237,7 +237,7 @@ describe('DeviceContext', () => {
   });
 
   describe('State Persistence and Updates', () => {
-    it('should update TV profile state when screen width changes to 1920px', () => {
+    it('should update TV profile state when screen width changes to 1920px', async () => {
       // Start with desktop resolution
       mockWindowDimensions(1024, 768);
       
@@ -256,13 +256,15 @@ describe('DeviceContext', () => {
       });
 
       // Wait for state update
-      setTimeout(() => {
-        expect(screen.getByTestId('is-tv-profile')).toHaveTextContent('true');
-        expect(screen.getByTestId('screen-width')).toHaveTextContent('1920');
-      }, 200); // Account for debounce delay
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 200)); // Account for debounce delay
+      });
+      
+      expect(screen.getByTestId('is-tv-profile')).toHaveTextContent('true');
+      expect(screen.getByTestId('screen-width')).toHaveTextContent('1920');
     });
 
-    it('should update TV profile state when screen width changes from 1920px', () => {
+    it('should update TV profile state when screen width changes from 1920px', async () => {
       // Start with TV profile resolution
       mockWindowDimensions(1920, 1080);
       
@@ -281,10 +283,12 @@ describe('DeviceContext', () => {
       });
 
       // Wait for state update
-      setTimeout(() => {
-        expect(screen.getByTestId('is-tv-profile')).toHaveTextContent('false');
-        expect(screen.getByTestId('screen-width')).toHaveTextContent('1024');
-      }, 200); // Account for debounce delay
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 200)); // Account for debounce delay
+      });
+      
+      expect(screen.getByTestId('is-tv-profile')).toHaveTextContent('false');
+      expect(screen.getByTestId('screen-width')).toHaveTextContent('1024');
     });
 
     it('should persist TV profile state during session', () => {

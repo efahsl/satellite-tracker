@@ -246,8 +246,8 @@ describe('useTVFocusManager', () => {
       expect(result.current.currentFocusIndex).toBe(0);
     });
 
-    it('should handle grid wrapping at boundaries', () => {
-      // Create a 3x2 grid (6 elements) for testing wrapping
+    it('should stop at grid boundaries without wrapping', () => {
+      // Create a 3x2 grid (6 elements) for testing boundary behavior
       const gridElements = [
         createMockButton('btn1'), // 0: row 0, col 0
         createMockButton('btn2'), // 1: row 0, col 1  
@@ -266,46 +266,46 @@ describe('useTVFocusManager', () => {
         })
       );
 
-      // Test horizontal wrapping: rightmost to leftmost
+      // Test horizontal boundary: rightmost stays at rightmost
       act(() => {
         result.current.focusElement(2); // Top-right corner
       });
       act(() => {
-        result.current.focusRight(); // Should wrap to left side of same row
+        result.current.focusRight(); // Should stay at current position
       });
-      expect(result.current.currentFocusIndex).toBe(0); // Top-left corner
+      expect(result.current.currentFocusIndex).toBe(2); // Still top-right corner
 
-      // Test horizontal wrapping: leftmost to rightmost
+      // Test horizontal boundary: leftmost stays at leftmost
       act(() => {
         result.current.focusElement(3); // Bottom-left corner
       });
       act(() => {
-        result.current.focusLeft(); // Should wrap to right side of same row
+        result.current.focusLeft(); // Should stay at current position
       });
-      expect(result.current.currentFocusIndex).toBe(5); // Bottom-right corner
+      expect(result.current.currentFocusIndex).toBe(3); // Still bottom-left corner
 
-      // Test vertical wrapping: top to bottom
+      // Test vertical boundary: top stays at top
       act(() => {
         result.current.focusElement(1); // Top-middle
       });
       act(() => {
-        result.current.focusUp(); // Should wrap to bottom of same column
+        result.current.focusUp(); // Should stay at current position
       });
-      expect(result.current.currentFocusIndex).toBe(4); // Bottom-middle
+      expect(result.current.currentFocusIndex).toBe(1); // Still top-middle
 
-      // Test vertical wrapping: bottom to top
+      // Test vertical boundary: bottom stays at bottom
       act(() => {
         result.current.focusElement(5); // Bottom-right
       });
       act(() => {
-        result.current.focusDown(); // Should wrap to top of same column
+        result.current.focusDown(); // Should stay at current position
       });
-      expect(result.current.currentFocusIndex).toBe(2); // Top-right
+      expect(result.current.currentFocusIndex).toBe(5); // Still bottom-right
     });
   });
 
-  describe('Focus looping behavior', () => {
-    it('should loop to last element when going up from first element', () => {
+  describe('Focus boundary behavior', () => {
+    it('should stay at first element when going up from first element', () => {
       const { result } = renderHook(() =>
         useTVFocusManager({
           isEnabled: true,
@@ -319,11 +319,11 @@ describe('useTVFocusManager', () => {
         result.current.focusPrevious();
       });
 
-      expect(result.current.currentFocusIndex).toBe(2);
-      expect(mockElements[2].focus).toHaveBeenCalled();
+      expect(result.current.currentFocusIndex).toBe(0);
+      expect(mockElements[0].focus).toHaveBeenCalled();
     });
 
-    it('should loop to first element when going down from last element', () => {
+    it('should stay at last element when going down from last element', () => {
       const { result } = renderHook(() =>
         useTVFocusManager({
           isEnabled: true,
@@ -337,8 +337,8 @@ describe('useTVFocusManager', () => {
         result.current.focusNext();
       });
 
-      expect(result.current.currentFocusIndex).toBe(0);
-      expect(mockElements[0].focus).toHaveBeenCalled();
+      expect(result.current.currentFocusIndex).toBe(2);
+      expect(mockElements[2].focus).toHaveBeenCalled();
     });
   });
 
@@ -514,15 +514,15 @@ describe('useTVFocusManager', () => {
         result.current.focusElement(10); // Out of bounds
       });
 
-      expect(result.current.currentFocusIndex).toBe(0); // Should loop to first
-      expect(mockElements[0].focus).toHaveBeenCalled();
+      expect(result.current.currentFocusIndex).toBe(2); // Should clamp to last element
+      expect(mockElements[2].focus).toHaveBeenCalled();
 
       act(() => {
         result.current.focusElement(-5); // Negative index
       });
 
-      expect(result.current.currentFocusIndex).toBe(2); // Should loop to last
-      expect(mockElements[2].focus).toHaveBeenCalled();
+      expect(result.current.currentFocusIndex).toBe(0); // Should clamp to first element
+      expect(mockElements[0].focus).toHaveBeenCalled();
     });
   });
 

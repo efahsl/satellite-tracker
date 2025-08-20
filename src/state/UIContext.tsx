@@ -6,6 +6,7 @@ interface UIState {
   infoPanelVisible: boolean;
   hamburgerMenuVisible: boolean;
   hamburgerMenuFocusIndex: number;
+  lastActiveButtonIndex: number; // Track the last active button for focus restoration
   tvCameraControlsVisible: boolean;
   zoomMode: 'in' | 'out';
   isZooming: boolean;
@@ -18,6 +19,7 @@ type UIAction =
   | { type: 'SET_INFO_PANEL_VISIBLE'; payload: boolean }
   | { type: 'SET_HAMBURGER_MENU_VISIBLE'; payload: boolean }
   | { type: 'SET_HAMBURGER_MENU_FOCUS'; payload: number }
+  | { type: 'SET_LAST_ACTIVE_BUTTON'; payload: number }
   | { type: 'CLOSE_HAMBURGER_MENU_FOR_MANUAL' }
   | { type: 'SET_TV_CAMERA_CONTROLS_VISIBLE'; payload: boolean }
   | { type: 'SET_ZOOM_MODE'; payload: 'in' | 'out' }
@@ -32,6 +34,7 @@ interface UIContextType {
   setInfoPanelVisible: (visible: boolean) => void;
   setHamburgerMenuVisible: (visible: boolean) => void;
   setHamburgerMenuFocus: (index: number) => void;
+  setLastActiveButton: (index: number) => void;
   closeHamburgerMenuForManual: () => void;
   setTVCameraControlsVisible: (visible: boolean) => void;
   setZoomMode: (mode: 'in' | 'out') => void;
@@ -44,6 +47,7 @@ const initialState: UIState = {
   infoPanelVisible: true,
   hamburgerMenuVisible: true, // Default to visible for TV mode
   hamburgerMenuFocusIndex: 0, // Start focus on first item
+  lastActiveButtonIndex: 0, // Track last active button for focus restoration
   tvCameraControlsVisible: false, // Hidden by default, shown when conditions are met
   zoomMode: 'in', // Default to zoom in mode
   isZooming: false, // Not zooming by default
@@ -85,11 +89,17 @@ const uiReducer = (state: UIState, action: UIAction): UIState => {
         ...state,
         hamburgerMenuFocusIndex: action.payload,
       };
+    case 'SET_LAST_ACTIVE_BUTTON':
+      return {
+        ...state,
+        lastActiveButtonIndex: action.payload,
+      };
     case 'CLOSE_HAMBURGER_MENU_FOR_MANUAL':
       return {
         ...state,
         hamburgerMenuVisible: false,
-        hamburgerMenuFocusIndex: 0, // Reset focus when closing
+        hamburgerMenuFocusIndex: 0, // Reset focus when closing (for backward compatibility)
+        // lastActiveButtonIndex is preserved for focus restoration
       };
     case 'SET_TV_CAMERA_CONTROLS_VISIBLE':
       return {
@@ -140,6 +150,10 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     dispatch({ type: 'SET_HAMBURGER_MENU_FOCUS', payload: index });
   }, []);
 
+  const setLastActiveButton = useMemo(() => (index: number) => {
+    dispatch({ type: 'SET_LAST_ACTIVE_BUTTON', payload: index });
+  }, []);
+
   const closeHamburgerMenuForManual = useMemo(() => () => {
     dispatch({ type: 'CLOSE_HAMBURGER_MENU_FOR_MANUAL' });
   }, []);
@@ -166,11 +180,12 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setInfoPanelVisible,
     setHamburgerMenuVisible,
     setHamburgerMenuFocus,
+    setLastActiveButton,
     closeHamburgerMenuForManual,
     setTVCameraControlsVisible,
     setZoomMode,
     setZooming,
-  }), [state, toggleFPSMonitor, toggleInfoPanel, setFPSMonitorVisible, setInfoPanelVisible, setHamburgerMenuVisible, setHamburgerMenuFocus, closeHamburgerMenuForManual, setTVCameraControlsVisible, setZoomMode, setZooming]);
+  }), [state, toggleFPSMonitor, toggleInfoPanel, setFPSMonitorVisible, setInfoPanelVisible, setHamburgerMenuVisible, setHamburgerMenuFocus, setLastActiveButton, closeHamburgerMenuForManual, setTVCameraControlsVisible, setZoomMode, setZooming]);
 
   return (
     <UIContext.Provider value={contextValue}>

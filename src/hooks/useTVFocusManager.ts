@@ -103,11 +103,11 @@ export const useTVFocusManager = ({
   const [currentFocusIndex, setCurrentFocusIndex] = useState(initialFocusIndex);
   const keydownHandlerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
 
-  // Clamp focus index to valid range
+  // Clamp focus index to valid range (no wrapping - stop at boundaries)
   const clampFocusIndex = useCallback((index: number): number => {
     if (focusableElements.length === 0) return 0;
-    if (index < 0) return focusableElements.length - 1;
-    if (index >= focusableElements.length) return 0;
+    if (index < 0) return 0; // Stop at first element instead of wrapping to end
+    if (index >= focusableElements.length) return focusableElements.length - 1; // Stop at last element instead of wrapping to start
     return index;
   }, [focusableElements.length]);
 
@@ -122,13 +122,13 @@ export const useTVFocusManager = ({
     }
   }, [focusableElements, clampFocusIndex]);
 
-  // Focus next element (with looping)
+  // Focus next element (stops at boundaries)
   const focusNext = useCallback(() => {
     const nextIndex = currentFocusIndex + 1;
     focusElement(nextIndex);
   }, [currentFocusIndex, focusElement]);
 
-  // Focus previous element (with looping)
+  // Focus previous element (stops at boundaries)
   const focusPrevious = useCallback(() => {
     const prevIndex = currentFocusIndex - 1;
     focusElement(prevIndex);
@@ -146,11 +146,8 @@ export const useTVFocusManager = ({
     const currentCol = currentFocusIndex % columns;
     
     if (currentRow === 0) {
-      // At top row, wrap to bottom row
-      const totalRows = Math.ceil(focusableElements.length / columns);
-      const targetRow = totalRows - 1;
-      const targetIndex = Math.min(targetRow * columns + currentCol, focusableElements.length - 1);
-      focusElement(targetIndex);
+      // At top row, stay at current position (no wrapping)
+      return;
     } else {
       // Move up one row
       const targetIndex = (currentRow - 1) * columns + currentCol;
@@ -170,9 +167,8 @@ export const useTVFocusManager = ({
     const totalRows = Math.ceil(focusableElements.length / columns);
     
     if (currentRow === totalRows - 1) {
-      // At bottom row, wrap to top row
-      const targetIndex = currentCol;
-      focusElement(targetIndex);
+      // At bottom row, stay at current position (no wrapping)
+      return;
     } else {
       // Move down one row
       const targetIndex = Math.min((currentRow + 1) * columns + currentCol, focusableElements.length - 1);
@@ -191,9 +187,8 @@ export const useTVFocusManager = ({
     const currentCol = currentFocusIndex % columns;
     
     if (currentCol === 0) {
-      // At leftmost column, wrap to rightmost column of same row
-      const targetIndex = Math.min(currentRow * columns + (columns - 1), focusableElements.length - 1);
-      focusElement(targetIndex);
+      // At leftmost column, stay at current position (no wrapping)
+      return;
     } else {
       // Move left one column
       const targetIndex = currentFocusIndex - 1;
@@ -212,9 +207,8 @@ export const useTVFocusManager = ({
     const currentCol = currentFocusIndex % columns;
     
     if (currentCol === columns - 1 || currentFocusIndex === focusableElements.length - 1) {
-      // At rightmost column or last element, wrap to leftmost column of same row
-      const targetIndex = currentRow * columns;
-      focusElement(targetIndex);
+      // At rightmost column or last element, stay at current position (no wrapping)
+      return;
     } else {
       // Move right one column
       const targetIndex = currentFocusIndex + 1;

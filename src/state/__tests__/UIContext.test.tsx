@@ -17,6 +17,7 @@ describe('UIContext', () => {
       expect(result.current.state.infoPanelVisible).toBe(true);
       expect(result.current.state.hamburgerMenuVisible).toBe(true);
       expect(result.current.state.hamburgerMenuFocusIndex).toBe(0);
+      expect(result.current.state.lastActiveButtonIndex).toBe(0);
       expect(result.current.state.tvCameraControlsVisible).toBe(false);
       expect(result.current.state.zoomMode).toBe('in');
       expect(result.current.state.isZooming).toBe(false);
@@ -114,6 +115,56 @@ describe('UIContext', () => {
     });
   });
 
+  describe('Last Active Button Management', () => {
+    it('should set last active button index to specific value', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.setLastActiveButton(2);
+      });
+
+      expect(result.current.state.lastActiveButtonIndex).toBe(2);
+    });
+
+    it('should handle last active button index of 0', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      // Set to non-zero first
+      act(() => {
+        result.current.setLastActiveButton(1);
+      });
+
+      expect(result.current.state.lastActiveButtonIndex).toBe(1);
+
+      // Reset to 0
+      act(() => {
+        result.current.setLastActiveButton(0);
+      });
+
+      expect(result.current.state.lastActiveButtonIndex).toBe(0);
+    });
+
+    it('should handle negative last active button index values', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.setLastActiveButton(-1);
+      });
+
+      expect(result.current.state.lastActiveButtonIndex).toBe(-1);
+    });
+
+    it('should handle large last active button index values', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.setLastActiveButton(999);
+      });
+
+      expect(result.current.state.lastActiveButtonIndex).toBe(999);
+    });
+  });
+
   describe('Close Hamburger Menu for Manual Mode', () => {
     it('should close menu and reset focus when manual mode is activated', () => {
       const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
@@ -155,6 +206,30 @@ describe('UIContext', () => {
 
       expect(result.current.state.hamburgerMenuVisible).toBe(false);
       expect(result.current.state.hamburgerMenuFocusIndex).toBe(0);
+    });
+
+    it('should preserve lastActiveButtonIndex when closing menu for manual mode', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      // Set initial state with menu visible, focus on item 3, and last active button 2
+      act(() => {
+        result.current.setHamburgerMenuVisible(true);
+        result.current.setHamburgerMenuFocus(3);
+        result.current.setLastActiveButton(2);
+      });
+
+      expect(result.current.state.hamburgerMenuVisible).toBe(true);
+      expect(result.current.state.hamburgerMenuFocusIndex).toBe(3);
+      expect(result.current.state.lastActiveButtonIndex).toBe(2);
+
+      // Close menu for manual mode
+      act(() => {
+        result.current.closeHamburgerMenuForManual();
+      });
+
+      expect(result.current.state.hamburgerMenuVisible).toBe(false);
+      expect(result.current.state.hamburgerMenuFocusIndex).toBe(0);
+      expect(result.current.state.lastActiveButtonIndex).toBe(2); // Should be preserved
     });
   });
 
@@ -525,6 +600,16 @@ describe('UIContext', () => {
       });
 
       expect(result.current.state.isZooming).toBe(true);
+    });
+
+    it('should support direct dispatch for SET_LAST_ACTIVE_BUTTON', () => {
+      const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
+
+      act(() => {
+        result.current.dispatch({ type: 'SET_LAST_ACTIVE_BUTTON', payload: 5 });
+      });
+
+      expect(result.current.state.lastActiveButtonIndex).toBe(5);
     });
   });
 });

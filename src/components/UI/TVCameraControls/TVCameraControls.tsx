@@ -110,8 +110,7 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
   const {
     activeDirection: hookActiveDirection,
     isZooming: hookIsZooming,
-    zoomMode: hookZoomMode,
-    isControlsEnabled
+    zoomMode: hookZoomMode
   } = useTVCameraNavigation({
     isEnabled: true,
     onDirectionalInput,
@@ -133,14 +132,17 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
   const isZooming = propIsZooming !== undefined ? propIsZooming : hookIsZooming;
   const zoomMode = propZoomMode !== undefined ? propZoomMode : hookZoomMode;
 
-  if (!shouldShowControls) {
-    return null;
-  }
-
+  // Always render the component but control visibility with CSS classes for smooth animations
   const containerClasses = [
     styles.container,
-    'tv-camera-controls'
+    'tv-camera-controls',
+    shouldShowControls ? styles.visible : styles.hidden
   ].filter(Boolean).join(' ');
+
+  // Only render in TV mode to avoid unnecessary DOM elements
+  if (!isTVProfile) {
+    return null;
+  }
 
   return (
     <div className={containerClasses}>

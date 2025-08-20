@@ -11,7 +11,7 @@ interface ISSFollowControlsProps {
 export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
   const { state, dispatch } = useISS();
   const { isTVProfile } = useDevice();
-  const { closeHamburgerMenuForManual } = useUI();
+  const { closeHamburgerMenuForManual, setLastActiveButton } = useUI();
 
   const handleToggleFollow = () => {
     dispatch({ type: "TOGGLE_FOLLOW_ISS" });
@@ -25,6 +25,8 @@ export function ISSFollowControls({ className = "" }: ISSFollowControlsProps) {
     dispatch({ type: "SET_MANUAL_MODE" });
     // Close hamburger menu when manual mode is activated (TV mode only)
     if (isTVProfile) {
+      // Store that the Manual button (index 2) was the last active button
+      setLastActiveButton(2);
       closeHamburgerMenuForManual();
     }
   };

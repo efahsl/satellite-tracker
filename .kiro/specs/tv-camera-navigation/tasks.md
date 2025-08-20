@@ -58,7 +58,7 @@
   - ✅ Implement zoom acceleration for longer holds
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
 
-- [ ] 8. Integrate camera controls with existing TV interface
+- [x] 8. Integrate camera controls with existing TV interface
 
   - Connect TVCameraControls component to main layout when in TV mode
   - Ensure controls hide when hamburger menu opens (back button pressed)

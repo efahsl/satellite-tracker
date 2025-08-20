@@ -104,7 +104,7 @@ describe('HamburgerMenu TV Keyboard Navigation Integration', () => {
     });
   });
 
-  it('should loop focus when reaching boundaries in TV mode', async () => {
+  it('should stop at boundaries instead of wrapping in TV mode', async () => {
     render(
       <TestWrapper>
         <HamburgerMenu />
@@ -129,16 +129,25 @@ describe('HamburgerMenu TV Keyboard Navigation Integration', () => {
       expect(document.activeElement).toBe(buttons[0]);
     }, { timeout: 200 });
 
-    // Test looping from first to last with arrow up
+    // Test boundary behavior: pressing up at first element should stay at first
     fireEvent.keyDown(document, { key: 'ArrowUp' });
+    await waitFor(() => {
+      expect(document.activeElement).toBe(buttons[0]); // Should stay at first element
+    });
+
+    // Navigate to last element
+    for (let i = 0; i < buttons.length - 1; i++) {
+      fireEvent.keyDown(document, { key: 'ArrowDown' });
+    }
+    
     await waitFor(() => {
       expect(document.activeElement).toBe(buttons[buttons.length - 1]);
     });
 
-    // Test looping from last to first with arrow down
+    // Test boundary behavior: pressing down at last element should stay at last
     fireEvent.keyDown(document, { key: 'ArrowDown' });
     await waitFor(() => {
-      expect(document.activeElement).toBe(buttons[0]);
+      expect(document.activeElement).toBe(buttons[buttons.length - 1]); // Should stay at last element
     });
   });
 
