@@ -1,12 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet, Link } from "react-router-dom";
 import HamburgerMenu from "../components/UI/HamburgerMenu/HamburgerMenu";
 import { DeviceDebugInfo } from "../components/UI/DeviceDebugInfo";
+import TVCameraControls from "../components/UI/TVCameraControls/TVCameraControls";
 import { useDevice } from "../state/DeviceContext";
+import { useUI } from "../state/UIContext";
+import { useISS } from "../state/ISSContext";
 import { ResponsiveContainer, ResponsiveText, DeviceStyle } from "../components/UI/ResponsiveLayout";
 
 const MainLayout: React.FC = () => {
   const { isMobile, isTVProfile } = useDevice();
+  const { state: uiState, setTVCameraControlsVisible } = useUI();
+  const { state: issState } = useISS();
+
+  // Automatically manage TV camera controls visibility based on conditions
+  useEffect(() => {
+    // Manual mode is when neither followISS nor earthRotateMode is active
+    const manualMode = !issState.followISS && !issState.earthRotateMode;
+    
+    // Controls should be visible when:
+    // 1. In TV profile mode
+    // 2. Hamburger menu is not visible  
+    // 3. Camera is in manual mode
+    const shouldShowControls = isTVProfile && !uiState.hamburgerMenuVisible && manualMode;
+    
+    // Update the UI state if it doesn't match the calculated visibility
+    if (uiState.tvCameraControlsVisible !== shouldShowControls) {
+      setTVCameraControlsVisible(shouldShowControls);
+    }
+  }, [isTVProfile, uiState.hamburgerMenuVisible, issState.followISS, issState.earthRotateMode, uiState.tvCameraControlsVisible, setTVCameraControlsVisible]);
 
   return (
     <div className={`flex flex-col min-h-screen bg-space-black text-iss-white ${isTVProfile ? 'tv-typography tv-high-contrast' : ''}`}>
@@ -96,6 +118,15 @@ const MainLayout: React.FC = () => {
           </ResponsiveText>
         </ResponsiveContainer>
       </footer>
+
+      {/* TV Camera Controls - only show in TV mode */}
+      {isTVProfile && (
+        <TVCameraControls 
+          visible={uiState.tvCameraControlsVisible}
+          zoomMode={uiState.zoomMode}
+          isZooming={uiState.isZooming}
+        />
+      )}
 
       {/* Debug info - only show in development */}
       {process.env.NODE_ENV === 'development' && <DeviceDebugInfo />}

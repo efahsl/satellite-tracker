@@ -24,7 +24,7 @@
   - Create CSS module for TV camera controls styling and positioning
   - _Requirements: 1.1, 1.2, 1.3, 3.1_
 
-- [ ] 4. Add TV camera controls visibility logic
+- [x] 4. Add TV camera controls visibility logic
 
   - Integrate TVCameraControls with DeviceContext isTVProfile detection
   - Connect component visibility to UIContext hamburgerMenuVisible state
