@@ -1,13 +1,21 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import Globe from '../components/Globe/Globe';
 import FloatingInfoPanel from '../components/UI/FloatingInfoPanel/FloatingInfoPanel';
 import FPSMonitor from '../components/Globe/FPSMonitor';
+import TVDPadControls from '../components/Controls/TVDPadControls';
 import { useDevice } from '../state/DeviceContext';
 import { useUI } from '../state/UIContext';
+import type { TVCameraControlsInterface } from '../components/Globe/Controls';
 
 const Home: React.FC = () => {
-  const { isMobile, isDesktop } = useDevice();
+  const { isMobile, isDesktop, isTVProfile } = useDevice();
   const { state: uiState } = useUI();
+  const [tvCameraControls, setTVCameraControls] = useState<TVCameraControlsInterface | null>(null);
+
+  // Handle TV camera controls ready callback
+  const handleTVCameraReady = useCallback((controls: TVCameraControlsInterface) => {
+    setTVCameraControls(controls);
+  }, []);
 
   return (
     <div 
@@ -36,8 +44,23 @@ const Home: React.FC = () => {
           minHeight: '100vh'
         }}
       >
-        <Globe width="100%" height="100%" />
+        <Globe 
+          width="100%" 
+          height="100%" 
+          onTVCameraReady={handleTVCameraReady}
+        />
       </div>
+      
+      {/* TV D-Pad Controls - only visible in TV mode when menu is hidden */}
+      {isTVProfile && tvCameraControls && (
+        <TVDPadControls
+          isVisible={uiState.tvDPadControlsVisible || !uiState.hamburgerMenuVisible}
+          onDirectionPress={tvCameraControls.handleDirectionPress}
+          onZoomStart={tvCameraControls.startZoom}
+          onZoomEnd={tvCameraControls.stopZoom}
+          zoomMode={tvCameraControls.zoomMode}
+        />
+      )}
       
       {/* FPS Monitor - positioned in top-right corner with responsive positioning */}
       {uiState.fpsMonitorVisible && (

@@ -1,4 +1,4 @@
-import React, { Suspense, memo, useState, useEffect } from 'react';
+import React, { Suspense, memo, useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Stars } from '@react-three/drei';
 import { Vector3 } from 'three';
@@ -6,7 +6,7 @@ import Earth from './Earth';
 import ISS from './ISS';
 import EnhancedISS from './ISS-Enhanced';
 import Sun from './Sun';
-import Controls from './Controls';
+import Controls, { TVCameraControlsInterface } from './Controls';
 import { useISS } from '../../state/ISSContext';
 import { usePerformance } from '../../state/PerformanceContext';
 import { 
@@ -23,12 +23,18 @@ import { calculateSunPosition } from '../../utils/sunPosition';
 interface GlobeProps {
   width?: string;
   height?: string;
+  onTVCameraReady?: (controls: TVCameraControlsInterface) => void;
 }
 
-const Globe: React.FC<GlobeProps> = memo(({ 
+export interface GlobeRef {
+  // Future: Add methods to control the globe from parent components
+}
+
+const Globe = memo(forwardRef<GlobeRef, GlobeProps>(({ 
   width = '100%', 
-  height = '100%' 
-}) => {
+  height = '100%',
+  onTVCameraReady
+}, ref) => {
   // Add ISS context hook to access earthRotateMode state
   const { state } = useISS();
   
@@ -37,6 +43,9 @@ const Globe: React.FC<GlobeProps> = memo(({
   
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
+
+  // Expose methods to parent components
+  useImperativeHandle(ref, () => ({}), []);
 
   // Update sun position periodically
   useEffect(() => {
@@ -105,12 +114,13 @@ const Globe: React.FC<GlobeProps> = memo(({
             />
           )}
           
-          {/* Enhanced camera controls */}
+          {/* Enhanced camera controls with TV camera support */}
           <Controls 
             enableZoom={true} 
             enablePan={true}
             dampingFactor={0.05}
             earthRotateMode={state.earthRotateMode}
+            onTVCameraReady={onTVCameraReady}
           />
           
           {/* Enhanced star field with conditional rendering based on performance tier */}
@@ -151,6 +161,8 @@ const Globe: React.FC<GlobeProps> = memo(({
       </div>
     </div>
   );
-});
+}));
+
+Globe.displayName = 'Globe';
 
 export default Globe;

@@ -6,6 +6,7 @@ interface UIState {
   infoPanelVisible: boolean;
   hamburgerMenuVisible: boolean;
   hamburgerMenuFocusIndex: number;
+  tvDPadControlsVisible: boolean;
 }
 
 type UIAction = 
@@ -15,7 +16,9 @@ type UIAction =
   | { type: 'SET_INFO_PANEL_VISIBLE'; payload: boolean }
   | { type: 'SET_HAMBURGER_MENU_VISIBLE'; payload: boolean }
   | { type: 'SET_HAMBURGER_MENU_FOCUS'; payload: number }
-  | { type: 'CLOSE_HAMBURGER_MENU_FOR_MANUAL' };
+  | { type: 'CLOSE_HAMBURGER_MENU_FOR_MANUAL' }
+  | { type: 'SET_TV_DPAD_CONTROLS_VISIBLE'; payload: boolean }
+  | { type: 'TOGGLE_TV_DPAD_CONTROLS' };
 
 interface UIContextType {
   state: UIState;
@@ -27,6 +30,8 @@ interface UIContextType {
   setHamburgerMenuVisible: (visible: boolean) => void;
   setHamburgerMenuFocus: (index: number) => void;
   closeHamburgerMenuForManual: () => void;
+  setTVDPadControlsVisible: (visible: boolean) => void;
+  toggleTVDPadControls: () => void;
 }
 
 // Initial state
@@ -35,6 +40,7 @@ const initialState: UIState = {
   infoPanelVisible: true,
   hamburgerMenuVisible: true, // Default to visible for TV mode
   hamburgerMenuFocusIndex: 0, // Start focus on first item
+  tvDPadControlsVisible: false, // Hidden by default, shown when menu is closed in TV mode
 };
 
 // Create context
@@ -79,6 +85,16 @@ const uiReducer = (state: UIState, action: UIAction): UIState => {
         hamburgerMenuVisible: false,
         hamburgerMenuFocusIndex: 0, // Reset focus when closing
       };
+    case 'SET_TV_DPAD_CONTROLS_VISIBLE':
+      return {
+        ...state,
+        tvDPadControlsVisible: action.payload,
+      };
+    case 'TOGGLE_TV_DPAD_CONTROLS':
+      return {
+        ...state,
+        tvDPadControlsVisible: !state.tvDPadControlsVisible,
+      };
     default:
       return state;
   }
@@ -117,6 +133,14 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     dispatch({ type: 'CLOSE_HAMBURGER_MENU_FOR_MANUAL' });
   }, []);
 
+  const setTVDPadControlsVisible = useMemo(() => (visible: boolean) => {
+    dispatch({ type: 'SET_TV_DPAD_CONTROLS_VISIBLE', payload: visible });
+  }, []);
+
+  const toggleTVDPadControls = useMemo(() => () => {
+    dispatch({ type: 'TOGGLE_TV_DPAD_CONTROLS' });
+  }, []);
+
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({
     state,
@@ -128,7 +152,9 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setHamburgerMenuVisible,
     setHamburgerMenuFocus,
     closeHamburgerMenuForManual,
-  }), [state, toggleFPSMonitor, toggleInfoPanel, setFPSMonitorVisible, setInfoPanelVisible, setHamburgerMenuVisible, setHamburgerMenuFocus, closeHamburgerMenuForManual]);
+    setTVDPadControlsVisible,
+    toggleTVDPadControls,
+  }), [state, toggleFPSMonitor, toggleInfoPanel, setFPSMonitorVisible, setInfoPanelVisible, setHamburgerMenuVisible, setHamburgerMenuFocus, closeHamburgerMenuForManual, setTVDPadControlsVisible, toggleTVDPadControls]);
 
   return (
     <UIContext.Provider value={contextValue}>
