@@ -50,6 +50,7 @@
   - Integrate with existing OrbitControls for smooth camera movement
   - Implement rotation speed and acceleration based on key hold duration
   - Write tests for camera rotation calculations and smooth transitions
+  - confirm all unit tests are still passing
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
 - [ ] 7. Add zoom control functionality with dynamic text

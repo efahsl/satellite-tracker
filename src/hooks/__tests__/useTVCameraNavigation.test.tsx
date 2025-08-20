@@ -1,10 +1,17 @@
 import { renderHook, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { DIRECTIONAL_INPUTS, ZOOM_MODES, TV_REMOTE_KEYS } from '../../utils/tvCameraConfig';
+
+// Override the global mock to use the real implementation for this test
+vi.mock('../useTVCameraNavigation', async () => {
+  const actual = await vi.importActual('../useTVCameraNavigation');
+  return actual;
+});
+
 import { useTVCameraNavigation } from '../useTVCameraNavigation';
 import { useDevice } from '../../state/DeviceContext';
 import { useUI } from '../../state/UIContext';
 import { useISS } from '../../state/ISSContext';
-import { DIRECTIONAL_INPUTS, ZOOM_MODES, TV_REMOTE_KEYS } from '../../utils/tvCameraConfig';
 
 // Mock the context hooks
 vi.mock('../../state/DeviceContext');

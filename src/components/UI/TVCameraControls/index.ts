@@ -1,4 +1,5 @@
 export { TVCameraControls, type TVCameraControlsProps } from './TVCameraControls';
 export { DirectionalArrow, type DirectionalArrowProps } from './DirectionalArrow';
 export { ZoomInstructions, type ZoomInstructionsProps } from './ZoomInstructions';
-export { TVCameraControlsContainer, type TVCameraControlsContainerProps } from './TVCameraControlsContainer';
+// Note: TVCameraControlsContainer is not exported from index to avoid test interference
+// Import directly: import { TVCameraControlsContainer } from './TVCameraControlsContainer';

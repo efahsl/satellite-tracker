@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { TVCameraControls } from './TVCameraControls';
 import { useDevice } from '../../../state/DeviceContext';
 import { useUI } from '../../../state/UIContext';
 import { useISS } from '../../../state/ISSContext';
 import { useTVCameraNavigation } from '../../../hooks/useTVCameraNavigation';
-import { DIRECTIONAL_INPUTS, ZOOM_MODES, type DirectionalInput } from '../../../utils/tvCameraConfig';
+import { type DirectionalInput } from '../../../utils/tvCameraConfig';
 
 export interface TVCameraControlsContainerProps {
   // Optional external callbacks for camera control integration
