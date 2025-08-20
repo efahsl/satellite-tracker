@@ -53,6 +53,8 @@ interface UseTVCameraNavigationReturn {
   directionalInput: DirectionalInputState;
   /** Currently active direction (if any) */
   activeDirection: string | null;
+  /** Currently pressed direction for immediate visual feedback */
+  pressedDirection: string | null;
   /** Whether zoom is currently active */
   isZooming: boolean;
   /** Current zoom mode */
@@ -86,6 +88,9 @@ export const useTVCameraNavigation = ({
     left: false,
     right: false
   });
+
+  // Track pressed state for immediate visual feedback
+  const [pressedDirection, setPressedDirection] = useState<string | null>(null);
 
   // Refs for tracking input state and timers
   const keyPressTimers = useRef<Map<string, NodeJS.Timeout>>(new Map());
@@ -347,24 +352,40 @@ export const useTVCameraNavigation = ({
     switch (event.key) {
       case TV_CAMERA_KEYS.ARROW_UP:
         if (!directionalInput.up) {
+          // Set immediate pressed feedback
+          setPressedDirection(TV_CAMERA_DIRECTIONS.UP);
+          // Clear pressed state after animation duration
+          setTimeout(() => setPressedDirection(null), 150);
           handleDebouncedInput(TV_CAMERA_DIRECTIONS.UP, true);
         }
         break;
       
       case TV_CAMERA_KEYS.ARROW_DOWN:
         if (!directionalInput.down) {
+          // Set immediate pressed feedback
+          setPressedDirection(TV_CAMERA_DIRECTIONS.DOWN);
+          // Clear pressed state after animation duration
+          setTimeout(() => setPressedDirection(null), 150);
           handleDebouncedInput(TV_CAMERA_DIRECTIONS.DOWN, true);
         }
         break;
       
       case TV_CAMERA_KEYS.ARROW_LEFT:
         if (!directionalInput.left) {
+          // Set immediate pressed feedback
+          setPressedDirection(TV_CAMERA_DIRECTIONS.LEFT);
+          // Clear pressed state after animation duration
+          setTimeout(() => setPressedDirection(null), 150);
           handleDebouncedInput(TV_CAMERA_DIRECTIONS.LEFT, true);
         }
         break;
       
       case TV_CAMERA_KEYS.ARROW_RIGHT:
         if (!directionalInput.right) {
+          // Set immediate pressed feedback
+          setPressedDirection(TV_CAMERA_DIRECTIONS.RIGHT);
+          // Clear pressed state after animation duration
+          setTimeout(() => setPressedDirection(null), 150);
           handleDebouncedInput(TV_CAMERA_DIRECTIONS.RIGHT, true);
         }
         break;
@@ -390,18 +411,26 @@ export const useTVCameraNavigation = ({
     // Handle directional keys
     switch (event.key) {
       case TV_CAMERA_KEYS.ARROW_UP:
+        // Clear pressed state immediately on key up
+        setPressedDirection(null);
         handleDebouncedInput(TV_CAMERA_DIRECTIONS.UP, false);
         break;
       
       case TV_CAMERA_KEYS.ARROW_DOWN:
+        // Clear pressed state immediately on key up
+        setPressedDirection(null);
         handleDebouncedInput(TV_CAMERA_DIRECTIONS.DOWN, false);
         break;
       
       case TV_CAMERA_KEYS.ARROW_LEFT:
+        // Clear pressed state immediately on key up
+        setPressedDirection(null);
         handleDebouncedInput(TV_CAMERA_DIRECTIONS.LEFT, false);
         break;
       
       case TV_CAMERA_KEYS.ARROW_RIGHT:
+        // Clear pressed state immediately on key up
+        setPressedDirection(null);
         handleDebouncedInput(TV_CAMERA_DIRECTIONS.RIGHT, false);
         break;
       
@@ -462,6 +491,9 @@ export const useTVCameraNavigation = ({
       setZooming(false);
       isZoomingRef.current = false;
       
+      // Clear pressed state
+      setPressedDirection(null);
+      
       // Clear acceleration data
       inputAcceleration.current.clear();
     }
@@ -488,6 +520,7 @@ export const useTVCameraNavigation = ({
   return {
     directionalInput,
     activeDirection,
+    pressedDirection,
     isZooming: uiState.isZooming,
     zoomMode: uiState.zoomMode,
     isControlsEnabled

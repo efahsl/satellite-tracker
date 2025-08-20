@@ -102,12 +102,20 @@
   opacity: 0.7; /* TV_CAMERA_CONFIG.ARROW_INACTIVE_OPACITY */
   transform: scale(1);
   
-  /* Animation */
-  transition: all 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55));
+  /* Enhanced animation for smooth visual feedback */
+  transition: 
+    opacity 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    transform 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    background-color 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    border-color 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    box-shadow 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55));
   
   /* Accessibility */
   cursor: pointer;
   user-select: none;
+  
+  /* Ensure smooth transitions from any state */
+  will-change: transform, opacity, background-color, border-color, box-shadow;
 }
 
 .arrow:hover {
@@ -117,22 +125,72 @@
   border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Active state for arrows */
+/* Enhanced active state for arrows with improved visual feedback */
 .arrow--active {
   opacity: 1.0; /* TV_CAMERA_CONFIG.ARROW_ACTIVE_OPACITY */
   transform: scale(1.1); /* TV_CAMERA_CONFIG.ARROW_ACTIVE_SCALE */
-  background: rgba(74, 144, 226, 0.3); /* TV focus color with transparency */
+  background: rgba(74, 144, 226, 0.4); /* Enhanced visibility with higher opacity */
   border-color: var(--tv-focus-border-color, #4A90E2);
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
+  box-shadow: 
+    0 0 0 2px rgba(74, 144, 226, 0.4),
+    0 0 8px rgba(74, 144, 226, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  
+  /* Enhanced transition for active state */
+  transition: 
+    opacity 80ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    transform 80ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    background-color 80ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    border-color 80ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    box-shadow 80ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55));
 }
 
-/* Arrow symbol styling */
+/* Active state hover enhancement */
+.arrow--active:hover {
+  opacity: 1.0;
+  transform: scale(1.15); /* Slightly larger when active and hovered */
+  background: rgba(74, 144, 226, 0.5);
+  border-color: var(--tv-focus-border-color, #4A90E2);
+  box-shadow: 
+    0 0 0 3px rgba(74, 144, 226, 0.5),
+    0 0 12px rgba(74, 144, 226, 0.4),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+/* Arrow symbol styling with enhanced visual feedback */
 .arrowSymbol {
   font-size: 24px;
   font-weight: bold;
   color: var(--color-iss-white, #ffffff);
   line-height: 1;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  
+  /* Smooth transitions for symbol changes */
+  transition: 
+    color 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    text-shadow 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    transform 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55));
+  
+  /* Ensure crisp rendering */
+  will-change: color, text-shadow, transform;
+}
+
+/* Enhanced arrow symbol when parent is active */
+.arrow--active .arrowSymbol {
+  color: var(--color-iss-white, #ffffff);
+  text-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.7),
+    0 0 4px rgba(74, 144, 226, 0.6),
+    0 0 8px rgba(74, 144, 226, 0.3);
+  transform: scale(1.05); /* Slightly larger symbol when active */
+}
+
+/* Arrow symbol hover state */
+.arrow:hover .arrowSymbol {
+  color: var(--color-iss-white, #ffffff);
+  text-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.6),
+    0 0 2px rgba(255, 255, 255, 0.3);
 }
 
 /* Directional positioning classes */
@@ -246,7 +304,7 @@
   }
 }
 
-/* Animation keyframes for future use */
+/* Animation keyframes for enhanced visual feedback */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -267,6 +325,95 @@
     opacity: 0;
     transform: translateY(-50%) translateX(-20px);
   }
+}
+
+/* Pulse animation for active arrows */
+@keyframes arrowPulse {
+  0% {
+    box-shadow: 
+      0 0 0 2px rgba(74, 144, 226, 0.4),
+      0 0 8px rgba(74, 144, 226, 0.3),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 0 3px rgba(74, 144, 226, 0.6),
+      0 0 12px rgba(74, 144, 226, 0.5),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    box-shadow: 
+      0 0 0 2px rgba(74, 144, 226, 0.4),
+      0 0 8px rgba(74, 144, 226, 0.3),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Subtle glow animation for active arrow symbols */
+@keyframes symbolGlow {
+  0% {
+    text-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.7),
+      0 0 4px rgba(74, 144, 226, 0.6),
+      0 0 8px rgba(74, 144, 226, 0.3);
+  }
+  50% {
+    text-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.7),
+      0 0 6px rgba(74, 144, 226, 0.8),
+      0 0 12px rgba(74, 144, 226, 0.5);
+  }
+  100% {
+    text-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.7),
+      0 0 4px rgba(74, 144, 226, 0.6),
+      0 0 8px rgba(74, 144, 226, 0.3);
+  }
+}
+
+/* Apply pulse animation to active arrows */
+.arrow--active {
+  animation: arrowPulse 1.5s ease-in-out infinite;
+}
+
+/* Apply glow animation to active arrow symbols */
+.arrow--active .arrowSymbol {
+  animation: symbolGlow 1.5s ease-in-out infinite;
+}
+
+/* Immediate press feedback animation */
+@keyframes arrowPress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+/* Class for immediate key press feedback */
+.arrow--pressed {
+  animation: arrowPress 150ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55));
+}
+
+/* Enhanced visual feedback for different arrow directions */
+.arrow--up.arrow--active {
+  background: linear-gradient(180deg, rgba(74, 144, 226, 0.5) 0%, rgba(74, 144, 226, 0.3) 100%);
+}
+
+.arrow--down.arrow--active {
+  background: linear-gradient(0deg, rgba(74, 144, 226, 0.5) 0%, rgba(74, 144, 226, 0.3) 100%);
+}
+
+.arrow--left.arrow--active {
+  background: linear-gradient(90deg, rgba(74, 144, 226, 0.5) 0%, rgba(74, 144, 226, 0.3) 100%);
+}
+
+.arrow--right.arrow--active {
+  background: linear-gradient(270deg, rgba(74, 144, 226, 0.5) 0%, rgba(74, 144, 226, 0.3) 100%);
 }
 
 /* Hide controls when not in TV mode or when menu is open */
