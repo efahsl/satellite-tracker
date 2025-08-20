@@ -24,6 +24,13 @@ interface UseTVFocusManagerProps {
   initialFocusIndex?: number;
   /** Grid configuration for 2D navigation (optional, defaults to linear navigation) */
   gridConfig?: GridConfig;
+  /** Camera control callbacks */
+  onCameraDirectional?: (direction: 'north' | 'east' | 'south' | 'west') => void;
+  /** Zoom control callbacks */
+  onZoomStart?: (isZoomingIn: boolean) => void;
+  onZoomEnd?: () => void;
+  /** Whether camera controls are active */
+  cameraControlsActive?: boolean;
 }
 
 /**
@@ -98,10 +105,16 @@ export const useTVFocusManager = ({
   focusableElements,
   onEscape,
   initialFocusIndex = 0,
-  gridConfig
+  gridConfig,
+  onCameraDirectional,
+  onZoomStart,
+  onZoomEnd,
+  cameraControlsActive = false
 }: UseTVFocusManagerProps): UseTVFocusManagerReturn => {
   const [currentFocusIndex, setCurrentFocusIndex] = useState(initialFocusIndex);
   const keydownHandlerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
+  const keyupHandlerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
+  const isSelectHeldRef = useRef<boolean>(false);
 
   // Clamp focus index to valid range
   const clampFocusIndex = useCallback((index: number): number => {
@@ -226,6 +239,42 @@ export const useTVFocusManager = ({
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (!isEnabled) return;
 
+    // Camera controls take priority when active
+    if (cameraControlsActive && onCameraDirectional) {
+      switch (event.key) {
+        case 'ArrowUp':
+          event.preventDefault();
+          onCameraDirectional('north');
+          return;
+        case 'ArrowRight':
+          event.preventDefault();
+          onCameraDirectional('east');
+          return;
+        case 'ArrowDown':
+          event.preventDefault();
+          onCameraDirectional('south');
+          return;
+        case 'ArrowLeft':
+          event.preventDefault();
+          onCameraDirectional('west');
+          return;
+        case 'Enter':
+          event.preventDefault();
+          if (!isSelectHeldRef.current && onZoomStart) {
+            isSelectHeldRef.current = true;
+            onZoomStart(true); // Start with zoom in
+          }
+          return;
+        case 'Escape':
+          event.preventDefault();
+          if (onEscape) {
+            onEscape();
+          }
+          return;
+      }
+    }
+
+    // Regular focus navigation when camera controls are not active
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
@@ -267,24 +316,43 @@ export const useTVFocusManager = ({
         // Don't prevent default for other keys
         break;
     }
-  }, [isEnabled, currentFocusIndex, focusableElements, focusUp, focusDown, focusLeft, focusRight, onEscape]);
+  }, [isEnabled, currentFocusIndex, focusableElements, focusUp, focusDown, focusLeft, focusRight, onEscape, cameraControlsActive, onCameraDirectional, onZoomStart]);
 
-  // Set up global keyboard event listener when enabled
+  // Handle key up events for zoom control
+  const handleKeyUp = useCallback((event: KeyboardEvent) => {
+    if (!isEnabled || !cameraControlsActive) return;
+
+    if (event.key === 'Enter' && isSelectHeldRef.current) {
+      event.preventDefault();
+      isSelectHeldRef.current = false;
+      if (onZoomEnd) {
+        onZoomEnd();
+      }
+    }
+  }, [isEnabled, cameraControlsActive, onZoomEnd]);
+
+  // Set up global keyboard event listeners when enabled
   useEffect(() => {
     if (!isEnabled) {
-      // Remove event listener if disabled
+      // Remove event listeners if disabled
       if (keydownHandlerRef.current) {
         document.removeEventListener('keydown', keydownHandlerRef.current);
         keydownHandlerRef.current = null;
       }
+      if (keyupHandlerRef.current) {
+        document.removeEventListener('keyup', keyupHandlerRef.current);
+        keyupHandlerRef.current = null;
+      }
       return;
     }
 
-    // Store reference to handler for cleanup
+    // Store references to handlers for cleanup
     keydownHandlerRef.current = handleKeyDown;
+    keyupHandlerRef.current = handleKeyUp;
     
-    // Add global keyboard event listener
+    // Add global keyboard event listeners
     document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
 
     // Cleanup function
     return () => {
@@ -292,8 +360,12 @@ export const useTVFocusManager = ({
         document.removeEventListener('keydown', keydownHandlerRef.current);
         keydownHandlerRef.current = null;
       }
+      if (keyupHandlerRef.current) {
+        document.removeEventListener('keyup', keyupHandlerRef.current);
+        keyupHandlerRef.current = null;
+      }
     };
-  }, [isEnabled, handleKeyDown]);
+  }, [isEnabled, handleKeyDown, handleKeyUp]);
 
   // Reset focus index when focusable elements change
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { Suspense, memo, useState, useEffect } from 'react';
+import React, { Suspense, memo, useState, useEffect, forwardRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Stars } from '@react-three/drei';
 import { Vector3 } from 'three';
@@ -6,7 +6,7 @@ import Earth from './Earth';
 import ISS from './ISS';
 import EnhancedISS from './ISS-Enhanced';
 import Sun from './Sun';
-import Controls from './Controls';
+import Controls, { ControlsRef } from './Controls';
 import { useISS } from '../../state/ISSContext';
 import { usePerformance } from '../../state/PerformanceContext';
 import { 
@@ -25,10 +25,10 @@ interface GlobeProps {
   height?: string;
 }
 
-const Globe: React.FC<GlobeProps> = memo(({ 
+const Globe = memo(forwardRef<ControlsRef, GlobeProps>(({ 
   width = '100%', 
   height = '100%' 
-}) => {
+}, ref) => {
   // Add ISS context hook to access earthRotateMode state
   const { state } = useISS();
   
@@ -107,6 +107,7 @@ const Globe: React.FC<GlobeProps> = memo(({
           
           {/* Enhanced camera controls */}
           <Controls 
+            ref={ref}
             enableZoom={true} 
             enablePan={true}
             dampingFactor={0.05}
@@ -151,6 +152,8 @@ const Globe: React.FC<GlobeProps> = memo(({
       </div>
     </div>
   );
-});
+}));
+
+Globe.displayName = 'Globe';
 
 export default Globe;

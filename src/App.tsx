@@ -4,6 +4,7 @@ import { ISSProvider } from './state/ISSContext';
 import { PerformanceProvider } from './state/PerformanceContext';
 import { DeviceProvider } from './state/DeviceContext';
 import { UIProvider } from './state/UIContext';
+import { CameraControlsProvider } from './state/CameraControlsContext';
 import MainLayout from './layouts/MainLayout';
 import { ROUTES } from './routes';
 
@@ -14,6 +15,7 @@ const App: React.FC = () => {
         <ISSProvider>
           <PerformanceProvider>
             <UIProvider>
+              <CameraControlsProvider>
               <Suspense fallback={
                 <div className="flex items-center justify-center h-screen bg-space-black text-iss-white">
                   <div className="text-center">
@@ -34,6 +36,7 @@ const App: React.FC = () => {
                 </Route>
               </Routes>
             </Suspense>
+              </CameraControlsProvider>
             </UIProvider>
           </PerformanceProvider>
         </ISSProvider>

@@ -1,0 +1,156 @@
+/* Camera Controls Container */
+.cameraControls {
+  position: fixed;
+  left: var(--tv-safe-zone-left, 5vw);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 12px;
+  border: 2px solid var(--tv-focus-border-color, #4A90E2);
+  backdrop-filter: blur(10px);
+}
+
+/* Directional Arrows Container */
+.directionalArrows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.horizontalArrows {
+  display: flex;
+  gap: 4rem;
+  align-items: center;
+}
+
+.arrowContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Arrow Buttons */
+.arrow {
+  width: 64px;
+  height: 64px;
+  background: var(--tv-high-contrast-background, #000000);
+  border: 3px solid var(--tv-high-contrast-border, #ffffff);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tv-high-contrast-text, #ffffff);
+  cursor: pointer;
+  transition: var(--tv-focus-transition, all 150ms ease-in-out);
+  user-select: none;
+}
+
+.arrow:hover,
+.arrow:focus {
+  background: var(--tv-focus-border-color, #4A90E2);
+  border-color: var(--tv-high-contrast-text, #ffffff);
+  transform: scale(1.1);
+  box-shadow: var(--tv-focus-shadow, 0 0 0 3px rgba(74, 144, 226, 0.3));
+}
+
+.arrow:active {
+  transform: scale(0.95);
+}
+
+/* Arrow Labels */
+.arrowLabel {
+  font-size: var(--tv-min-font-size, 16px);
+  font-weight: bold;
+  color: var(--tv-high-contrast-text, #ffffff);
+  text-align: center;
+  letter-spacing: 0.1em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Zoom Instructions */
+.zoomInstructions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 8px;
+  border: 1px solid var(--tv-high-contrast-border, #ffffff);
+}
+
+.zoomText {
+  font-size: calc(var(--tv-min-font-size, 16px) * 1.2);
+  font-weight: bold;
+  color: var(--tv-high-contrast-text, #ffffff);
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.05em;
+}
+
+.selectKey {
+  padding: 0.75rem 1.5rem;
+  background: var(--tv-focus-border-color, #4A90E2);
+  color: var(--tv-high-contrast-text, #ffffff);
+  border-radius: 8px;
+  font-size: var(--tv-min-font-size, 16px);
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  border: 2px solid var(--tv-high-contrast-border, #ffffff);
+}
+
+/* Responsive adjustments for TV */
+@media (width: 1920px) {
+  .cameraControls {
+    left: 5vw;
+  }
+  
+  .arrow {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .arrow svg {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .arrowLabel {
+    font-size: 20px;
+  }
+  
+  .zoomText {
+    font-size: 24px;
+  }
+  
+  .selectKey {
+    font-size: 20px;
+    padding: 1rem 2rem;
+  }
+}
+
+/* Animation for smooth transitions */
+.cameraControls {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}

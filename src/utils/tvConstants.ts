@@ -122,6 +122,23 @@ export const isTVWidth = (): boolean => {
   return typeof window !== 'undefined' && window.innerWidth === TV_DETECTION_WIDTH;
 };
 
+// Camera Controls Configuration
+export const TV_CAMERA_CONTROLS = {
+  ROTATION_SPEED: 0.3, // Speed of camera rotation for directional controls (increased for visibility)
+  ZOOM_SPEED: 0.5, // Speed of zoom in/out (increased for visibility)
+  SMOOTH_TRANSITION: 0.1, // Lerp factor for smooth camera transitions
+  MIN_ZOOM_DISTANCE: 2, // Minimum zoom distance from Earth
+  MAX_ZOOM_DISTANCE: 10, // Maximum zoom distance from Earth
+} as const;
+
+// Camera Direction Mappings
+export const CAMERA_DIRECTIONS = {
+  NORTH: { x: 0, y: 1, z: 0 },
+  EAST: { x: 1, y: 0, z: 0 },
+  SOUTH: { x: 0, y: -1, z: 0 },
+  WEST: { x: -1, y: 0, z: 0 },
+} as const;
+
 // Combined TV configuration object (for backward compatibility)
 export const TV_CONFIG = {
   DETECTION_WIDTH: TV_DETECTION_WIDTH,
@@ -142,4 +159,7 @@ export const TV_CONFIG = {
   SAFE_ZONE_BOTTOM: TV_SAFE_ZONE.BOTTOM,
   SAFE_ZONE_LEFT: TV_SAFE_ZONE.LEFT,
   SAFE_ZONE_RIGHT: TV_SAFE_ZONE.RIGHT,
+  CAMERA_ROTATION_SPEED: TV_CAMERA_CONTROLS.ROTATION_SPEED,
+  CAMERA_ZOOM_SPEED: TV_CAMERA_CONTROLS.ZOOM_SPEED,
+  CAMERA_SMOOTH_TRANSITION: TV_CAMERA_CONTROLS.SMOOTH_TRANSITION,
 } as const;

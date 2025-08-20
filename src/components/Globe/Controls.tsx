@@ -1,10 +1,11 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useImperativeHandle, forwardRef, useCallback } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { Vector3 } from 'three';
+import { Vector3, Spherical } from 'three';
 import { useISS } from '../../state/ISSContext';
 import { latLongToVector3 } from '../../utils/coordinates';
 import { EARTH_RADIUS, CAMERA_DISTANCE, ISS_ALTITUDE_SCALE, EARTH_ROTATE_DISTANCE, EARTH_ROTATE_SPEED, EARTH_ROTATE_TRANSITION_SPEED } from '../../utils/constants';
+import { TV_CAMERA_CONTROLS } from '../../utils/tvConstants';
 
 interface ControlsProps {
   autoRotate?: boolean;
@@ -15,14 +16,21 @@ interface ControlsProps {
   earthRotateMode?: boolean;
 }
 
-const Controls: React.FC<ControlsProps> = ({
+export interface ControlsRef {
+  rotateToDirection: (direction: 'north' | 'east' | 'south' | 'west') => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  getCurrentDistance: () => number;
+}
+
+const Controls = forwardRef<ControlsRef, ControlsProps>(({
   autoRotate = false,
   autoRotateSpeed = 0.5,
   enableZoom = true,
   enablePan = true,
   dampingFactor = 0.1,
   earthRotateMode = false,
-}) => {
+}, ref) => {
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
   const { state } = useISS();
@@ -30,12 +38,86 @@ const Controls: React.FC<ControlsProps> = ({
   const lastFollowState = useRef<boolean>(false);
   const lastEarthRotateState = useRef<boolean>(false);
   const earthRotateAngle = useRef<number>(0);
+  const targetRotationRef = useRef<Spherical | null>(null);
+  const isRotatingRef = useRef<boolean>(false);
+
+  // Utility function for linear interpolation
+  const lerp = (start: number, end: number, factor: number): number => {
+    return start + (end - start) * factor;
+  };
 
   // Set initial camera position
   useEffect(() => {
     camera.position.set(0, 0, CAMERA_DISTANCE);
     camera.lookAt(0, 0, 0);
   }, [camera]);
+
+  // Camera control methods
+  const rotateToDirection = useCallback((direction: 'north' | 'east' | 'south' | 'west') => {
+    if (!controlsRef.current) return;
+
+    const currentPosition = camera.position.clone();
+    const spherical = new Spherical().setFromVector3(currentPosition);
+    
+    // Calculate target rotation based on direction
+    switch (direction) {
+      case 'north':
+        spherical.phi = Math.max(0.1, spherical.phi - TV_CAMERA_CONTROLS.ROTATION_SPEED);
+        break;
+      case 'south':
+        spherical.phi = Math.min(Math.PI - 0.1, spherical.phi + TV_CAMERA_CONTROLS.ROTATION_SPEED);
+        break;
+      case 'east':
+        spherical.theta += TV_CAMERA_CONTROLS.ROTATION_SPEED;
+        break;
+      case 'west':
+        spherical.theta -= TV_CAMERA_CONTROLS.ROTATION_SPEED;
+        break;
+    }
+    
+    targetRotationRef.current = spherical;
+    isRotatingRef.current = true;
+  }, [camera]);
+
+  const zoomIn = useCallback(() => {
+    if (!controlsRef.current) return;
+    
+    const currentDistance = camera.position.length();
+    const newDistance = Math.max(
+      EARTH_RADIUS + TV_CAMERA_CONTROLS.MIN_ZOOM_DISTANCE,
+      currentDistance - TV_CAMERA_CONTROLS.ZOOM_SPEED * 20
+    );
+    
+    const direction = camera.position.clone().normalize();
+    const newPosition = direction.multiplyScalar(newDistance);
+    cameraPositionRef.current.copy(newPosition);
+  }, [camera]);
+
+  const zoomOut = useCallback(() => {
+    if (!controlsRef.current) return;
+    
+    const currentDistance = camera.position.length();
+    const newDistance = Math.min(
+      CAMERA_DISTANCE * TV_CAMERA_CONTROLS.MAX_ZOOM_DISTANCE,
+      currentDistance + TV_CAMERA_CONTROLS.ZOOM_SPEED * 20
+    );
+    
+    const direction = camera.position.clone().normalize();
+    const newPosition = direction.multiplyScalar(newDistance);
+    cameraPositionRef.current.copy(newPosition);
+  }, [camera]);
+
+  const getCurrentDistance = useCallback(() => {
+    return camera.position.length();
+  }, [camera]);
+
+  // Expose methods through ref
+  useImperativeHandle(ref, () => ({
+    rotateToDirection,
+    zoomIn,
+    zoomOut,
+    getCurrentDistance,
+  }), [rotateToDirection, zoomIn, zoomOut, getCurrentDistance]);
 
   // Cleanup animation references on unmount
   useEffect(() => {
@@ -48,6 +130,35 @@ const Controls: React.FC<ControlsProps> = ({
   // Camera control logic
   useFrame((_, delta) => {
     if (!controlsRef.current) return;
+    
+    // Handle smooth camera rotation for TV controls
+    if (isRotatingRef.current && targetRotationRef.current) {
+      const currentPosition = camera.position.clone();
+      const currentSpherical = new Spherical().setFromVector3(currentPosition);
+      const targetSpherical = targetRotationRef.current;
+      
+      // Lerp towards target rotation
+      currentSpherical.phi = lerp(currentSpherical.phi, targetSpherical.phi, TV_CAMERA_CONTROLS.SMOOTH_TRANSITION);
+      currentSpherical.theta = lerp(currentSpherical.theta, targetSpherical.theta, TV_CAMERA_CONTROLS.SMOOTH_TRANSITION);
+      
+      // Apply new position
+      const newPosition = new Vector3().setFromSpherical(currentSpherical);
+      camera.position.copy(newPosition);
+      cameraPositionRef.current.copy(newPosition);
+      
+      // Check if rotation is complete
+      const phiDiff = Math.abs(currentSpherical.phi - targetSpherical.phi);
+      const thetaDiff = Math.abs(currentSpherical.theta - targetSpherical.theta);
+      if (phiDiff < 0.01 && thetaDiff < 0.01) {
+        isRotatingRef.current = false;
+        targetRotationRef.current = null;
+      }
+    }
+    
+    // Handle smooth zoom transitions
+    if (!isRotatingRef.current) {
+      camera.position.lerp(cameraPositionRef.current, TV_CAMERA_CONTROLS.SMOOTH_TRANSITION);
+    }
     
     // Get ISS position if available
     let issPosition: Vector3 | null = null;
@@ -136,6 +247,8 @@ const Controls: React.FC<ControlsProps> = ({
       maxDistance={CAMERA_DISTANCE * 2}
     />
   );
-};
+});
+
+Controls.displayName = 'Controls';
 
 export default Controls;

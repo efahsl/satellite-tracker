@@ -1,12 +1,55 @@
 import React from "react";
 import { Outlet, Link } from "react-router-dom";
 import HamburgerMenu from "../components/UI/HamburgerMenu/HamburgerMenu";
+import CameraControls from "../components/TV/CameraControls/CameraControls";
 import { DeviceDebugInfo } from "../components/UI/DeviceDebugInfo";
 import { useDevice } from "../state/DeviceContext";
+import { useUI } from "../state/UIContext";
+import { useISS } from "../state/ISSContext";
+import { useCameraControls } from "../hooks/useCameraControls";
+import { useTVFocusManager } from "../hooks/useTVFocusManager";
 import { ResponsiveContainer, ResponsiveText, DeviceStyle } from "../components/UI/ResponsiveLayout";
 
 const MainLayout: React.FC = () => {
   const { isMobile, isTVProfile } = useDevice();
+  const { state: uiState, setHamburgerMenuVisible } = useUI();
+  const { state: issState } = useISS();
+  const {
+    handleDirectionalMove,
+    handleZoomStart,
+    handleZoomEnd,
+    handleZoomIn,
+    handleZoomOut,
+  } = useCameraControls();
+
+  // Check if manual mode is active and menu is hidden (camera controls should be visible)
+  const isManualMode = !issState.followISS && !issState.earthRotateMode;
+  const showCameraControls = isTVProfile && isManualMode && !uiState.hamburgerMenuVisible;
+
+  // Debug logging
+  console.log('MainLayout Debug:', {
+    isTVProfile,
+    followISS: issState.followISS,
+    earthRotateMode: issState.earthRotateMode,
+    isManualMode,
+    hamburgerMenuVisible: uiState.hamburgerMenuVisible,
+    showCameraControls
+  });
+
+  // TV focus manager for camera controls
+  useTVFocusManager({
+    isEnabled: showCameraControls,
+    focusableElements: [], // Camera controls don't use traditional focus elements
+    onEscape: () => {
+      console.log('Camera controls escape pressed, showing hamburger menu');
+      // When escape is pressed, show the hamburger menu
+      setHamburgerMenuVisible(true);
+    },
+    onCameraDirectional: handleDirectionalMove,
+    onZoomStart: handleZoomStart,
+    onZoomEnd: handleZoomEnd,
+    cameraControlsActive: showCameraControls,
+  });
 
   return (
     <div className={`flex flex-col min-h-screen bg-space-black text-iss-white ${isTVProfile ? 'tv-typography tv-high-contrast' : ''}`}>
@@ -77,6 +120,15 @@ const MainLayout: React.FC = () => {
         </ResponsiveContainer>
       </header>
       )}
+
+      {/* Camera Controls for TV Mode - Show when in Manual Mode and Menu is Hidden */}
+      <CameraControls
+        isVisible={showCameraControls}
+        onDirectionalMove={handleDirectionalMove}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        isZoomingIn={uiState.isZoomingIn}
+      />
 
       {/* Main Content */}
       <main className={`flex-grow ${isTVProfile ? 'tv-typography' : ''}`}>
