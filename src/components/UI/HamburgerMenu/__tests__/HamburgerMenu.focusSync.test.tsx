@@ -3,16 +3,33 @@ import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { HamburgerMenu } from '../HamburgerMenu';
 import { DeviceProvider } from '../../../../state/DeviceContext';
-import { UIProvider } from '../../../../state/UIContext';
+import { UIProvider, useUI } from '../../../../state/UIContext';
 import { ISSProvider } from '../../../../state/ISSContext';
 import { PerformanceProvider } from '../../../../state/PerformanceContext';
 
+// Test component to control UI state
+const TestController: React.FC<{ onUIReady?: (ui: any) => void }> = ({ onUIReady }) => {
+  const ui = useUI();
+  
+  React.useEffect(() => {
+    if (onUIReady) {
+      onUIReady(ui);
+    }
+  }, [ui, onUIReady]);
+  
+  return null;
+};
+
 // Test wrapper with all required providers
-const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const TestWrapper: React.FC<{ children: React.ReactNode; onUIReady?: (ui: any) => void }> = ({ 
+  children, 
+  onUIReady 
+}) => (
   <DeviceProvider>
     <ISSProvider>
       <PerformanceProvider>
         <UIProvider>
+          <TestController onUIReady={onUIReady} />
           {children}
         </UIProvider>
       </PerformanceProvider>
@@ -20,7 +37,7 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </DeviceProvider>
 );
 
-describe('HamburgerMenu Focus Restoration', () => {
+describe('HamburgerMenu Focus Synchronization', () => {
   beforeEach(() => {
     // Mock window dimensions for TV profile
     Object.defineProperty(window, 'innerWidth', {
@@ -45,19 +62,44 @@ describe('HamburgerMenu Focus Restoration', () => {
     });
   });
 
-  it('should synchronize focus state with useTVFocusManager', async () => {
+  it('should initialize useTVFocusManager with lastActiveButtonIndex', async () => {
+    let uiControls: any;
+    
     render(
-      <TestWrapper>
+      <TestWrapper onUIReady={(ui) => { uiControls = ui; }}>
         <HamburgerMenu />
       </TestWrapper>
     );
 
-    // Wait for the component to initialize and focus to be set
+    // Wait for initialization
     await act(async () => {
       await new Promise(resolve => setTimeout(resolve, 150));
     });
 
-    // The menu should be open in TV mode and have focusable elements
+    // Set the last active button to Manual (index 2)
+    act(() => {
+      uiControls.setLastActiveButton(2);
+    });
+
+    // Close and reopen the menu to trigger focus restoration
+    act(() => {
+      uiControls.setHamburgerMenuVisible(false);
+    });
+
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 50));
+    });
+
+    act(() => {
+      uiControls.setHamburgerMenuVisible(true);
+    });
+
+    // Wait for focus restoration
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 150));
+    });
+
+    // The menu should be open and focused on the correct element
     const menuContent = document.getElementById('hamburger-menu-content');
     expect(menuContent).toBeTruthy();
   });

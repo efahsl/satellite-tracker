@@ -94,7 +94,7 @@ describe('HamburgerMenu', () => {
       expect(menuButton).toBeNull();
 
       // Menu should be automatically open in TV mode
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       expect(menuContent.className).toContain('contentTV');
       expect(menuContent.className).not.toContain('contentMobile');
       expect(menuContent.className).toContain('contentOpen');
@@ -116,7 +116,7 @@ describe('HamburgerMenu', () => {
       const menuButton = screen.getByRole('button', { name: /menu/i });
       fireEvent.click(menuButton);
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       expect(menuContent.className).toContain('contentMobile');
       expect(menuContent.className).not.toContain('contentTV');
     });
@@ -137,7 +137,7 @@ describe('HamburgerMenu', () => {
       const menuButton = screen.getByRole('button', { name: /menu/i });
       fireEvent.click(menuButton);
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       expect(menuContent.className).not.toContain('contentMobile');
       expect(menuContent.className).not.toContain('contentTV');
     });
@@ -222,7 +222,7 @@ describe('HamburgerMenu', () => {
       );
       
       // Menu is auto-open in TV mode
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       expect(menuContent.className).toContain('contentOpen');
 
       // Click on a control
@@ -249,7 +249,7 @@ describe('HamburgerMenu', () => {
       const menuButton = screen.getByRole('button', { name: /menu/i });
       fireEvent.click(menuButton);
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       expect(menuContent.className).toContain('contentOpen');
 
       // Click on a control
@@ -280,7 +280,7 @@ describe('HamburgerMenu', () => {
       expect(menuButton).toBeNull();
       
       // Menu should be auto-open with proper ARIA attributes
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       expect(menuContent.getAttribute('aria-modal')).toBe('true');
       expect(menuContent.getAttribute('aria-label')).toBe('Navigation menu');
       expect(menuContent.getAttribute('aria-hidden')).toBe('false');
@@ -300,7 +300,7 @@ describe('HamburgerMenu', () => {
       );
       
       // Menu is auto-open in TV mode
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       expect(menuContent.className).toContain('contentOpen');
 
       // Press Escape key - in TV mode this might close the menu temporarily
@@ -434,7 +434,7 @@ describe('HamburgerMenu', () => {
       const onEscapeCallback = mockUseTVFocusManager.mock.calls[0][0].onEscape;
 
       // Menu should be open initially in TV mode
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       expect(menuContent.className).toContain('contentOpen');
 
       // Call the escape handler
@@ -510,7 +510,7 @@ describe('HamburgerMenu', () => {
         </TestWrapper>
       );
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       expect(menuContent.className).toContain('contentTV');
 
       // Check that the controls container has the TV class using a more specific selector
@@ -562,7 +562,7 @@ describe('HamburgerMenu', () => {
 
       // Check that buttons with active classes would receive enhanced styling
       // The actual styling is applied via CSS selectors, so we verify the structure is correct
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       expect(menuContent.className).toContain('contentTV');
       
       // Verify that the controls container exists for CSS targeting

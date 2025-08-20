@@ -301,9 +301,16 @@ export const useTVFocusManager = ({
 
   // Track if we've done initial focus to prevent re-focusing on element changes
   const hasInitializedRef = useRef(false);
+  const lastInitialFocusIndexRef = useRef(initialFocusIndex);
   
-  // Focus initial element when enabled and elements are available (only once)
+  // Focus initial element when enabled and elements are available (only once per initialFocusIndex)
   useEffect(() => {
+    // Reset initialization flag if initialFocusIndex changes
+    if (lastInitialFocusIndexRef.current !== initialFocusIndex) {
+      hasInitializedRef.current = false;
+      lastInitialFocusIndexRef.current = initialFocusIndex;
+    }
+    
     if (isEnabled && focusableElements.length > 0 && !hasInitializedRef.current) {
       const validIndex = clampFocusIndex(initialFocusIndex);
       setCurrentFocusIndex(validIndex);

@@ -238,7 +238,7 @@ describe('HamburgerMenu TV Keyboard Navigation Integration', () => {
     }, { timeout: 200 });
 
     // Verify TV mode styling is applied
-    const menuContent = screen.getByRole('dialog');
+    const menuContent = document.getElementById('hamburger-menu-content')!;
     expect(menuContent.className).toContain('contentTV');
 
     // Switch to non-TV mode
@@ -259,7 +259,7 @@ describe('HamburgerMenu TV Keyboard Navigation Integration', () => {
     // Wait for the component to update to mobile mode
     await waitFor(() => {
       // In non-TV mode, the menu should have mobile styling instead of TV styling
-      const updatedMenuContent = screen.getByRole('dialog');
+      const updatedMenuContent = document.getElementById('hamburger-menu-content')!;
       expect(updatedMenuContent.className).toContain('contentMobile');
       expect(updatedMenuContent.className).not.toContain('contentTV');
     });

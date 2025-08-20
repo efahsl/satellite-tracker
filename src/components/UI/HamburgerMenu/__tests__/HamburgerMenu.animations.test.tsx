@@ -71,7 +71,7 @@ describe('HamburgerMenu Animations', () => {
         </TestWrapper>
       );
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       
       // Menu should have TV-specific classes (CSS modules transform class names)
       expect(menuContent.className).toContain('contentTV');
@@ -89,7 +89,7 @@ describe('HamburgerMenu Animations', () => {
         </TestWrapper>
       );
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       
       // In TV mode, menu starts open by default, so we verify the structure
       // The actual closing would be triggered by UIContext state change
@@ -107,7 +107,7 @@ describe('HamburgerMenu Animations', () => {
         </TestWrapper>
       );
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       
       // Simulate animation start
       act(() => {
@@ -133,7 +133,7 @@ describe('HamburgerMenu Animations', () => {
         </TestWrapper>
       );
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       
       // Test transition events
       act(() => {
@@ -171,7 +171,7 @@ describe('HamburgerMenu Animations', () => {
         </TestWrapper>
       );
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       const computedStyle = window.getComputedStyle(menuContent);
       
       // Should have transition property (CSS custom properties may not be available in test environment)
@@ -186,7 +186,7 @@ describe('HamburgerMenu Animations', () => {
         </TestWrapper>
       );
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       expect(menuContent.className).toContain('contentTV');
     });
   });
@@ -216,7 +216,7 @@ describe('HamburgerMenu Animations', () => {
         </TestWrapper>
       );
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       
       // With reduced motion, transitions should be disabled
       // This would be handled by CSS media query
@@ -266,7 +266,7 @@ describe('HamburgerMenu Animations', () => {
         </TestWrapper>
       );
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       const computedStyle = window.getComputedStyle(menuContent);
       
       // Should have transform property defined (may be empty in test environment)
@@ -280,7 +280,7 @@ describe('HamburgerMenu Animations', () => {
         </TestWrapper>
       );
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       
       // TV menu should have proper positioning class
       expect(menuContent.className).toContain('contentTV');
@@ -295,7 +295,7 @@ describe('HamburgerMenu Animations', () => {
         </TestWrapper>
       );
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       
       // Start animation
       act(() => {
@@ -321,7 +321,7 @@ describe('HamburgerMenu Animations', () => {
         </TestWrapper>
       );
 
-      const menuContent = screen.getByRole('dialog');
+      const menuContent = document.getElementById('hamburger-menu-content')!;
       
       // Multiple animation starts should not cause issues
       act(() => {

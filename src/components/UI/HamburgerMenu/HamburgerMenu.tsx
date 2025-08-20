@@ -98,7 +98,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
       // In TV mode, escape key should not close the menu since it's persistent
       // This is handled by the global back/escape key listener for menu reopening
     },
-    initialFocusIndex: 0
+    initialFocusIndex: uiState.lastActiveButtonIndex >= 0 ? uiState.lastActiveButtonIndex : 0
   });
 
   const handleToggle = useCallback(() => {
