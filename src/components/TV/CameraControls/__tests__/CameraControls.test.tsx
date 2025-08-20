@@ -1,39 +1,21 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
-import { DeviceProvider } from '../../../../state/DeviceContext';
-import { UIProvider } from '../../../../state/UIContext';
 import CameraControls from '../CameraControls';
-
-// Mock the device context to simulate TV mode
-const mockDeviceContext = {
-  isMobile: false,
-  isDesktop: false,
-  isTVProfile: true,
-  screenWidth: 1920,
-  screenHeight: 1080,
-  deviceType: 'tv' as const,
-};
-
-// Mock the UI context
-const mockUIContext = {
-  state: {
-    cameraControlsVisible: true,
-    isZoomingIn: true,
-  },
-};
 
 // Mock the device hook
 vi.mock('../../../../state/DeviceContext', () => ({
-  useDevice: () => mockDeviceContext,
-  DeviceProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  useDevice: vi.fn(),
 }));
 
-// Mock the UI hook
+// Mock the UI hook  
 vi.mock('../../../../state/UIContext', () => ({
-  useUI: () => mockUIContext,
-  UIProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  useUI: vi.fn(),
 }));
+
+// Import the mocked hooks
+import { useDevice } from '../../../../state/DeviceContext';
+import { useUI } from '../../../../state/UIContext';
 
 describe('CameraControls', () => {
   const mockProps = {
@@ -46,59 +28,69 @@ describe('CameraControls', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    
+    // Setup default mocks
+    (useDevice as any).mockReturnValue({
+      isMobile: false,
+      isDesktop: false,
+      isTVProfile: true,
+      screenWidth: 1920,
+      screenHeight: 1080,
+      deviceType: 'tv',
+    });
+
+    (useUI as any).mockReturnValue({
+      state: {
+        cameraControlsVisible: true,
+        isZoomingIn: true,
+      },
+    });
   });
 
   it('renders camera controls when visible in TV mode', () => {
-    render(
-      <DeviceProvider>
-        <UIProvider>
-          <CameraControls {...mockProps} />
-        </UIProvider>
-      </DeviceProvider>
-    );
+    render(<CameraControls {...mockProps} />);
 
     // Check for directional labels
-    expect(screen.getByText('NORTH')).toBeDefined();
-    expect(screen.getByText('EAST')).toBeDefined();
-    expect(screen.getByText('SOUTH')).toBeDefined();
-    expect(screen.getByText('WEST')).toBeDefined();
+    expect(screen.getByText('NORTH')).toBeInTheDocument();
+    expect(screen.getByText('EAST')).toBeInTheDocument();
+    expect(screen.getByText('SOUTH')).toBeInTheDocument();
+    expect(screen.getByText('WEST')).toBeInTheDocument();
 
     // Check for zoom instructions
-    expect(screen.getByText('Hold SELECT to Zoom IN')).toBeDefined();
-    expect(screen.getByText('SELECT')).toBeDefined();
+    expect(screen.getByText('Hold SELECT to Zoom IN')).toBeInTheDocument();
+    expect(screen.getByText('SELECT')).toBeInTheDocument();
   });
 
   it('does not render when not visible', () => {
-    render(
-      <DeviceProvider>
-        <UIProvider>
-          <CameraControls {...mockProps} isVisible={false} />
-        </UIProvider>
-      </DeviceProvider>
-    );
+    const { container } = render(<CameraControls {...mockProps} isVisible={false} />);
 
-    expect(screen.queryByText('NORTH')).toBeNull();
+    // Component should return null and not render anything
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('does not render when not in TV mode', () => {
+    (useDevice as any).mockReturnValue({
+      isMobile: false,
+      isDesktop: true,
+      isTVProfile: false,
+      screenWidth: 1024,
+      screenHeight: 768,
+      deviceType: 'desktop',
+    });
+
+    const { container } = render(<CameraControls {...mockProps} />);
+
+    // Component should return null when not in TV mode
+    expect(container.firstChild).toBeNull();
   });
 
   it('shows correct zoom text based on zoom mode', () => {
-    const { rerender } = render(
-      <DeviceProvider>
-        <UIProvider>
-          <CameraControls {...mockProps} isZoomingIn={true} />
-        </UIProvider>
-      </DeviceProvider>
-    );
+    const { rerender } = render(<CameraControls {...mockProps} isZoomingIn={true} />);
 
-    expect(screen.getByText('Hold SELECT to Zoom IN')).toBeDefined();
+    expect(screen.getAllByText('Hold SELECT to Zoom IN')[0]).toBeInTheDocument();
 
-    rerender(
-      <DeviceProvider>
-        <UIProvider>
-          <CameraControls {...mockProps} isZoomingIn={false} />
-        </UIProvider>
-      </DeviceProvider>
-    );
+    rerender(<CameraControls {...mockProps} isZoomingIn={false} />);
 
-    expect(screen.getByText('Hold SELECT to Zoom OUT')).toBeDefined();
+    expect(screen.getByText('Hold SELECT to Zoom OUT')).toBeInTheDocument();
   });
 });

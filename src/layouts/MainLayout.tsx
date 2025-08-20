@@ -26,15 +26,7 @@ const MainLayout: React.FC = () => {
   const isManualMode = !issState.followISS && !issState.earthRotateMode;
   const showCameraControls = isTVProfile && isManualMode && !uiState.hamburgerMenuVisible;
 
-  // Debug logging
-  console.log('MainLayout Debug:', {
-    isTVProfile,
-    followISS: issState.followISS,
-    earthRotateMode: issState.earthRotateMode,
-    isManualMode,
-    hamburgerMenuVisible: uiState.hamburgerMenuVisible,
-    showCameraControls
-  });
+
 
   // TV focus manager for camera controls
   useTVFocusManager({
@@ -129,6 +121,8 @@ const MainLayout: React.FC = () => {
         onZoomOut={handleZoomOut}
         isZoomingIn={uiState.isZoomingIn}
       />
+      
+
 
       {/* Main Content */}
       <main className={`flex-grow ${isTVProfile ? 'tv-typography' : ''}`}>

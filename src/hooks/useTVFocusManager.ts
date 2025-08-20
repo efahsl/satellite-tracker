@@ -27,7 +27,7 @@ interface UseTVFocusManagerProps {
   /** Camera control callbacks */
   onCameraDirectional?: (direction: 'north' | 'east' | 'south' | 'west') => void;
   /** Zoom control callbacks */
-  onZoomStart?: (isZoomingIn: boolean) => void;
+  onZoomStart?: () => void;
   onZoomEnd?: () => void;
   /** Whether camera controls are active */
   cameraControlsActive?: boolean;
@@ -262,7 +262,7 @@ export const useTVFocusManager = ({
           event.preventDefault();
           if (!isSelectHeldRef.current && onZoomStart) {
             isSelectHeldRef.current = true;
-            onZoomStart(true); // Start with zoom in
+            onZoomStart(); // Let the hook determine zoom direction from state
           }
           return;
         case 'Escape':

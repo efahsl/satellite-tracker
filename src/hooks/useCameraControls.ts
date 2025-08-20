@@ -13,7 +13,7 @@ export const useCameraControls = () => {
     }
   }, [controlsRef]);
 
-  const handleZoomStart = useCallback((isZoomingIn: boolean) => {
+  const handleZoomStart = useCallback(() => {
     if (!controlsRef.current) return;
 
     // Clear any existing zoom interval
@@ -21,17 +21,20 @@ export const useCameraControls = () => {
       clearInterval(zoomIntervalRef.current);
     }
 
+    // Use current zoom state from UI context
+    const currentZoomMode = state.isZoomingIn;
+
     // Start continuous zoom
     zoomIntervalRef.current = setInterval(() => {
       if (controlsRef.current) {
-        if (isZoomingIn) {
+        if (currentZoomMode) {
           controlsRef.current.zoomIn();
         } else {
           controlsRef.current.zoomOut();
         }
       }
     }, 50); // 20 FPS for smooth zoom
-  }, []);
+  }, [controlsRef, state.isZoomingIn]);
 
   const handleZoomEnd = useCallback(() => {
     // Stop continuous zoom
