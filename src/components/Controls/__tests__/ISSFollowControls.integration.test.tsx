@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { vi } from 'vitest';
 import { ISSFollowControls } from '../ISSFollowControls';
 import { ISSProvider } from '../../../state/ISSContext';
@@ -40,6 +40,11 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
   beforeEach(() => {
     // Reset all mocks before each test
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Clean up DOM after each test
+    cleanup();
   });
 
   describe('Manual Mode Button Integration', () => {

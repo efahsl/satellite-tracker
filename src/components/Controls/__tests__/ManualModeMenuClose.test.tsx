@@ -1,23 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { vi } from 'vitest';
 import { ISSFollowControls } from '../ISSFollowControls';
 import { ISSProvider } from '../../../state/ISSContext';
 import { UIProvider, useUI } from '../../../state/UIContext';
 import { DeviceProvider } from '../../../state/DeviceContext';
-
-// Mock window.innerWidth to simulate TV mode (1920px)
-Object.defineProperty(window, 'innerWidth', {
-  writable: true,
-  configurable: true,
-  value: 1920,
-});
-
-Object.defineProperty(window, 'innerHeight', {
-  writable: true,
-  configurable: true,
-  value: 1080,
-});
 
 // Test component to monitor UI state
 const UIStateMonitor: React.FC = () => {
@@ -43,7 +30,17 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 
 describe('Manual Mode Menu Close - TV Mode', () => {
   beforeEach(() => {
-    // Reset window dimensions
+    // Clean up any previous renders
+    cleanup();
+  });
+
+  afterEach(() => {
+    // Clean up after each test
+    cleanup();
+  });
+
+  it('should close hamburger menu when manual mode is activated in TV mode (1920px width)', async () => {
+    // Mock window dimensions for TV mode
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
@@ -54,13 +51,9 @@ describe('Manual Mode Menu Close - TV Mode', () => {
       configurable: true,
       value: 1080,
     });
-    
-    // Trigger resize event to update device context
     window.dispatchEvent(new Event('resize'));
-  });
 
-  it('should close hamburger menu when manual mode is activated in TV mode (1920px width)', async () => {
-    render(
+    const { container } = render(
       <TestWrapper>
         <ISSFollowControls />
       </TestWrapper>
@@ -68,11 +61,13 @@ describe('Manual Mode Menu Close - TV Mode', () => {
 
     // Wait for initial state to settle
     await waitFor(() => {
-      expect(screen.getByTestId('menu-visible')).toBeInTheDocument();
+      const menuVisible = container.querySelector('[data-testid="menu-visible"]');
+      expect(menuVisible).toBeTruthy();
     });
 
     // Initially, menu should be visible in TV mode
-    expect(screen.getByTestId('menu-visible')).toHaveTextContent('true');
+    const menuVisibleElement = container.querySelector('[data-testid="menu-visible"]');
+    expect(menuVisibleElement?.textContent).toBe('true');
 
     // Find and click the manual mode button
     const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
@@ -80,23 +75,29 @@ describe('Manual Mode Menu Close - TV Mode', () => {
 
     // Wait for state updates and verify menu is closed
     await waitFor(() => {
-      expect(screen.getByTestId('menu-visible')).toHaveTextContent('false');
+      const updatedMenuVisible = container.querySelector('[data-testid="menu-visible"]');
+      expect(updatedMenuVisible?.textContent).toBe('false');
     }, { timeout: 1000 });
 
     // Verify manual mode is active
-    expect(manualButton).toHaveAttribute('aria-pressed', 'true');
+    expect(manualButton.getAttribute('aria-pressed')).toBe('true');
   });
 
   it('should not close menu when manual mode is activated in non-TV mode', async () => {
-    // Change to desktop width
+    // Mock window dimensions for desktop mode
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
       value: 1024,
     });
+    Object.defineProperty(window, 'innerHeight', {
+      writable: true,
+      configurable: true,
+      value: 768,
+    });
     window.dispatchEvent(new Event('resize'));
 
-    render(
+    const { container } = render(
       <TestWrapper>
         <ISSFollowControls />
       </TestWrapper>
@@ -104,11 +105,13 @@ describe('Manual Mode Menu Close - TV Mode', () => {
 
     // Wait for initial state to settle
     await waitFor(() => {
-      expect(screen.getByTestId('menu-visible')).toBeInTheDocument();
+      const menuVisible = container.querySelector('[data-testid="menu-visible"]');
+      expect(menuVisible).toBeTruthy();
     });
 
     // Get initial menu state
-    const initialMenuState = screen.getByTestId('menu-visible').textContent;
+    const menuVisibleElement = container.querySelector('[data-testid="menu-visible"]');
+    const initialMenuState = menuVisibleElement?.textContent;
 
     // Find and click the manual mode button
     const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
@@ -116,29 +119,41 @@ describe('Manual Mode Menu Close - TV Mode', () => {
 
     // Wait a bit and verify menu state hasn't changed
     await new Promise(resolve => setTimeout(resolve, 100));
-    expect(screen.getByTestId('menu-visible')).toHaveTextContent(initialMenuState || 'false');
+    const updatedMenuVisible = container.querySelector('[data-testid="menu-visible"]');
+    expect(updatedMenuVisible?.textContent).toBe(initialMenuState);
 
     // Verify manual mode is still active
-    expect(manualButton).toHaveAttribute('aria-pressed', 'true');
+    expect(manualButton.getAttribute('aria-pressed')).toBe('true');
   });
 
   it('should verify TV profile detection is working correctly', async () => {
-    // Ensure we're in TV mode
+    // Mock window dimensions for TV mode
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
       value: 1920,
     });
+    Object.defineProperty(window, 'innerHeight', {
+      writable: true,
+      configurable: true,
+      value: 1080,
+    });
     window.dispatchEvent(new Event('resize'));
 
-    render(
+    const { container } = render(
       <TestWrapper>
         <ISSFollowControls />
       </TestWrapper>
     );
 
+    // Wait for component to render
+    await waitFor(() => {
+      const manualButton = screen.queryByRole('button', { name: /manual camera mode/i });
+      expect(manualButton).toBeTruthy();
+    });
+
     // In TV mode, the component should have tv-typography class
-    const container = screen.getByRole('button', { name: /manual camera mode/i }).closest('[class*="issFollowControls"]');
-    expect(container).toHaveClass('tv-typography');
+    const issFollowControlsContainer = container.querySelector('[class*="issFollowControls"]');
+    expect(issFollowControlsContainer?.className).toContain('tv-typography');
   });
 });

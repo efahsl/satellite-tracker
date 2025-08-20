@@ -6,6 +6,9 @@ interface UIState {
   infoPanelVisible: boolean;
   hamburgerMenuVisible: boolean;
   hamburgerMenuFocusIndex: number;
+  tvCameraControlsVisible: boolean;
+  zoomMode: 'in' | 'out';
+  isZooming: boolean;
 }
 
 type UIAction = 
@@ -15,7 +18,10 @@ type UIAction =
   | { type: 'SET_INFO_PANEL_VISIBLE'; payload: boolean }
   | { type: 'SET_HAMBURGER_MENU_VISIBLE'; payload: boolean }
   | { type: 'SET_HAMBURGER_MENU_FOCUS'; payload: number }
-  | { type: 'CLOSE_HAMBURGER_MENU_FOR_MANUAL' };
+  | { type: 'CLOSE_HAMBURGER_MENU_FOR_MANUAL' }
+  | { type: 'SET_TV_CAMERA_CONTROLS_VISIBLE'; payload: boolean }
+  | { type: 'SET_ZOOM_MODE'; payload: 'in' | 'out' }
+  | { type: 'SET_ZOOMING'; payload: boolean };
 
 interface UIContextType {
   state: UIState;
@@ -27,6 +33,9 @@ interface UIContextType {
   setHamburgerMenuVisible: (visible: boolean) => void;
   setHamburgerMenuFocus: (index: number) => void;
   closeHamburgerMenuForManual: () => void;
+  setTVCameraControlsVisible: (visible: boolean) => void;
+  setZoomMode: (mode: 'in' | 'out') => void;
+  setZooming: (zooming: boolean) => void;
 }
 
 // Initial state
@@ -35,6 +44,9 @@ const initialState: UIState = {
   infoPanelVisible: true,
   hamburgerMenuVisible: true, // Default to visible for TV mode
   hamburgerMenuFocusIndex: 0, // Start focus on first item
+  tvCameraControlsVisible: false, // Hidden by default, shown when conditions are met
+  zoomMode: 'in', // Default to zoom in mode
+  isZooming: false, // Not zooming by default
 };
 
 // Create context
@@ -79,6 +91,21 @@ const uiReducer = (state: UIState, action: UIAction): UIState => {
         hamburgerMenuVisible: false,
         hamburgerMenuFocusIndex: 0, // Reset focus when closing
       };
+    case 'SET_TV_CAMERA_CONTROLS_VISIBLE':
+      return {
+        ...state,
+        tvCameraControlsVisible: action.payload,
+      };
+    case 'SET_ZOOM_MODE':
+      return {
+        ...state,
+        zoomMode: action.payload,
+      };
+    case 'SET_ZOOMING':
+      return {
+        ...state,
+        isZooming: action.payload,
+      };
     default:
       return state;
   }
@@ -117,6 +144,18 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     dispatch({ type: 'CLOSE_HAMBURGER_MENU_FOR_MANUAL' });
   }, []);
 
+  const setTVCameraControlsVisible = useMemo(() => (visible: boolean) => {
+    dispatch({ type: 'SET_TV_CAMERA_CONTROLS_VISIBLE', payload: visible });
+  }, []);
+
+  const setZoomMode = useMemo(() => (mode: 'in' | 'out') => {
+    dispatch({ type: 'SET_ZOOM_MODE', payload: mode });
+  }, []);
+
+  const setZooming = useMemo(() => (zooming: boolean) => {
+    dispatch({ type: 'SET_ZOOMING', payload: zooming });
+  }, []);
+
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({
     state,
@@ -128,7 +167,10 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setHamburgerMenuVisible,
     setHamburgerMenuFocus,
     closeHamburgerMenuForManual,
-  }), [state, toggleFPSMonitor, toggleInfoPanel, setFPSMonitorVisible, setInfoPanelVisible, setHamburgerMenuVisible, setHamburgerMenuFocus, closeHamburgerMenuForManual]);
+    setTVCameraControlsVisible,
+    setZoomMode,
+    setZooming,
+  }), [state, toggleFPSMonitor, toggleInfoPanel, setFPSMonitorVisible, setInfoPanelVisible, setHamburgerMenuVisible, setHamburgerMenuFocus, closeHamburgerMenuForManual, setTVCameraControlsVisible, setZoomMode, setZooming]);
 
   return (
     <UIContext.Provider value={contextValue}>
