@@ -93,6 +93,12 @@ export const useTVCameraNavigation = ({
   const inputAcceleration = useRef<Map<string, InputAcceleration>>(new Map());
   const animationFrameRef = useRef<number | null>(null);
   const lastInputTime = useRef<number>(0);
+  const directionalInputRef = useRef<DirectionalInputState>({
+    up: false,
+    down: false,
+    left: false,
+    right: false
+  });
 
   // Calculate if controls should be enabled
   const manualMode = !issState.followISS && !issState.earthRotateMode;
@@ -113,10 +119,15 @@ export const useTVCameraNavigation = ({
     lastInputTime.current = now;
 
     // Update directional input state
-    setDirectionalInput(prev => ({
-      ...prev,
-      [direction]: isActive
-    }));
+    setDirectionalInput(prev => {
+      const newState = {
+        ...prev,
+        [direction]: isActive
+      };
+      // Also update the ref for immediate access in animation loop
+      directionalInputRef.current = newState;
+      return newState;
+    });
 
     // Call callback if provided
     if (onDirectionalInput) {
@@ -162,8 +173,8 @@ export const useTVCameraNavigation = ({
 
     let hasActiveInput = false;
 
-    // Process each active direction
-    Object.entries(directionalInput).forEach(([direction, isActive]) => {
+    // Process each active direction using ref for current state
+    Object.entries(directionalInputRef.current).forEach(([direction, isActive]) => {
       if (isActive) {
         hasActiveInput = true;
         const accelerationData = inputAcceleration.current.get(direction);
@@ -205,7 +216,7 @@ export const useTVCameraNavigation = ({
     } else {
       animationFrameRef.current = null;
     }
-  }, [isControlsEnabled, directionalInput, onCameraRotation]);
+  }, [isControlsEnabled, onCameraRotation, getControlsRef]);
 
   // Start animation loop when there's active input
   useEffect(() => {

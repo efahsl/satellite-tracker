@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { Vector3 } from 'three';
+import { Vector3, Spherical } from 'three';
 import { useISS } from '../../state/ISSContext';
 import { latLongToVector3 } from '../../utils/coordinates';
 import { EARTH_RADIUS, CAMERA_DISTANCE, ISS_ALTITUDE_SCALE, EARTH_ROTATE_DISTANCE, EARTH_ROTATE_SPEED, EARTH_ROTATE_TRANSITION_SPEED } from '../../utils/constants';
@@ -59,9 +59,10 @@ const Controls = forwardRef<ControlsRef, ControlsProps>(({
     camera.lookAt(0, 0, 0);
   }, [camera]);
 
-  // Directional camera rotation functions
+  // Directional camera rotation functions using OrbitControls methods
   const rotateCameraNorth = (speed: number) => {
     if (!controlsRef.current) return;
+    
     // Rotate camera up (decrease polar angle)
     const currentPolar = controlsRef.current.getPolarAngle();
     const newPolar = Math.max(
@@ -73,6 +74,7 @@ const Controls = forwardRef<ControlsRef, ControlsProps>(({
 
   const rotateCameraSouth = (speed: number) => {
     if (!controlsRef.current) return;
+    
     // Rotate camera down (increase polar angle)
     const currentPolar = controlsRef.current.getPolarAngle();
     const newPolar = Math.min(
@@ -84,6 +86,7 @@ const Controls = forwardRef<ControlsRef, ControlsProps>(({
 
   const rotateCameraEast = (speed: number) => {
     if (!controlsRef.current) return;
+    
     // Rotate camera right (increase azimuth angle)
     const currentAzimuth = controlsRef.current.getAzimuthalAngle();
     const newAzimuth = currentAzimuth + speed;
@@ -92,6 +95,7 @@ const Controls = forwardRef<ControlsRef, ControlsProps>(({
 
   const rotateCameraWest = (speed: number) => {
     if (!controlsRef.current) return;
+    
     // Rotate camera left (decrease azimuth angle)
     const currentAzimuth = controlsRef.current.getAzimuthalAngle();
     const newAzimuth = currentAzimuth - speed;
@@ -117,6 +121,9 @@ const Controls = forwardRef<ControlsRef, ControlsProps>(({
         rotateCameraEast(speed);
         break;
     }
+
+    // Update controls after rotation
+    controlsRef.current.update();
 
     // Call callback if provided
     if (onCameraRotate) {
