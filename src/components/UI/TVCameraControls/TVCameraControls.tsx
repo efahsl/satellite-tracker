@@ -3,6 +3,7 @@ import styles from './TVCameraControls.module.css';
 import { useDevice } from '../../../state/DeviceContext';
 import { useUI } from '../../../state/UIContext';
 import { useISS } from '../../../state/ISSContext';
+import { useTVCameraNavigation } from '../../../hooks/useTVCameraNavigation';
 import { TV_CAMERA_DIRECTIONS, TV_CAMERA_ZOOM_MODES } from '../../../utils/tvConstants';
 
 export interface TVCameraControlsProps {
@@ -85,16 +86,29 @@ const ZoomInstructionText: React.FC<ZoomInstructionTextProps> = ({
 
 export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
   visible = true,
-  zoomMode = TV_CAMERA_ZOOM_MODES.IN,
-  isZooming = false,
-  activeDirection = null,
-  // onDirectionalInput, // TODO: Implement in future tasks
-  // onZoomStart, // TODO: Implement in future tasks  
-  // onZoomEnd // TODO: Implement in future tasks
+  zoomMode: propZoomMode,
+  isZooming: propIsZooming,
+  activeDirection: propActiveDirection,
+  onDirectionalInput,
+  onZoomStart,
+  onZoomEnd
 }) => {
   const { isTVProfile } = useDevice();
   const { state: uiState } = useUI();
   const { state } = useISS();
+
+  // Use the TV camera navigation hook for input handling
+  const {
+    activeDirection: hookActiveDirection,
+    isZooming: hookIsZooming,
+    zoomMode: hookZoomMode,
+    isControlsEnabled
+  } = useTVCameraNavigation({
+    isEnabled: true,
+    onDirectionalInput,
+    onZoomStart,
+    onZoomEnd
+  });
 
   // Manual mode is when neither followISS nor earthRotateMode is active
   const manualMode = !state.followISS && !state.earthRotateMode;
@@ -104,6 +118,11 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
     isTVProfile && 
     !uiState.hamburgerMenuVisible && 
     manualMode;
+
+  // Use hook values if props are not provided (hook takes precedence for state management)
+  const activeDirection = propActiveDirection !== undefined ? propActiveDirection : hookActiveDirection;
+  const isZooming = propIsZooming !== undefined ? propIsZooming : hookIsZooming;
+  const zoomMode = propZoomMode !== undefined ? propZoomMode : hookZoomMode;
 
   if (!shouldShowControls) {
     return null;
