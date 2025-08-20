@@ -243,15 +243,39 @@ const rotateCameraToDirection = (direction: string, speed: number = 0.1) => {
 - Menu visibility toggle with Escape key
 - Performance optimized with throttled updates and boundary checks
 
-## ✅ IMPLEMENTATION COMPLETE
+## ✅ IMPLEMENTATION COMPLETE - ENHANCED WITH LONG-PRESS SUPPORT
 
-All phases have been successfully implemented. The TV D-pad camera controls feature is now fully functional with:
+All phases have been successfully implemented with an additional enhancement for long-press functionality. The TV D-pad camera controls feature is now fully functional with:
 
 ### Core Functionality
 - **Directional Navigation**: Arrow keys control camera rotation (North/South/East/West)
+- **🆕 Long-Press Support**: Hold arrow keys for continuous camera panning
 - **Zoom Controls**: Enter key toggles between zoom in/out modes
 - **Menu Integration**: Escape key shows/hides hamburger menu
 - **TV Mode Detection**: Only active when in TV profile mode (1920px width)
+
+### Enhanced Features
+- **Continuous Panning**: Hold any arrow key to continuously pan the camera in that direction
+- **Visual Feedback**: Panning buttons show enhanced glow and pulsing animation
+- **Panning Indicator**: Orange progress bar and status text during continuous panning
+- **Smooth Movement**: 20fps continuous movement for fluid camera control
+- **Automatic Cleanup**: Proper interval management and state cleanup
+
+### Technical Implementation Details
+
+#### Long-Press Functionality
+- **Initial Movement**: Single press triggers immediate camera movement
+- **Continuous Movement**: Holding key starts interval-based continuous movement (50ms intervals)
+- **Visual States**: 
+  - `active`: Single press state (blue glow)
+  - `panning`: Long-press state (enhanced blue glow with pulsing animation)
+- **Performance**: Optimized with proper interval cleanup and boundary checking
+
+#### User Experience
+- **Intuitive**: Works exactly like zoom - single press for discrete movement, hold for continuous
+- **Visual Clarity**: Different visual states clearly indicate single vs continuous movement
+- **Responsive**: Immediate feedback on key press, smooth continuous movement on hold
+- **Accessible**: Proper ARIA labels and screen reader support for all states
 
 ### Technical Features
 - **Smooth Camera Movement**: Uses spherical coordinates for natural rotation

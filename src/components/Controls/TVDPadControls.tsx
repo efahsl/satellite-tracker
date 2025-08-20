@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useDevice } from '../../state/DeviceContext';
 import { useUI } from '../../state/UIContext';
 
@@ -98,20 +98,16 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
 
     switch (event.key) {
       case 'ArrowUp':
-        setActiveDirection('north');
-        onDirectionPress('north');
+        startPanning('north');
         break;
       case 'ArrowDown':
-        setActiveDirection('south');
-        onDirectionPress('south');
+        startPanning('south');
         break;
       case 'ArrowLeft':
-        setActiveDirection('west');
-        onDirectionPress('west');
+        startPanning('west');
         break;
       case 'ArrowRight':
-        setActiveDirection('east');
-        onDirectionPress('east');
+        startPanning('east');
         break;
       case 'Enter':
         if (!isZooming) {
@@ -124,7 +120,7 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
         setHamburgerMenuVisible(true);
         break;
     }
-  }, [isTVProfile, isVisible, pressedKeys, onDirectionPress, onZoomStart, zoomMode, isZooming, setHamburgerMenuVisible]);
+  }, [isTVProfile, isVisible, pressedKeys, startPanning, onZoomStart, zoomMode, isZooming, setHamburgerMenuVisible]);
 
   const handleKeyUp = useCallback((event: KeyboardEvent) => {
     if (!isTVProfile || !isVisible) return;
@@ -138,7 +134,7 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
       case 'ArrowDown':
       case 'ArrowLeft':
       case 'ArrowRight':
-        setActiveDirection(null);
+        stopPanning();
         break;
       case 'Enter':
         if (isZooming) {
@@ -147,7 +143,7 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
         }
         break;
     }
-  }, [isTVProfile, isVisible, pressedKeys, onZoomEnd, isZooming]);
+  }, [isTVProfile, isVisible, pressedKeys, stopPanning, onZoomEnd, isZooming]);
 
   // Set up keyboard event listeners
   useEffect(() => {
@@ -165,11 +161,11 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
   // Reset state when component becomes invisible
   useEffect(() => {
     if (!isVisible) {
-      setActiveDirection(null);
+      stopPanning();
       setIsZooming(false);
       setPressedKeys(new Set());
     }
-  }, [isVisible]);
+  }, [isVisible, stopPanning]);
 
   // Don't render if not in TV mode or not visible
   if (!isTVProfile || !isVisible) {
@@ -186,7 +182,7 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
       >
         {/* Up Arrow */}
         <button
-          className={`dpad-button dpad-up ${activeDirection === 'north' ? 'active' : ''}`}
+          className={`dpad-button dpad-up ${activeDirection === 'north' ? 'active' : ''} ${isPanning && activeDirection === 'north' ? 'panning' : ''}`}
           aria-label="Move camera north"
           aria-pressed={activeDirection === 'north'}
           tabIndex={-1}
@@ -199,7 +195,7 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
         {/* Middle Row: Left and Right */}
         <div className="dpad-middle-row">
           <button
-            className={`dpad-button dpad-left ${activeDirection === 'west' ? 'active' : ''}`}
+            className={`dpad-button dpad-left ${activeDirection === 'west' ? 'active' : ''} ${isPanning && activeDirection === 'west' ? 'panning' : ''}`}
             aria-label="Move camera west"
             aria-pressed={activeDirection === 'west'}
             tabIndex={-1}
@@ -214,7 +210,7 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
           </div>
 
           <button
-            className={`dpad-button dpad-right ${activeDirection === 'east' ? 'active' : ''}`}
+            className={`dpad-button dpad-right ${activeDirection === 'east' ? 'active' : ''} ${isPanning && activeDirection === 'east' ? 'panning' : ''}`}
             aria-label="Move camera east"
             aria-pressed={activeDirection === 'east'}
             tabIndex={-1}
@@ -227,7 +223,7 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
 
         {/* Down Arrow */}
         <button
-          className={`dpad-button dpad-down ${activeDirection === 'south' ? 'active' : ''}`}
+          className={`dpad-button dpad-down ${activeDirection === 'south' ? 'active' : ''} ${isPanning && activeDirection === 'south' ? 'panning' : ''}`}
           aria-label="Move camera south"
           aria-pressed={activeDirection === 'south'}
           tabIndex={-1}
@@ -245,9 +241,11 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
         aria-live="polite"
         aria-label="Zoom controls"
       >
+        {/* Zoom Instructions */}
         <div className={`zoom-text ${isZooming ? 'zooming' : ''}`}>
           {zoomMode === 'in' ? 'Hold SELECT to Zoom IN' : 'Hold SELECT to Zoom OUT'}
         </div>
+        
         {isZooming && (
           <div className="zoom-indicator" aria-label={`Currently ${zoomMode === 'in' ? 'zooming in' : 'zooming out'}`}>
             <div className="zoom-progress-bar" role="progressbar" aria-label="Zoom progress">
@@ -347,6 +345,30 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
           box-shadow: 
             0 0 30px rgba(0, 123, 255, 0.6),
             inset 0 2px 4px rgba(255, 255, 255, 0.2);
+        }
+
+        .dpad-button.panning {
+          background: linear-gradient(145deg, rgba(0, 123, 255, 0.9), rgba(0, 123, 255, 0.7));
+          border-color: rgba(0, 123, 255, 1);
+          color: white;
+          transform: scale(0.95);
+          box-shadow: 
+            0 0 40px rgba(0, 123, 255, 0.8),
+            inset 0 2px 4px rgba(255, 255, 255, 0.3);
+          animation: panning-pulse 0.8s infinite;
+        }
+
+        @keyframes panning-pulse {
+          0%, 100% { 
+            box-shadow: 
+              0 0 40px rgba(0, 123, 255, 0.8),
+              inset 0 2px 4px rgba(255, 255, 255, 0.3);
+          }
+          50% { 
+            box-shadow: 
+              0 0 60px rgba(0, 123, 255, 1),
+              inset 0 2px 4px rgba(255, 255, 255, 0.4);
+          }
         }
 
         .dpad-center {
