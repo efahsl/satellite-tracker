@@ -65,19 +65,28 @@ const ZoomInstructionText: React.FC<ZoomInstructionTextProps> = ({
   isZooming 
 }) => {
   const getZoomText = () => {
+    // When zooming, show the opposite action (what will happen next)
     if (isZooming) {
-      return zoomMode === TV_CAMERA_ZOOM_MODES.IN 
+      // If currently zooming and mode is IN, we're zooming in, so next action is zoom out
+      return zoomMode === TV_CAMERA_ZOOM_MODES.OUT 
         ? 'Hold SELECT to Zoom OUT' 
         : 'Hold SELECT to Zoom IN';
     }
+    
+    // When not zooming, show the current mode action
     return zoomMode === TV_CAMERA_ZOOM_MODES.IN 
       ? 'Hold SELECT to Zoom IN' 
       : 'Hold SELECT to Zoom OUT';
   };
 
+  const textClasses = [
+    styles.zoomInstruction,
+    isZooming ? styles.zoomInstructionActive : ''
+  ].filter(Boolean).join(' ');
+
   return (
     <div className={styles.zoomText}>
-      <span className={styles.zoomInstruction}>
+      <span className={textClasses}>
         {getZoomText()}
       </span>
     </div>

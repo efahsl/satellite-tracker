@@ -150,7 +150,14 @@
   word-wrap: break-word;
   
   /* Animation for text changes */
-  transition: opacity 150ms var(--tv-easing-fade, cubic-bezier(0.4, 0, 0.2, 1));
+  transition: all 150ms var(--tv-easing-fade, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Active zoom instruction styling */
+.zoomInstructionActive {
+  color: var(--tv-focus-border-color, #4A90E2);
+  text-shadow: 0 0 4px rgba(74, 144, 226, 0.5), 0 1px 2px rgba(0, 0, 0, 0.7);
+  transform: scale(1.05);
 }
 
 /* TV-specific enhancements */
@@ -171,6 +178,11 @@
   .zoomInstruction {
     font-size: calc(16px * 1.5); /* TV_TYPOGRAPHY.MIN_FONT_SIZE scaled */
     letter-spacing: 0.025em; /* TV_TYPOGRAPHY.LETTER_SPACING */
+  }
+  
+  .zoomInstructionActive {
+    color: var(--tv-focus-border-color, #4A90E2);
+    text-shadow: 0 0 4px rgba(74, 144, 226, 0.5);
   }
 }
 

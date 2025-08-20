@@ -106,6 +106,21 @@ export const useTVCameraNavigation = ({
     isTVProfile && 
     !uiState.hamburgerMenuVisible && 
     manualMode;
+    
+  // Debug: Log current window width and TV profile status
+  useEffect(() => {
+    console.log('📊 TV Navigation State:', {
+      windowWidth: typeof window !== 'undefined' ? window.innerWidth : 'undefined',
+      isTVProfile,
+      hamburgerMenuVisible: uiState.hamburgerMenuVisible,
+      manualMode,
+      followISS: issState.followISS,
+      earthRotateMode: issState.earthRotateMode,
+      isControlsEnabled,
+      zoomMode: uiState.zoomMode,
+      isZooming: uiState.isZooming
+    });
+  }, [isTVProfile, uiState.hamburgerMenuVisible, manualMode, isControlsEnabled, issState.followISS, issState.earthRotateMode, uiState.zoomMode, uiState.isZooming]);
 
   // Get currently active direction
   const activeDirection = Object.entries(directionalInput).find(([_, isActive]) => isActive)?.[0] || null;
@@ -227,36 +242,92 @@ export const useTVCameraNavigation = ({
     }
   }, [directionalInput, animationLoop, isControlsEnabled]);
 
-  // Handle zoom functionality
-  const handleZoomStart = useCallback(() => {
-    if (!isControlsEnabled) return;
+  // Zoom animation frame ref for continuous zooming
+  const zoomAnimationFrameRef = useRef<number | null>(null);
+  const zoomStartTime = useRef<number>(0);
+  const currentZoomDirection = useRef<boolean>(false); // true for zoom in, false for zoom out
+  const isZoomingRef = useRef<boolean>(false); // Track zooming state for animation loop
 
+  // Handle zoom functionality with continuous hold-to-zoom behavior
+  const handleZoomStart = useCallback(() => {
+    console.log('🔍 handleZoomStart called:', { 
+      isControlsEnabled, 
+      zoomMode: uiState.zoomMode,
+      isZooming: uiState.isZooming 
+    });
+    
+    if (!isControlsEnabled) {
+      console.log('❌ Zoom blocked - controls disabled');
+      return;
+    }
+
+    console.log('✅ Starting zoom...');
     setZooming(true);
+    isZoomingRef.current = true; // Set ref immediately for animation loop
+    zoomStartTime.current = Date.now();
     
     // Determine zoom direction based on current mode
-    const zoomIn = uiState.zoomMode === TV_CAMERA_ZOOM_MODES.IN;
-    
-    // Use controls ref to handle zoom
-    const controlsRef = getControlsRef();
-    if (controlsRef?.handleZoomChange) {
-      controlsRef.handleZoomChange(zoomIn, TV_CAMERA_CONFIG.ZOOM_SPEED);
-    }
+    currentZoomDirection.current = uiState.zoomMode === TV_CAMERA_ZOOM_MODES.IN;
+    console.log('🎯 Zoom direction:', currentZoomDirection.current ? 'IN (closer)' : 'OUT (further)');
     
     if (onZoomStart) {
       onZoomStart();
     }
 
-    // Toggle zoom mode for next time
+    // Start continuous zoom animation
+    const zoomLoop = () => {
+      if (!isZoomingRef.current) {
+        zoomAnimationFrameRef.current = null;
+        return;
+      }
+
+      const controlsRef = getControlsRef();
+      
+      if (controlsRef?.handleZoomChange) {
+        // Calculate zoom speed with acceleration
+        const elapsed = Date.now() - zoomStartTime.current;
+        const accelerationFactor = Math.min(
+          TV_CAMERA_CONFIG.ZOOM_ACCELERATION,
+          1 + (elapsed / 1000) * (TV_CAMERA_CONFIG.ZOOM_ACCELERATION - 1)
+        );
+        const zoomSpeed = TV_CAMERA_CONFIG.ZOOM_SPEED * accelerationFactor;
+        
+        controlsRef.handleZoomChange(currentZoomDirection.current, zoomSpeed);
+      }
+
+      // Continue zoom animation - check if requestAnimationFrame is available (not in test environment)
+      if (typeof requestAnimationFrame !== 'undefined') {
+        zoomAnimationFrameRef.current = requestAnimationFrame(zoomLoop);
+      } else {
+        // Fallback for test environment
+        zoomAnimationFrameRef.current = setTimeout(zoomLoop, 16) as any;
+      }
+    };
+
+    // Start the zoom animation loop
+    console.log('🚀 Starting zoom animation loop');
+    zoomAnimationFrameRef.current = requestAnimationFrame(zoomLoop);
+
+    // Toggle zoom mode for next time (this changes the instruction text)
     const newZoomMode = uiState.zoomMode === TV_CAMERA_ZOOM_MODES.IN 
       ? TV_CAMERA_ZOOM_MODES.OUT 
       : TV_CAMERA_ZOOM_MODES.IN;
+    console.log('🔄 Toggling zoom mode:', uiState.zoomMode, '->', newZoomMode);
     setZoomMode(newZoomMode);
-  }, [isControlsEnabled, uiState.zoomMode, setZooming, setZoomMode, onZoomStart, getControlsRef]);
+  }, [isControlsEnabled, uiState.zoomMode, uiState.isZooming, setZooming, setZoomMode, onZoomStart, getControlsRef]);
 
   const handleZoomEnd = useCallback(() => {
     if (!isControlsEnabled) return;
 
     setZooming(false);
+    isZoomingRef.current = false; // Set ref immediately to stop animation loop
+    
+    // Stop zoom animation
+    if (zoomAnimationFrameRef.current) {
+      cancelAnimationFrame(zoomAnimationFrameRef.current);
+      zoomAnimationFrameRef.current = null;
+    }
+    
     if (onZoomEnd) {
       onZoomEnd();
     }
@@ -299,13 +370,15 @@ export const useTVCameraNavigation = ({
         break;
       
       case TV_CAMERA_KEYS.SELECT:
-        // Handle zoom with hold-to-zoom logic
+        // Handle zoom with immediate hold-to-zoom logic
+        console.log('🎮 SELECT key pressed:', { 
+          isZooming: uiState.isZooming, 
+          isControlsEnabled,
+          zoomMode: uiState.zoomMode 
+        });
         if (!uiState.isZooming) {
-          const holdTimer = setTimeout(() => {
-            handleZoomStart();
-          }, TV_CAMERA_CONFIG.HOLD_THRESHOLD_MS);
-          
-          keyPressTimers.current.set('zoom', holdTimer);
+          // Start zoom immediately on key press (no delay for better responsiveness)
+          handleZoomStart();
         }
         break;
     }
@@ -334,12 +407,6 @@ export const useTVCameraNavigation = ({
       
       case TV_CAMERA_KEYS.SELECT:
         // Handle zoom end
-        const zoomTimer = keyPressTimers.current.get('zoom');
-        if (zoomTimer) {
-          clearTimeout(zoomTimer);
-          keyPressTimers.current.delete('zoom');
-        }
-        
         if (uiState.isZooming) {
           handleZoomEnd();
         }
@@ -372,10 +439,15 @@ export const useTVCameraNavigation = ({
       keyHoldTimers.current.forEach(timer => clearTimeout(timer));
       keyHoldTimers.current.clear();
       
-      // Clear animation frame
+      // Clear animation frames
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;
+      }
+      
+      if (zoomAnimationFrameRef.current) {
+        cancelAnimationFrame(zoomAnimationFrameRef.current);
+        zoomAnimationFrameRef.current = null;
       }
       
       // Reset input state
@@ -386,10 +458,14 @@ export const useTVCameraNavigation = ({
         right: false
       });
       
+      // Reset zoom state
+      setZooming(false);
+      isZoomingRef.current = false;
+      
       // Clear acceleration data
       inputAcceleration.current.clear();
     }
-  }, [isControlsEnabled]);
+  }, [isControlsEnabled, setZooming]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -398,9 +474,13 @@ export const useTVCameraNavigation = ({
       keyPressTimers.current.forEach(timer => clearTimeout(timer));
       keyHoldTimers.current.forEach(timer => clearTimeout(timer));
       
-      // Clear animation frame
+      // Clear animation frames
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
+      }
+      
+      if (zoomAnimationFrameRef.current) {
+        cancelAnimationFrame(zoomAnimationFrameRef.current);
       }
     };
   }, []);

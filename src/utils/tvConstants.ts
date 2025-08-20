@@ -137,7 +137,7 @@ export const TV_CAMERA_CONFIG = {
   POLAR_STEP: Math.PI / 90, // Step size for vertical rotation (2 degrees)
   
   // Zoom settings
-  ZOOM_SPEED: 0.02, // Zoom speed per frame
+  ZOOM_SPEED: 0.1, // Zoom speed per frame (increased for more noticeable effect)
   ZOOM_ACCELERATION: 1.3, // Speed multiplier for continuous zoom
   MIN_ZOOM_DISTANCE: 6, // Minimum camera distance (closer than default)
   MAX_ZOOM_DISTANCE: 20, // Maximum camera distance (further than default)

@@ -131,11 +131,14 @@ const Controls = forwardRef<ControlsRef, ControlsProps>(({
     }
   };
 
-  // Handle zoom changes
+  // Handle zoom changes with smooth continuous zooming
   const handleZoomChange = (zoomIn: boolean, speed: number) => {
-    if (!tvCameraNavigation || !controlsRef.current) return;
+    if (!tvCameraNavigation || !controlsRef.current) {
+      return;
+    }
 
     const currentDistance = controlsRef.current.getDistance();
+    
     let newDistance: number;
 
     if (zoomIn) {
@@ -150,9 +153,18 @@ const Controls = forwardRef<ControlsRef, ControlsProps>(({
       );
     }
 
-    // Update camera distance
-    const direction = camera.position.clone().normalize();
-    camera.position.copy(direction.multiplyScalar(newDistance));
+    // Only update if distance actually changed (prevents unnecessary updates)
+    if (Math.abs(newDistance - currentDistance) > 0.001) {
+      // Directly modify camera position using the current direction
+      const direction = camera.position.clone().normalize();
+      const newPosition = direction.multiplyScalar(newDistance);
+      
+      // Update camera position directly
+      camera.position.copy(newPosition);
+      
+      // Update controls to reflect the new position
+      controlsRef.current.update();
+    }
 
     // Call callback if provided
     if (onZoomChange) {
