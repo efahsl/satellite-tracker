@@ -88,12 +88,12 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
   zoomMode = TV_CAMERA_ZOOM_MODES.IN,
   isZooming = false,
   activeDirection = null,
-  onDirectionalInput,
-  onZoomStart,
-  onZoomEnd
+  // onDirectionalInput, // TODO: Implement in future tasks
+  // onZoomStart, // TODO: Implement in future tasks  
+  // onZoomEnd // TODO: Implement in future tasks
 }) => {
   const { isTVProfile } = useDevice();
-  const { hamburgerMenuVisible } = useUI();
+  const { state: uiState } = useUI();
   const { state } = useISS();
 
   // Manual mode is when neither followISS nor earthRotateMode is active
@@ -102,7 +102,7 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
   // Determine if controls should be visible based on all conditions
   const shouldShowControls = visible && 
     isTVProfile && 
-    !hamburgerMenuVisible && 
+    !uiState.hamburgerMenuVisible && 
     manualMode;
 
   if (!shouldShowControls) {
