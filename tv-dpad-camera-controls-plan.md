@@ -249,6 +249,10 @@ All phases have been successfully implemented with an additional enhancement for
 
 ### Core Functionality
 - **Directional Navigation**: Arrow keys control camera rotation (North/South/East/West)
+  - **UP Arrow**: Rotates camera view north
+  - **DOWN Arrow**: Rotates camera view south  
+  - **LEFT Arrow**: Rotates camera view east (swapped for better UX)
+  - **RIGHT Arrow**: Rotates camera view west (swapped for better UX)
 - **🆕 Long-Press Support**: Hold arrow keys for continuous camera panning
 - **Zoom Controls**: Enter key toggles between zoom in/out modes
 - **Menu Integration**: Escape key shows/hides hamburger menu

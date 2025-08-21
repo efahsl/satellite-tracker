@@ -104,10 +104,10 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
         startPanning('south');
         break;
       case 'ArrowLeft':
-        startPanning('west');
+        startPanning('east');
         break;
       case 'ArrowRight':
-        startPanning('east');
+        startPanning('west');
         break;
       case 'Enter':
         if (!isZooming) {
@@ -195,9 +195,9 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
         {/* Middle Row: Left and Right */}
         <div className="dpad-middle-row">
           <button
-            className={`dpad-button dpad-left ${activeDirection === 'west' ? 'active' : ''} ${isPanning && activeDirection === 'west' ? 'panning' : ''}`}
-            aria-label="Move camera west"
-            aria-pressed={activeDirection === 'west'}
+            className={`dpad-button dpad-left ${activeDirection === 'east' ? 'active' : ''} ${isPanning && activeDirection === 'east' ? 'panning' : ''}`}
+            aria-label="Move camera east"
+            aria-pressed={activeDirection === 'east'}
             tabIndex={-1}
           >
             <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -210,9 +210,9 @@ const TVDPadControls: React.FC<TVDPadControlsProps> = ({
           </div>
 
           <button
-            className={`dpad-button dpad-right ${activeDirection === 'east' ? 'active' : ''} ${isPanning && activeDirection === 'east' ? 'panning' : ''}`}
-            aria-label="Move camera east"
-            aria-pressed={activeDirection === 'east'}
+            className={`dpad-button dpad-right ${activeDirection === 'west' ? 'active' : ''} ${isPanning && activeDirection === 'west' ? 'panning' : ''}`}
+            aria-label="Move camera west"
+            aria-pressed={activeDirection === 'west'}
             tabIndex={-1}
           >
             <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
