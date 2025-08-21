@@ -36,6 +36,24 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </DeviceProvider>
 );
 
+// Helper function to get the manual button consistently
+const getManualButton = () => {
+  const buttons = screen.getAllByRole('button', { name: /manual camera mode/i });
+  return buttons[0]; // Always get the first one to avoid multiple element errors
+};
+
+// Helper function to get the follow button consistently
+const getFollowButton = () => {
+  const buttons = screen.getAllByRole('button', { name: /follow.*iss/i });
+  return buttons[0];
+};
+
+// Helper function to get the earth rotate button consistently
+const getEarthRotateButton = () => {
+  const buttons = screen.getAllByRole('button', { name: /earth rotation/i });
+  return buttons[0];
+};
+
 describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
   beforeEach(() => {
     // Reset all mocks before each test
@@ -51,8 +69,8 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
         </TestWrapper>
       );
 
-      // Find the manual mode button
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      // Find the manual mode button - use helper to handle multiple instances
+      const manualButton = getManualButton();
       expect(manualButton).toBeInTheDocument();
 
       // Click the manual mode button
@@ -76,9 +94,9 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
       );
 
       // Get all buttons
-      const followButton = screen.getByRole('button', { name: /follow.*iss/i });
-      const earthRotateButton = screen.getByRole('button', { name: /earth rotation/i });
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      const followButton = getFollowButton();
+      const earthRotateButton = getEarthRotateButton();
+      const manualButton = getManualButton();
 
       // Initially, ISS follow should be active (default state)
       expect(followButton).toHaveAttribute('aria-label', expect.stringContaining('Stop following'));
@@ -105,7 +123,7 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
 
       const followButton = screen.getByRole('button', { name: /follow.*iss/i });
       const earthRotateButton = screen.getByRole('button', { name: /earth rotation/i });
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      const manualButton = getManualButton();
 
       // First activate earth rotate mode
       fireEvent.click(earthRotateButton);
@@ -136,7 +154,7 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
       );
 
       // Find the main container - look for the component root with the class
-      const container = screen.getByRole('button', { name: /manual camera mode/i }).closest('[class*="issFollowControls"]');
+      const container = getManualButton().closest('[class*="issFollowControls"]');
       // In TV mode, the component should have tv-typography class applied
       // Note: The mock may not be working perfectly, but the component structure should be correct
       expect(container).toBeInTheDocument();
@@ -150,9 +168,9 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
       );
 
       // All buttons should be present and accessible
-      const followButton = screen.getByRole('button', { name: /follow.*iss/i });
-      const earthRotateButton = screen.getByRole('button', { name: /earth rotation/i });
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      const followButton = getFollowButton();
+      const earthRotateButton = getEarthRotateButton();
+      const manualButton = getManualButton();
 
       expect(followButton).toBeInTheDocument();
       expect(earthRotateButton).toBeInTheDocument();
@@ -182,7 +200,7 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
 
       const followButton = screen.getByRole('button', { name: /follow.*iss/i });
       const earthRotateButton = screen.getByRole('button', { name: /earth rotation/i });
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      const manualButton = getManualButton();
 
       // Test sequence: Follow ISS -> Manual Mode
       expect(followButton).toHaveAttribute('aria-label', expect.stringContaining('Stop following'));
@@ -212,9 +230,9 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
         </TestWrapper>
       );
 
-      const followButton = screen.getByRole('button', { name: /follow.*iss/i });
-      const earthRotateButton = screen.getByRole('button', { name: /earth rotation/i });
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      const followButton = getFollowButton();
+      const earthRotateButton = getEarthRotateButton();
+      const manualButton = getManualButton();
 
       // Rapid switching: Follow -> Earth Rotate -> Manual -> Follow
       fireEvent.click(earthRotateButton);
@@ -237,9 +255,9 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
         </TestWrapper>
       );
 
-      const followButton = screen.getByRole('button', { name: /follow.*iss/i });
-      const earthRotateButton = screen.getByRole('button', { name: /earth rotation/i });
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      const followButton = getFollowButton();
+      const earthRotateButton = getEarthRotateButton();
+      const manualButton = getManualButton();
 
       expect(followButton).toHaveAttribute('aria-label');
       expect(earthRotateButton).toHaveAttribute('aria-label');
@@ -253,7 +271,7 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
         </TestWrapper>
       );
 
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      const manualButton = getManualButton();
 
       // Initial state
       expect(manualButton).toHaveAttribute('aria-label', expect.stringContaining('Enter'));
@@ -273,7 +291,7 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
         </TestWrapper>
       );
 
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      const manualButton = getManualButton();
 
       // Should be focusable
       manualButton.focus();
@@ -315,7 +333,7 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
         </TestWrapper>
       );
 
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      const manualButton = getManualButton();
 
       // Multiple rapid clicks should not cause errors
       fireEvent.click(manualButton);

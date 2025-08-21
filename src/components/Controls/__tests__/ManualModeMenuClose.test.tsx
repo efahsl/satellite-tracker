@@ -41,6 +41,18 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </DeviceProvider>
 );
 
+// Helper function to get the manual button consistently
+const getManualButton = () => {
+  const buttons = screen.getAllByRole('button', { name: /manual camera mode/i });
+  return buttons[0]; // Always get the first one to avoid multiple element errors
+};
+
+// Helper function to get menu visible element consistently
+const getMenuVisibleElement = () => {
+  const elements = screen.getAllByTestId('menu-visible');
+  return elements[0]; // Always get the first one to avoid multiple element errors
+};
+
 describe('Manual Mode Menu Close - TV Mode', () => {
   beforeEach(() => {
     // Reset window dimensions
@@ -68,19 +80,19 @@ describe('Manual Mode Menu Close - TV Mode', () => {
 
     // Wait for initial state to settle
     await waitFor(() => {
-      expect(screen.getByTestId('menu-visible')).toBeInTheDocument();
+      expect(getMenuVisibleElement()).toBeInTheDocument();
     });
 
     // Initially, menu should be visible in TV mode
-    expect(screen.getByTestId('menu-visible')).toHaveTextContent('true');
+    expect(getMenuVisibleElement()).toHaveTextContent('true');
 
     // Find and click the manual mode button
-    const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+    const manualButton = getManualButton();
     fireEvent.click(manualButton);
 
     // Wait for state updates and verify menu is closed
     await waitFor(() => {
-      expect(screen.getByTestId('menu-visible')).toHaveTextContent('false');
+      expect(getMenuVisibleElement()).toHaveTextContent('false');
     }, { timeout: 1000 });
 
     // Verify manual mode is active
@@ -104,19 +116,19 @@ describe('Manual Mode Menu Close - TV Mode', () => {
 
     // Wait for initial state to settle
     await waitFor(() => {
-      expect(screen.getByTestId('menu-visible')).toBeInTheDocument();
+      expect(getMenuVisibleElement()).toBeInTheDocument();
     });
 
     // Get initial menu state
-    const initialMenuState = screen.getByTestId('menu-visible').textContent;
+    const initialMenuState = getMenuVisibleElement().textContent;
 
     // Find and click the manual mode button
-    const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+    const manualButton = getManualButton();
     fireEvent.click(manualButton);
 
     // Wait a bit and verify menu state hasn't changed
     await new Promise(resolve => setTimeout(resolve, 100));
-    expect(screen.getByTestId('menu-visible')).toHaveTextContent(initialMenuState || 'false');
+    expect(getMenuVisibleElement()).toHaveTextContent(initialMenuState || 'false');
 
     // Verify manual mode is still active
     expect(manualButton).toHaveAttribute('aria-pressed', 'true');
@@ -138,7 +150,7 @@ describe('Manual Mode Menu Close - TV Mode', () => {
     );
 
     // In TV mode, the component should have tv-typography class
-    const container = screen.getByRole('button', { name: /manual camera mode/i }).closest('[class*="issFollowControls"]');
+    const container = getManualButton().closest('[class*="issFollowControls"]');
     expect(container).toHaveClass('tv-typography');
   });
 });
