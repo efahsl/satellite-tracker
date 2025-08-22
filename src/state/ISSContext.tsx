@@ -22,6 +22,9 @@ interface ISSState {
   error: string | null;
   followISS: boolean;
   earthRotateMode: boolean;
+  tvDpadMode: boolean;
+  currentZoomLevel: number;
+  targetDirection: 'NORTH' | 'EAST' | 'SOUTH' | 'WEST' | null;
 }
 
 type ISSAction =
@@ -32,7 +35,11 @@ type ISSAction =
   | { type: 'FETCH_CREW_ERROR'; payload: string }
   | { type: 'TOGGLE_FOLLOW_ISS' }
   | { type: 'TOGGLE_EARTH_ROTATE' }
-  | { type: 'SET_MANUAL_MODE' };
+  | { type: 'SET_MANUAL_MODE' }
+  | { type: 'SET_TV_DPAD_MODE'; payload: boolean }
+  | { type: 'SET_TARGET_DIRECTION'; payload: 'NORTH' | 'EAST' | 'SOUTH' | 'WEST' | null }
+  | { type: 'SET_ZOOM_LEVEL'; payload: number }
+  | { type: 'RESET_CAMERA_VIEW' };
 
 // Initial state
 const initialState: ISSState = {
@@ -42,6 +49,9 @@ const initialState: ISSState = {
   error: null,
   followISS: true,
   earthRotateMode: false,
+  tvDpadMode: false,
+  currentZoomLevel: 12,
+  targetDirection: null,
 };
 
 // Create context
@@ -102,6 +112,27 @@ const issReducer = (state: ISSState, action: ISSAction): ISSState => {
         ...state,
         followISS: false,
         earthRotateMode: false,
+      };
+    case 'SET_TV_DPAD_MODE':
+      return {
+        ...state,
+        tvDpadMode: action.payload,
+      };
+    case 'SET_TARGET_DIRECTION':
+      return {
+        ...state,
+        targetDirection: action.payload,
+      };
+    case 'SET_ZOOM_LEVEL':
+      return {
+        ...state,
+        currentZoomLevel: action.payload,
+      };
+    case 'RESET_CAMERA_VIEW':
+      return {
+        ...state,
+        targetDirection: null,
+        currentZoomLevel: 12,
       };
     default:
       return state;

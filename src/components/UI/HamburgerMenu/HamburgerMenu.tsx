@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { ISSFollowControls, PerformanceControls, DisplayControls } from '../../Controls';
+import { ISSFollowControls, PerformanceControls, DisplayControls, TVDpadCameraControls } from '../../Controls';
 import { useDevice } from '../../../state/DeviceContext';
 import { useUI } from '../../../state/UIContext';
 import { useTVFocusManager, findFocusableElements } from '../../../hooks/useTVFocusManager';
+import { useISS } from '../../../state/ISSContext';
 import styles from './HamburgerMenu.module.css';
 
 interface HamburgerMenuProps {
@@ -12,6 +13,7 @@ interface HamburgerMenuProps {
 export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) => {
   const { isMobile, isTVProfile } = useDevice();
   const { state: uiState, setHamburgerMenuVisible } = useUI();
+  const { dispatch } = useISS();
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [focusableElements, setFocusableElements] = useState<HTMLElement[]>([]);
@@ -86,7 +88,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
   }, [isTVProfile, isOpen]);
 
   // TV focus manager for keyboard navigation
-  const { currentFocusIndex, focusElement } = useTVFocusManager({
+  useTVFocusManager({
     isEnabled: isTVProfile && isOpen,
     focusableElements,
     onEscape: () => {
@@ -190,6 +192,29 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
           <DisplayControls />
         </div>
       </div>
+
+      {/* TV D-pad Camera Controls - Show when menu is closed in TV mode */}
+      {isTVProfile && !isOpen && (
+        <TVDpadCameraControls
+          isVisible={true}
+          onHide={() => setHamburgerMenuVisible(true)}
+          onDirectionChange={(direction) => {
+            // Handle direction changes by dispatching to ISS context
+            const directionMap = {
+              'up': 'NORTH',
+              'right': 'EAST',
+              'down': 'SOUTH',
+              'left': 'WEST'
+            } as const;
+            dispatch({ type: 'SET_TARGET_DIRECTION', payload: directionMap[direction] });
+          }}
+          onZoomChange={(isZoomingIn) => {
+            // Handle zoom changes by dispatching to ISS context
+            const newZoomLevel = isZoomingIn ? 2 : 24; // Zoom in to 2 units, out to 24 units
+            dispatch({ type: 'SET_ZOOM_LEVEL', payload: newZoomLevel });
+          }}
+        />
+      )}
 
       {/* Backdrop - Only show for mobile/desktop, not TV */}
       {isOpen && !isTVProfile && (

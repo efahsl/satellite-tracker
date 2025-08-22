@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV D-pad Camera Controls Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+        
+        .test-title {
+            color: #4A90E2;
+            margin-bottom: 15px;
+        }
+        
+        .test-description {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .test-instructions {
+            background: #333;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #4A90E2;
+        }
+        
+        .test-instructions h4 {
+            margin-top: 0;
+            color: #4A90E2;
+        }
+        
+        .test-instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .test-instructions li {
+            margin: 5px 0;
+        }
+        
+        .key-info {
+            background: #444;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            display: inline-block;
+            margin: 2px;
+        }
+        
+        .status-display {
+            background: #333;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            margin-top: 15px;
+        }
+        
+        .status-item {
+            margin: 5px 0;
+        }
+        
+        .status-label {
+            color: #4A90E2;
+            font-weight: bold;
+        }
+        
+        .status-value {
+            color: #fff;
+        }
+        
+        .demo-area {
+            background: #000;
+            height: 400px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            border: 2px solid #444;
+        }
+        
+        .demo-text {
+            text-align: center;
+            color: #888;
+        }
+        
+        .demo-text h3 {
+            color: #4A90E2;
+            margin-bottom: 10px;
+        }
+        
+        .demo-text p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .tv-mode-toggle {
+            background: #4A90E2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        
+        .tv-mode-toggle:hover {
+            background: #357abd;
+        }
+        
+        .tv-mode-toggle.active {
+            background: #2d5aa0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>TV D-pad Camera Controls Test</h1>
+        
+        <div class="test-section">
+            <h2 class="test-title">Overview</h2>
+            <div class="test-description">
+                This test page demonstrates the TV D-pad camera controls functionality. 
+                The controls include directional arrow buttons for camera rotation and zoom controls.
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">Test Instructions</h2>
+            <div class="test-instructions">
+                <h4>How to Test:</h4>
+                <ol>
+                    <li><strong>Toggle TV Mode:</strong> Click the "Toggle TV Mode" button to simulate TV mode</li>
+                    <li><strong>Direction Controls:</strong> Use arrow keys to rotate camera view</li>
+                    <li><strong>Zoom Controls:</strong> Hold Enter key to zoom in/out</li>
+                    <li><strong>Menu Integration:</strong> Press Escape to return to menu</li>
+                </ol>
+                
+                <h4>Key Mappings:</h4>
+                <ul>
+                    <li><span class="key-info">↑</span> - Rotate camera to North</li>
+                    <li><span class="key-info">→</span> - Rotate camera to East</li>
+                    <li><span class="key-info">↓</span> - Rotate camera to South</li>
+                    <li><span class="key-info">←</span> - Rotate camera to West</li>
+                    <li><span class="key-info">Enter</span> - Hold to zoom in/out</li>
+                    <li><span class="key-info">Escape</span> - Return to menu</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">Demo Area</h2>
+            <button id="tvModeToggle" class="tv-mode-toggle">Toggle TV Mode</button>
+            
+            <div class="demo-area">
+                <div class="demo-text">
+                    <h3>TV D-pad Controls</h3>
+                    <p>Toggle TV mode to see the D-pad controls appear on the left side</p>
+                    <p>Use arrow keys to test camera rotation</p>
+                    <p>Hold Enter to test zoom functionality</p>
+                </div>
+            </div>
+            
+            <div class="status-display">
+                <div class="status-item">
+                    <span class="status-label">TV Mode:</span>
+                    <span class="status-value" id="tvModeStatus">Disabled</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Current Direction:</span>
+                    <span class="status-value" id="directionStatus">None</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Zoom Level:</span>
+                    <span class="status-value" id="zoomStatus">Default</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Last Action:</span>
+                    <span class="status-value" id="lastActionStatus">None</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">Expected Behavior</h2>
+            <div class="test-description">
+                <ul>
+                    <li><strong>TV Mode:</strong> When enabled, D-pad controls should appear on the left side</li>
+                    <li><strong>Direction Controls:</strong> Arrow keys should trigger camera rotation to cardinal directions</li>
+                    <li><strong>Zoom Controls:</strong> Enter key should toggle between zoom in/out states</li>
+                    <li><strong>Menu Integration:</strong> Escape key should hide D-pad controls and show menu</li>
+                    <li><strong>Responsive Design:</strong> Controls should adapt to different screen sizes</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">Technical Details</h2>
+            <div class="test-description">
+                <p><strong>Components Created:</strong></p>
+                <ul>
+                    <li><code>TVDpadCameraControls.tsx</code> - Main D-pad component</li>
+                    <li><code>DpadButton.tsx</code> - Individual arrow button component</li>
+                    <li><code>ZoomControl.tsx</code> - Zoom text and control component</li>
+                    <li><code>TVDpadCameraControls.module.css</code> - TV-specific styling</li>
+                </ul>
+                
+                <p><strong>Integration Points:</strong></p>
+                <ul>
+                    <li>Extended <code>Controls.tsx</code> with D-pad camera functions</li>
+                    <li>Extended <code>ISSContext.tsx</code> with new state properties</li>
+                    <li>Enhanced <code>useTVFocusManager.ts</code> for D-pad key handling</li>
+                    <li>Integrated with <code>HamburgerMenu.tsx</code> for menu transitions</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple test implementation
+        let isTVMode = false;
+        let currentDirection = 'None';
+        let zoomLevel = 'Default';
+        let lastAction = 'None';
+        
+        const tvModeToggle = document.getElementById('tvModeToggle');
+        const tvModeStatus = document.getElementById('tvModeStatus');
+        const directionStatus = document.getElementById('directionStatus');
+        const zoomStatus = document.getElementById('zoomStatus');
+        const lastActionStatus = document.getElementById('lastActionStatus');
+        
+        // Toggle TV mode
+        tvModeToggle.addEventListener('click', () => {
+            isTVMode = !isTVMode;
+            tvModeToggle.textContent = isTVMode ? 'Disable TV Mode' : 'Toggle TV Mode';
+            tvModeToggle.classList.toggle('active', isTVMode);
+            tvModeStatus.textContent = isTVMode ? 'Enabled' : 'Disabled';
+            updateLastAction('TV Mode ' + (isTVMode ? 'enabled' : 'disabled'));
+        });
+        
+        // Handle keyboard events
+        document.addEventListener('keydown', (event) => {
+            if (!isTVMode) return;
+            
+            event.preventDefault();
+            
+            switch (event.key) {
+                case 'ArrowUp':
+                    currentDirection = 'North';
+                    updateLastAction('Camera rotated to North');
+                    break;
+                case 'ArrowRight':
+                    currentDirection = 'East';
+                    updateLastAction('Camera rotated to East');
+                    break;
+                case 'ArrowDown':
+                    currentDirection = 'South';
+                    updateLastAction('Camera rotated to South');
+                    break;
+                case 'ArrowLeft':
+                    currentDirection = 'West';
+                    updateLastAction('Camera rotated to West');
+                    break;
+                case 'Enter':
+                    zoomLevel = zoomLevel === 'Default' ? 'Zooming In' : 'Zooming Out';
+                    updateLastAction('Zoom ' + (zoomLevel === 'Zooming In' ? 'started' : 'reversed'));
+                    break;
+                case 'Escape':
+                    updateLastAction('Return to menu');
+                    break;
+            }
+            
+            updateStatus();
+        });
+        
+        // Handle keyup for zoom
+        document.addEventListener('keyup', (event) => {
+            if (!isTVMode || event.key !== 'Enter') return;
+            
+            zoomLevel = 'Default';
+            updateLastAction('Zoom stopped');
+            updateStatus();
+        });
+        
+        function updateStatus() {
+            directionStatus.textContent = currentDirection;
+            zoomStatus.textContent = zoomLevel;
+        }
+        
+        function updateLastAction(action) {
+            lastAction = action;
+            lastActionStatus.textContent = action;
+        }
+        
+        // Initialize status
+        updateStatus();
+    </script>
+</body>
+</html>

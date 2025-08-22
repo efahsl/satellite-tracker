@@ -75,6 +75,32 @@ export const EARTH_ROTATE_DISTANCE = EARTH_RADIUS + 12; // Camera distance for E
 export const EARTH_ROTATE_SPEED = 0.1047; // Radians per second (360° in 15 seconds - faster)
 export const EARTH_ROTATE_TRANSITION_SPEED = 0.05; // Lerp factor for smooth transitions
 
+// TV D-pad Camera Controls
+export const TV_DPAD_CONFIG = {
+  // Camera rotation settings
+  ROTATION_SPEED: 0.05, // Radians per frame for smooth rotation
+  ROTATION_TRANSITION_DURATION: 1000, // ms for smooth transitions
+  
+  // Zoom settings
+  ZOOM_IN_DISTANCE: EARTH_RADIUS + 2, // Closest zoom level
+  ZOOM_OUT_DISTANCE: CAMERA_DISTANCE * 2, // Farthest zoom level
+  ZOOM_SPEED: 0.1, // Zoom speed multiplier
+  
+  // UI positioning
+  LEFT_MARGIN: '20px',
+  VERTICAL_CENTER: '50%',
+  BUTTON_SIZE: '60px',
+  BUTTON_SPACING: '20px'
+};
+
+// Cardinal direction coordinates
+export const CARDINAL_DIRECTIONS = {
+  NORTH: { longitude: 0, latitude: 0, distance: CAMERA_DISTANCE },
+  EAST: { longitude: 90, latitude: 0, distance: CAMERA_DISTANCE },
+  SOUTH: { longitude: 180, latitude: 0, distance: CAMERA_DISTANCE },
+  WEST: { longitude: 270, latitude: 0, distance: CAMERA_DISTANCE }
+};
+
 // TV Interface Configuration
 export const TV_CONFIG = {
   // Device detection

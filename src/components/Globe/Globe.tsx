@@ -111,6 +111,9 @@ const Globe: React.FC<GlobeProps> = memo(({
             enablePan={true}
             dampingFactor={0.05}
             earthRotateMode={state.earthRotateMode}
+            tvDpadMode={state.tvDpadMode || false}
+            targetDirection={state.targetDirection || null}
+            zoomLevel={state.currentZoomLevel || 12}
           />
           
           {/* Enhanced star field with conditional rendering based on performance tier */}

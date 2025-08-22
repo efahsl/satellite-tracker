@@ -4,7 +4,16 @@ import { OrbitControls } from '@react-three/drei';
 import { Vector3 } from 'three';
 import { useISS } from '../../state/ISSContext';
 import { latLongToVector3 } from '../../utils/coordinates';
-import { EARTH_RADIUS, CAMERA_DISTANCE, ISS_ALTITUDE_SCALE, EARTH_ROTATE_DISTANCE, EARTH_ROTATE_SPEED, EARTH_ROTATE_TRANSITION_SPEED } from '../../utils/constants';
+import { 
+  EARTH_RADIUS, 
+  CAMERA_DISTANCE, 
+  ISS_ALTITUDE_SCALE, 
+  EARTH_ROTATE_DISTANCE, 
+  EARTH_ROTATE_SPEED, 
+  EARTH_ROTATE_TRANSITION_SPEED,
+  TV_DPAD_CONFIG,
+  CARDINAL_DIRECTIONS
+} from '../../utils/constants';
 
 interface ControlsProps {
   autoRotate?: boolean;
@@ -13,6 +22,9 @@ interface ControlsProps {
   enablePan?: boolean;
   dampingFactor?: number;
   earthRotateMode?: boolean;
+  tvDpadMode?: boolean;
+  targetDirection?: keyof typeof CARDINAL_DIRECTIONS | null;
+  zoomLevel?: number;
 }
 
 const Controls: React.FC<ControlsProps> = ({
@@ -22,6 +34,9 @@ const Controls: React.FC<ControlsProps> = ({
   enablePan = true,
   dampingFactor = 0.1,
   earthRotateMode = false,
+  tvDpadMode = false,
+  targetDirection = null,
+  zoomLevel = CAMERA_DISTANCE,
 }) => {
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
@@ -30,6 +45,12 @@ const Controls: React.FC<ControlsProps> = ({
   const lastFollowState = useRef<boolean>(false);
   const lastEarthRotateState = useRef<boolean>(false);
   const earthRotateAngle = useRef<number>(0);
+  
+  // D-pad camera control refs
+  const targetDirectionRef = useRef<keyof typeof CARDINAL_DIRECTIONS | null>(null);
+  const rotationProgressRef = useRef<number>(0);
+  const targetZoomRef = useRef<number>(CAMERA_DISTANCE);
+  const isRotatingRef = useRef<boolean>(false);
 
   // Set initial camera position
   useEffect(() => {
@@ -37,11 +58,29 @@ const Controls: React.FC<ControlsProps> = ({
     camera.lookAt(0, 0, 0);
   }, [camera]);
 
+  // Handle target direction changes
+  useEffect(() => {
+    if (targetDirection && targetDirection !== targetDirectionRef.current) {
+      targetDirectionRef.current = targetDirection;
+      rotationProgressRef.current = 0;
+      isRotatingRef.current = true;
+    }
+  }, [targetDirection]);
+
+  // Handle zoom level changes
+  useEffect(() => {
+    if (zoomLevel !== targetZoomRef.current) {
+      targetZoomRef.current = zoomLevel;
+    }
+  }, [zoomLevel]);
+
   // Cleanup animation references on unmount
   useEffect(() => {
     return () => {
       // Reset rotation angle on cleanup
       earthRotateAngle.current = 0;
+      rotationProgressRef.current = 0;
+      isRotatingRef.current = false;
     };
   }, []);
 
@@ -58,8 +97,39 @@ const Controls: React.FC<ControlsProps> = ({
       issPosition = new Vector3(x, y, z);
     }
     
-    // Handle Earth rotate mode
-    if (earthRotateMode) {
+    // Handle D-pad camera rotation
+    if (tvDpadMode && targetDirectionRef.current && isRotatingRef.current) {
+      // Always keep the target at Earth center (0,0,0)
+      controlsRef.current.target.set(0, 0, 0);
+      
+      // Get target direction coordinates
+      const targetCoords = CARDINAL_DIRECTIONS[targetDirectionRef.current];
+      
+      // Calculate target camera position
+      const targetPos = new Vector3(
+        Math.cos((targetCoords.longitude * Math.PI) / 180) * targetCoords.distance,
+        0,
+        Math.sin((targetCoords.longitude * Math.PI) / 180) * targetCoords.distance
+      );
+      
+      // Update rotation progress
+      rotationProgressRef.current += TV_DPAD_CONFIG.ROTATION_SPEED;
+      
+      if (rotationProgressRef.current >= 1) {
+        // Rotation complete
+        rotationProgressRef.current = 1;
+        isRotatingRef.current = false;
+        targetDirectionRef.current = null;
+      }
+      
+      // Smooth transition to target position
+      cameraPositionRef.current.lerp(targetPos, TV_DPAD_CONFIG.ROTATION_SPEED);
+      camera.position.copy(cameraPositionRef.current);
+      
+      // Ensure camera is looking at Earth center
+      camera.lookAt(0, 0, 0);
+      
+    } else if (earthRotateMode) {
       // Always keep the target at Earth center (0,0,0)
       controlsRef.current.target.set(0, 0, 0);
       
@@ -113,6 +183,24 @@ const Controls: React.FC<ControlsProps> = ({
         cameraPositionRef.current.lerp(defaultPos, 0.05);
         camera.position.copy(cameraPositionRef.current);
       }
+    }
+    
+    // Handle D-pad zoom
+    if (tvDpadMode && targetZoomRef.current !== cameraPositionRef.current.length()) {
+      const currentDistance = cameraPositionRef.current.length();
+      const targetDistance = targetZoomRef.current;
+      
+      // Calculate zoom direction
+      const zoomDirection = cameraPositionRef.current.clone().normalize();
+      const newDistance = currentDistance + (targetDistance - currentDistance) * TV_DPAD_CONFIG.ZOOM_SPEED;
+      
+      // Apply zoom
+      const newPosition = zoomDirection.multiplyScalar(newDistance);
+      cameraPositionRef.current.copy(newPosition);
+      camera.position.copy(cameraPositionRef.current);
+      
+      // Ensure camera is looking at Earth center
+      camera.lookAt(0, 0, 0);
     }
     
     // Update state tracking

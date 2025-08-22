@@ -1,0 +1,217 @@
+/* TV D-pad Camera Controls Container */
+.container {
+  position: fixed;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  pointer-events: auto;
+}
+
+/* D-pad Container */
+.dpadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Middle row for left/right buttons */
+.middleRow {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+/* D-pad Button Base Styles */
+.dpadButton {
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.8), rgba(53, 122, 189, 0.8));
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Arrow symbol styling */
+.arrowSymbol {
+  display: block;
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Button hover effects */
+.dpadButton:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, rgba(74, 144, 226, 1), rgba(53, 122, 189, 1));
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Button focus states for TV navigation */
+.dpadButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.8), 0 6px 12px rgba(0, 0, 0, 0.4);
+  transform: scale(1.05);
+}
+
+/* Button active states */
+.dpadButton:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}
+
+/* Button press animation */
+.dpadButton:active .arrowSymbol {
+  transform: scale(0.9);
+}
+
+/* Zoom Control */
+.zoomControl {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px solid rgba(74, 144, 226, 0.6);
+  min-width: 200px;
+  text-align: center;
+}
+
+.zoomText {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  line-height: 1.3;
+}
+
+.zoomHint {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  font-style: italic;
+}
+
+/* Back button hint */
+.backHint {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* TV Typography Support */
+.container:global(.tv-typography) .dpadButton {
+  font-size: 32px;
+  width: 80px;
+  height: 80px;
+}
+
+.container:global(.tv-typography) .zoomText {
+  font-size: 24px;
+}
+
+.container:global(.tv-typography) .zoomHint {
+  font-size: 18px;
+}
+
+.container:global(.tv-typography) .backHint {
+  font-size: 18px;
+}
+
+/* Responsive adjustments for different TV sizes */
+@media (min-width: 2560px) {
+  .container {
+    left: 40px;
+  }
+  
+  .dpadButton {
+    width: 80px;
+    height: 80px;
+    font-size: 32px;
+  }
+  
+  .zoomControl {
+    min-width: 280px;
+    padding: 30px;
+  }
+  
+  .zoomText {
+    font-size: 22px;
+  }
+}
+
+/* Animation for button press feedback */
+@keyframes buttonPress {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.dpadButton:active {
+  animation: buttonPress 0.1s ease;
+}
+
+/* Focus ring animation for TV navigation */
+@keyframes focusPulse {
+  0% { box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.8), 0 6px 12px rgba(0, 0, 0, 0.4); }
+  50% { box-shadow: 0 0 0 5px rgba(74, 144, 226, 0.6), 0 6px 12px rgba(0, 0, 0, 0.4); }
+  100% { box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.8), 0 6px 12px rgba(0, 0, 0, 0.4); }
+}
+
+.dpadButton:focus {
+  animation: focusPulse 2s infinite;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .dpadButton {
+    border: 3px solid white;
+    background: #000;
+    color: white;
+  }
+  
+  .zoomControl {
+    border: 3px solid white;
+    background: #000;
+  }
+  
+  .backHint {
+    border: 2px solid white;
+    background: #000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .dpadButton {
+    transition: none;
+  }
+  
+  .dpadButton:hover,
+  .dpadButton:focus {
+    transform: none;
+  }
+  
+  .dpadButton:focus {
+    animation: none;
+  }
+}

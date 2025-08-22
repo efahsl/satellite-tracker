@@ -24,6 +24,12 @@ interface UseTVFocusManagerProps {
   initialFocusIndex?: number;
   /** Grid configuration for 2D navigation (optional, defaults to linear navigation) */
   gridConfig?: GridConfig;
+  /** Callback for D-pad direction changes */
+  onDpadDirection?: (direction: 'up' | 'down' | 'left' | 'right') => void;
+  /** Callback for SELECT button hold state */
+  onSelectHold?: (isHolding: boolean) => void;
+  /** Callback for back button press */
+  onBackPress?: () => void;
 }
 
 /**
@@ -98,10 +104,14 @@ export const useTVFocusManager = ({
   focusableElements,
   onEscape,
   initialFocusIndex = 0,
-  gridConfig
+  gridConfig,
+  onDpadDirection,
+  onSelectHold,
+  onBackPress
 }: UseTVFocusManagerProps): UseTVFocusManagerReturn => {
   const [currentFocusIndex, setCurrentFocusIndex] = useState(initialFocusIndex);
   const keydownHandlerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
+  const [isSelectHolding, setIsSelectHolding] = useState(false);
 
   // Clamp focus index to valid range
   const clampFocusIndex = useCallback((index: number): number => {
@@ -229,25 +239,55 @@ export const useTVFocusManager = ({
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
-        focusDown();
+        if (onDpadDirection) {
+          onDpadDirection('down');
+        } else {
+          focusDown();
+        }
         break;
       
       case 'ArrowUp':
         event.preventDefault();
-        focusUp();
+        if (onDpadDirection) {
+          onDpadDirection('up');
+        } else {
+          focusUp();
+        }
         break;
       
       case 'ArrowLeft':
         event.preventDefault();
-        focusLeft();
+        if (onDpadDirection) {
+          onDpadDirection('left');
+        } else {
+          focusLeft();
+        }
         break;
       
       case 'ArrowRight':
         event.preventDefault();
-        focusRight();
+        if (onDpadDirection) {
+          onDpadDirection('right');
+        } else {
+          focusRight();
+        }
         break;
       
       case 'Enter':
+        event.preventDefault();
+        if (onSelectHold) {
+          // Handle SELECT button hold for D-pad mode
+          setIsSelectHolding(true);
+          onSelectHold(true);
+        } else {
+          // Normal focus management mode
+          const currentElement = focusableElements[currentFocusIndex];
+          if (currentElement && isElementFocusable(currentElement)) {
+            currentElement.click();
+          }
+        }
+        break;
+      
       case ' ': // Space key
         event.preventDefault();
         const currentElement = focusableElements[currentFocusIndex];
@@ -258,7 +298,9 @@ export const useTVFocusManager = ({
       
       case 'Escape':
         event.preventDefault();
-        if (onEscape) {
+        if (onBackPress) {
+          onBackPress();
+        } else if (onEscape) {
           onEscape();
         }
         break;
@@ -267,14 +309,26 @@ export const useTVFocusManager = ({
         // Don't prevent default for other keys
         break;
     }
-  }, [isEnabled, currentFocusIndex, focusableElements, focusUp, focusDown, focusLeft, focusRight, onEscape]);
+  }, [isEnabled, currentFocusIndex, focusableElements, focusUp, focusDown, focusLeft, focusRight, onEscape, onDpadDirection, onSelectHold, onBackPress]);
 
-  // Set up global keyboard event listener when enabled
+  // Handle keyup events for SELECT button release
+  const handleKeyUp = useCallback((event: KeyboardEvent) => {
+    if (!isEnabled) return;
+
+    if (event.key === 'Enter' && onSelectHold && isSelectHolding) {
+      event.preventDefault();
+      setIsSelectHolding(false);
+      onSelectHold(false);
+    }
+  }, [isEnabled, onSelectHold, isSelectHolding]);
+
+  // Set up global keyboard event listeners when enabled
   useEffect(() => {
     if (!isEnabled) {
-      // Remove event listener if disabled
+      // Remove event listeners if disabled
       if (keydownHandlerRef.current) {
         document.removeEventListener('keydown', keydownHandlerRef.current);
+        document.removeEventListener('keyup', handleKeyUp);
         keydownHandlerRef.current = null;
       }
       return;
@@ -283,17 +337,19 @@ export const useTVFocusManager = ({
     // Store reference to handler for cleanup
     keydownHandlerRef.current = handleKeyDown;
     
-    // Add global keyboard event listener
+    // Add global keyboard event listeners
     document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
 
     // Cleanup function
     return () => {
       if (keydownHandlerRef.current) {
         document.removeEventListener('keydown', keydownHandlerRef.current);
+        document.removeEventListener('keyup', handleKeyUp);
         keydownHandlerRef.current = null;
       }
     };
-  }, [isEnabled, handleKeyDown]);
+  }, [isEnabled, handleKeyDown, handleKeyUp]);
 
   // Reset focus index when focusable elements change
   useEffect(() => {
