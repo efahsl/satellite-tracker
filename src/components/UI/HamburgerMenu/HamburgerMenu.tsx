@@ -69,6 +69,14 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
     }
   }, [isTVProfile, setHamburgerMenuVisible, uiState.hamburgerMenuVisible]);
 
+  // Enable TV D-pad mode when controls are visible
+  useEffect(() => {
+    if (isTVProfile) {
+      const shouldEnableDpad = !isOpen;
+      dispatch({ type: 'SET_TV_DPAD_MODE', payload: shouldEnableDpad });
+    }
+  }, [isTVProfile, isOpen, dispatch]);
+
   // Update focusable elements when menu opens/closes or content changes
   useEffect(() => {
     if (isTVProfile && isOpen && menuContentRef.current) {
@@ -210,7 +218,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ className = '' }) 
           }}
           onZoomChange={(isZoomingIn) => {
             // Handle zoom changes by dispatching to ISS context
-            const newZoomLevel = isZoomingIn ? 2 : 24; // Zoom in to 2 units, out to 24 units
+            const newZoomLevel = isZoomingIn ? 2 : 24; // Zoom in to zoom in to 2 units, out to 24 units
             dispatch({ type: 'SET_ZOOM_LEVEL', payload: newZoomLevel });
           }}
         />

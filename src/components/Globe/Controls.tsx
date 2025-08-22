@@ -49,7 +49,7 @@ const Controls: React.FC<ControlsProps> = ({
   // D-pad camera control refs
   const targetDirectionRef = useRef<keyof typeof CARDINAL_DIRECTIONS | null>(null);
   const rotationProgressRef = useRef<number>(0);
-  const targetZoomRef = useRef<number>(CAMERA_DISTANCE);
+  const targetZoomRef = useRef<number | null>(null);
   const isRotatingRef = useRef<boolean>(false);
 
   // Set initial camera position
@@ -98,6 +98,12 @@ const Controls: React.FC<ControlsProps> = ({
     }
     
     // Handle D-pad camera rotation
+    if (tvDpadMode && targetDirectionRef.current && !isRotatingRef.current) {
+      // Start rotation
+      isRotatingRef.current = true;
+      rotationProgressRef.current = 0;
+    }
+    
     if (tvDpadMode && targetDirectionRef.current && isRotatingRef.current) {
       // Always keep the target at Earth center (0,0,0)
       controlsRef.current.target.set(0, 0, 0);
@@ -128,6 +134,15 @@ const Controls: React.FC<ControlsProps> = ({
       
       // Ensure camera is looking at Earth center
       camera.lookAt(0, 0, 0);
+      
+    } else if (tvDpadMode) {
+      // In TV D-pad mode, always override OrbitControls
+      controlsRef.current.target.set(0, 0, 0);
+      
+      if (!targetDirectionRef.current && !targetZoomRef.current) {
+        // When not actively controlling, sync camera position reference
+        cameraPositionRef.current.copy(camera.position);
+      }
       
     } else if (earthRotateMode) {
       // Always keep the target at Earth center (0,0,0)
@@ -186,21 +201,28 @@ const Controls: React.FC<ControlsProps> = ({
     }
     
     // Handle D-pad zoom
-    if (tvDpadMode && targetZoomRef.current !== cameraPositionRef.current.length()) {
+    if (tvDpadMode && targetZoomRef.current !== null) {
       const currentDistance = cameraPositionRef.current.length();
       const targetDistance = targetZoomRef.current;
+      const distanceDiff = Math.abs(targetDistance - currentDistance);
       
-      // Calculate zoom direction
-      const zoomDirection = cameraPositionRef.current.clone().normalize();
-      const newDistance = currentDistance + (targetDistance - currentDistance) * TV_DPAD_CONFIG.ZOOM_SPEED;
-      
-      // Apply zoom
-      const newPosition = zoomDirection.multiplyScalar(newDistance);
-      cameraPositionRef.current.copy(newPosition);
-      camera.position.copy(cameraPositionRef.current);
-      
-      // Ensure camera is looking at Earth center
-      camera.lookAt(0, 0, 0);
+      // Only zoom if we're not already close enough to the target
+      if (distanceDiff > 0.1) {
+        // Calculate zoom direction
+        const zoomDirection = cameraPositionRef.current.clone().normalize();
+        const newDistance = currentDistance + (targetDistance - currentDistance) * TV_DPAD_CONFIG.ZOOM_SPEED;
+        
+        // Apply zoom
+        const newPosition = zoomDirection.multiplyScalar(newDistance);
+        cameraPositionRef.current.copy(newPosition);
+        camera.position.copy(cameraPositionRef.current);
+        
+        // Ensure camera is looking at Earth center
+        camera.lookAt(0, 0, 0);
+      } else {
+        // Zoom complete, reset target
+        targetZoomRef.current = null;
+      }
     }
     
     // Update state tracking
@@ -216,8 +238,8 @@ const Controls: React.FC<ControlsProps> = ({
       ref={controlsRef}
       autoRotate={autoRotate}
       autoRotateSpeed={autoRotateSpeed}
-      enableZoom={enableZoom}
-      enablePan={enablePan}
+      enableZoom={tvDpadMode ? false : enableZoom}
+      enablePan={tvDpadMode ? false : enablePan}
       enableDamping
       dampingFactor={dampingFactor}
       minDistance={EARTH_RADIUS + 0.5}
