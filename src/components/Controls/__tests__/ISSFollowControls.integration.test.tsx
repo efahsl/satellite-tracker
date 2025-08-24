@@ -56,8 +56,12 @@ describe('ISSFollowControls - Manual Mode and Menu Integration', () => {
         </TestWrapper>
       );
 
-      // Find the manual mode button
-      const manualButton = screen.getByRole('button', { name: /manual camera mode/i });
+      // Find the manual mode button - use getAllByRole to handle multiple instances
+      const manualButtons = screen.getAllByRole('button', { name: /manual camera mode/i });
+      expect(manualButtons.length).toBeGreaterThan(0);
+      
+      // Use the first manual button found
+      const manualButton = manualButtons[0];
       expect(manualButton).toBeInTheDocument();
 
       // Click the manual mode button

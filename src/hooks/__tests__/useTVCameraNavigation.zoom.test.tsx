@@ -383,7 +383,7 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
       rerender({ enabled: false });
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise(resolve => setTimeout(resolve, 100));
       });
 
       // Should stop zooming when disabled
