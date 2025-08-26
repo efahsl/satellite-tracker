@@ -48,16 +48,6 @@
   - Implement rotation speed and acceleration based on key hold duration
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-- [x] 7. Add zoom control functionality with dynamic text
-
-  - Implement zoom mode toggle functionality with Enter key
-  - Create zoom mode state management with mode-specific behavior
-  - Add dynamic text updates: "Press SELECT for Zoom Mode" / "UP: Zoom In, DOWN: Zoom Out, SELECT: Exit"
-  - Integrate zoom controls with existing camera distance constraints
-  - Add zoom in/out functionality using Up/Down arrows in zoom mode
-  - Disable Left/Right arrows when in zoom mode
-  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8_
-
 - [x] 8. Integrate camera controls with existing TV interface
 
   - Connect TVCameraControls component to main layout when in TV mode
@@ -74,7 +64,7 @@
   - Ensure visual feedback works with keyboard input detection
   - _Requirements: 2.5, 2.6_
 
-- [ ] 10. Refactor zoom behavior from hold-to-zoom to zoom mode toggle
+- [x] 10. Refactor zoom behavior from hold-to-zoom to zoom mode toggle
 
   - Update UIContext: replace zoomMode/isZooming with isInZoomMode boolean and SET_ZOOM_MODE action
   - Modify useTVCameraNavigation hook: replace hold-to-zoom with SELECT key toggle, add mode-aware input handling

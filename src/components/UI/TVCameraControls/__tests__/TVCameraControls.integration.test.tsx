@@ -66,7 +66,7 @@ describe('TVCameraControls Integration', () => {
     );
 
     // Should render controls when visible
-    expect(screen.getByText('Hold SELECT to Zoom IN')).toBeInTheDocument();
+    expect(screen.getByText('Press SELECT for Zoom Mode')).toBeInTheDocument();
 
     // Should handle visibility changes for smooth animations
     rerender(

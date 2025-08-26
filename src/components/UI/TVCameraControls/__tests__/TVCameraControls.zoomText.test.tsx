@@ -52,43 +52,43 @@ describe('TVCameraControls Zoom Text', () => {
     cleanup();
   });
 
-  it('should show "Hold SELECT to Zoom IN" when not zooming and mode is IN', () => {
+  it('should show "Press SELECT for Zoom Mode" when not in zoom mode', () => {
     const { container } = render(
       <TestWrapper>
         <TVCameraControls 
           visible={true}
-          zoomMode="in"
-          isZooming={false}
+          isInZoomMode={false}
+          activeZoomDirection={null}
         />
       </TestWrapper>
     );
 
     const zoomText = container.querySelector('.tv-camera-controls .zoomInstruction, [class*="zoomInstruction"]');
-    expect(zoomText?.textContent).toBe('Hold SELECT to Zoom IN');
+    expect(zoomText?.textContent).toBe('Press SELECT for Zoom Mode');
   });
 
-  it('should show "Hold SELECT to Zoom OUT" when not zooming and mode is OUT', () => {
+  it('should show "Zoom Mode: UP=In, DOWN=Out, SELECT=Exit" when in zoom mode', () => {
     const { container } = render(
       <TestWrapper>
         <TVCameraControls 
           visible={true}
-          zoomMode="out"
-          isZooming={false}
+          isInZoomMode={true}
+          activeZoomDirection={null}
         />
       </TestWrapper>
     );
 
     const zoomText = container.querySelector('.tv-camera-controls .zoomInstruction, [class*="zoomInstruction"]');
-    expect(zoomText?.textContent).toBe('Hold SELECT to Zoom OUT');
+    expect(zoomText?.textContent).toBe('Zoom Mode: UP=In, DOWN=Out, SELECT=Exit');
   });
 
-  it('should show "Zooming IN..." when actively zooming and mode is OUT (meaning we are zooming in)', () => {
+  it('should show "Zooming IN..." when actively zooming in', () => {
     const { container } = render(
       <TestWrapper>
         <TVCameraControls 
           visible={true}
-          zoomMode="out" // Mode gets toggled when zoom starts, so OUT means we're zooming IN
-          isZooming={true}
+          isInZoomMode={true}
+          activeZoomDirection="in"
         />
       </TestWrapper>
     );
@@ -97,13 +97,13 @@ describe('TVCameraControls Zoom Text', () => {
     expect(zoomText?.textContent).toBe('Zooming IN...');
   });
 
-  it('should show "Zooming OUT..." when actively zooming and mode is IN (meaning we are zooming out)', () => {
+  it('should show "Zooming OUT..." when actively zooming out', () => {
     const { container } = render(
       <TestWrapper>
         <TVCameraControls 
           visible={true}
-          zoomMode="in" // Mode gets toggled when zoom starts, so IN means we're zooming OUT
-          isZooming={true}
+          isInZoomMode={true}
+          activeZoomDirection="out"
         />
       </TestWrapper>
     );
@@ -112,13 +112,13 @@ describe('TVCameraControls Zoom Text', () => {
     expect(zoomText?.textContent).toBe('Zooming OUT...');
   });
 
-  it('should apply active styling when zooming', () => {
+  it('should apply active styling when actively zooming', () => {
     const { container } = render(
       <TestWrapper>
         <TVCameraControls 
           visible={true}
-          zoomMode="out"
-          isZooming={true}
+          isInZoomMode={true}
+          activeZoomDirection="in"
         />
       </TestWrapper>
     );
@@ -127,13 +127,13 @@ describe('TVCameraControls Zoom Text', () => {
     expect(zoomText?.className).toContain('zoomInstructionActive');
   });
 
-  it('should not apply active styling when not zooming', () => {
+  it('should not apply active styling when not actively zooming', () => {
     const { container } = render(
       <TestWrapper>
         <TVCameraControls 
           visible={true}
-          zoomMode="in"
-          isZooming={false}
+          isInZoomMode={true}
+          activeZoomDirection={null}
         />
       </TestWrapper>
     );

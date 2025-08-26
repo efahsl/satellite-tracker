@@ -5,7 +5,7 @@ import { DeviceProvider } from '../../state/DeviceContext';
 import { UIProvider, useUI } from '../../state/UIContext';
 import { ISSProvider, useISS } from '../../state/ISSContext';
 import { CameraControlsProvider } from '../../state/CameraControlsContext';
-import { TV_CAMERA_KEYS, TV_CAMERA_ZOOM_MODES } from '../../utils/tvConstants';
+import { TV_CAMERA_KEYS } from '../../utils/tvConstants';
 import React from 'react';
 
 // Mock the CameraControlsContext to provide a working controls ref
@@ -95,13 +95,13 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
   });
 
   describe('Zoom Mode State Management', () => {
-    it('should initialize with zoom in mode', () => {
+    it('should initialize with navigation mode (not in zoom mode)', () => {
       const { result } = renderHook(() => useTVCameraNavigation(), {
         wrapper: TestWrapper,
       });
 
-      expect(result.current.zoomMode).toBe(TV_CAMERA_ZOOM_MODES.IN);
-      expect(result.current.isZooming).toBe(false);
+      expect(result.current.isInZoomMode).toBe(false);
+      expect(result.current.activeZoomDirection).toBeNull();
     });
 
     it('should have controls enabled in test environment', async () => {
@@ -119,25 +119,15 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
       expect(result.current.isControlsEnabled).toBe(true);
     });
 
-    it('should toggle zoom mode when zoom starts', async () => {
-      const mockZoomStart = vi.fn();
-      const mockControlsRef = {
-        handleZoomChange: vi.fn(),
-      };
-
-      // Mock the camera controls context
-      const mockGetControlsRef = vi.fn(() => mockControlsRef);
-      
-      const { result } = renderHook(() => useTVCameraNavigation({
-        onZoomStart: mockZoomStart,
-      }), {
+    it('should toggle zoom mode when SELECT key is pressed', async () => {
+      const { result } = renderHook(() => useTVCameraNavigation(), {
         wrapper: TestWrapper,
       });
 
-      // Initial state should be zoom in mode
-      expect(result.current.zoomMode).toBe(TV_CAMERA_ZOOM_MODES.IN);
+      // Initial state should be navigation mode
+      expect(result.current.isInZoomMode).toBe(false);
 
-      // Simulate SELECT key press (zoom start)
+      // Simulate SELECT key press (zoom mode toggle)
       act(() => {
         const keydownEvent = new KeyboardEvent('keydown', {
           key: TV_CAMERA_KEYS.SELECT,
@@ -151,14 +141,31 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
         await new Promise(resolve => setTimeout(resolve, 50));
       });
 
-      // After zoom starts, mode should toggle to OUT for next time
-      expect(result.current.zoomMode).toBe(TV_CAMERA_ZOOM_MODES.OUT);
-      expect(result.current.isZooming).toBe(true);
+      // Should now be in zoom mode
+      expect(result.current.isInZoomMode).toBe(true);
+      expect(result.current.activeZoomDirection).toBeNull(); // No active zoom direction yet
+
+      // Press SELECT again to exit zoom mode
+      act(() => {
+        const keydownEvent = new KeyboardEvent('keydown', {
+          key: TV_CAMERA_KEYS.SELECT,
+          bubbles: true,
+        });
+        document.dispatchEvent(keydownEvent);
+      });
+
+      // Wait for state updates
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      // Should be back in navigation mode
+      expect(result.current.isInZoomMode).toBe(false);
     });
   });
 
-  describe('Hold-to-Zoom Behavior', () => {
-    it('should start zooming immediately on SELECT key press', async () => {
+  describe('Zoom Mode Behavior', () => {
+    it('should handle UP/DOWN arrows in zoom mode', async () => {
       const mockZoomStart = vi.fn();
       const mockZoomEnd = vi.fn();
 
@@ -169,7 +176,7 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
         wrapper: TestWrapper,
       });
 
-      // Simulate SELECT key press
+      // First enter zoom mode
       act(() => {
         const keydownEvent = new KeyboardEvent('keydown', {
           key: TV_CAMERA_KEYS.SELECT,
@@ -178,44 +185,55 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
         document.dispatchEvent(keydownEvent);
       });
 
-      // Wait for state updates
       await act(async () => {
         await new Promise(resolve => setTimeout(resolve, 50));
       });
 
-      // Should be zooming
-      expect(result.current.isZooming).toBe(true);
+      expect(result.current.isInZoomMode).toBe(true);
 
-      // Simulate SELECT key release
+      // Now test UP arrow for zoom in
+      act(() => {
+        const keydownEvent = new KeyboardEvent('keydown', {
+          key: TV_CAMERA_KEYS.ARROW_UP,
+          bubbles: true,
+        });
+        document.dispatchEvent(keydownEvent);
+      });
+
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      expect(result.current.activeZoomDirection).toBe('in');
+
+      // Release UP arrow
       act(() => {
         const keyupEvent = new KeyboardEvent('keyup', {
-          key: TV_CAMERA_KEYS.SELECT,
+          key: TV_CAMERA_KEYS.ARROW_UP,
           bubbles: true,
         });
         document.dispatchEvent(keyupEvent);
       });
 
-      // Wait for state updates
       await act(async () => {
         await new Promise(resolve => setTimeout(resolve, 50));
       });
 
-      // Should stop zooming
-      expect(result.current.isZooming).toBe(false);
+      expect(result.current.activeZoomDirection).toBeNull();
     });
 
-    it('should call zoom callbacks appropriately', async () => {
+    it('should call zoom callbacks when using UP/DOWN in zoom mode', async () => {
       const mockZoomStart = vi.fn();
       const mockZoomEnd = vi.fn();
 
-      renderHook(() => useTVCameraNavigation({
+      const { result } = renderHook(() => useTVCameraNavigation({
         onZoomStart: mockZoomStart,
         onZoomEnd: mockZoomEnd,
       }), {
         wrapper: TestWrapper,
       });
 
-      // Simulate SELECT key press and release cycle
+      // Enter zoom mode first
       act(() => {
         const keydownEvent = new KeyboardEvent('keydown', {
           key: TV_CAMERA_KEYS.SELECT,
@@ -228,9 +246,22 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
         await new Promise(resolve => setTimeout(resolve, 50));
       });
 
+      // Use UP arrow to zoom in
+      act(() => {
+        const keydownEvent = new KeyboardEvent('keydown', {
+          key: TV_CAMERA_KEYS.ARROW_UP,
+          bubbles: true,
+        });
+        document.dispatchEvent(keydownEvent);
+      });
+
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
       act(() => {
         const keyupEvent = new KeyboardEvent('keyup', {
-          key: TV_CAMERA_KEYS.SELECT,
+          key: TV_CAMERA_KEYS.ARROW_UP,
           bubbles: true,
         });
         document.dispatchEvent(keyupEvent);
@@ -247,22 +278,12 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
   });
 
   describe('Zoom Direction Logic', () => {
-    it('should zoom in when mode is IN', async () => {
-      const mockCameraRotation = vi.fn();
-      const mockControlsRef = {
-        handleZoomChange: vi.fn(),
-      };
-
-      const { result } = renderHook(() => useTVCameraNavigation({
-        onCameraRotation: mockCameraRotation,
-      }), {
+    it('should handle zoom in and zoom out directions', async () => {
+      const { result } = renderHook(() => useTVCameraNavigation(), {
         wrapper: TestWrapper,
       });
 
-      // Initial mode should be IN
-      expect(result.current.zoomMode).toBe(TV_CAMERA_ZOOM_MODES.IN);
-
-      // Simulate zoom start
+      // Enter zoom mode
       act(() => {
         const keydownEvent = new KeyboardEvent('keydown', {
           key: TV_CAMERA_KEYS.SELECT,
@@ -275,18 +296,58 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
         await new Promise(resolve => setTimeout(resolve, 50));
       });
 
-      // Should be zooming and mode should have toggled
-      expect(result.current.isZooming).toBe(true);
-      expect(result.current.zoomMode).toBe(TV_CAMERA_ZOOM_MODES.OUT);
+      expect(result.current.isInZoomMode).toBe(true);
+
+      // Test UP arrow for zoom in
+      act(() => {
+        const keydownEvent = new KeyboardEvent('keydown', {
+          key: TV_CAMERA_KEYS.ARROW_UP,
+          bubbles: true,
+        });
+        document.dispatchEvent(keydownEvent);
+      });
+
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      expect(result.current.activeZoomDirection).toBe('in');
+
+      // Release UP arrow
+      act(() => {
+        const keyupEvent = new KeyboardEvent('keyup', {
+          key: TV_CAMERA_KEYS.ARROW_UP,
+          bubbles: true,
+        });
+        document.dispatchEvent(keyupEvent);
+      });
+
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      expect(result.current.activeZoomDirection).toBeNull();
+
+      // Test DOWN arrow for zoom out
+      act(() => {
+        const keydownEvent = new KeyboardEvent('keydown', {
+          key: TV_CAMERA_KEYS.ARROW_DOWN,
+          bubbles: true,
+        });
+        document.dispatchEvent(keydownEvent);
+      });
+
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      expect(result.current.activeZoomDirection).toBe('out');
     });
   });
 
   describe('Continuous Zoom Animation', () => {
     it('should handle continuous zoom with animation frames', async () => {
       const mockZoomStart = vi.fn();
-      const mockControlsRef = {
-        handleZoomChange: vi.fn(),
-      };
 
       // Mock requestAnimationFrame
       const mockRequestAnimationFrame = vi.fn((callback) => {
@@ -304,10 +365,23 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
         wrapper: TestWrapper,
       });
 
-      // Start zoom
+      // Enter zoom mode first
       act(() => {
         const keydownEvent = new KeyboardEvent('keydown', {
           key: TV_CAMERA_KEYS.SELECT,
+          bubbles: true,
+        });
+        document.dispatchEvent(keydownEvent);
+      });
+
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      // Start continuous zoom with UP arrow
+      act(() => {
+        const keydownEvent = new KeyboardEvent('keydown', {
+          key: TV_CAMERA_KEYS.ARROW_UP,
           bubbles: true,
         });
         document.dispatchEvent(keydownEvent);
@@ -323,7 +397,7 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
       // Stop zoom
       act(() => {
         const keyupEvent = new KeyboardEvent('keyup', {
-          key: TV_CAMERA_KEYS.SELECT,
+          key: TV_CAMERA_KEYS.ARROW_UP,
           bubbles: true,
         });
         document.dispatchEvent(keyupEvent);
@@ -350,11 +424,11 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
       });
 
       // Should reflect UI context state
-      expect(typeof result.current.isZooming).toBe('boolean');
-      expect(['in', 'out']).toContain(result.current.zoomMode);
+      expect(typeof result.current.isInZoomMode).toBe('boolean');
+      expect([null, 'in', 'out']).toContain(result.current.activeZoomDirection);
     });
 
-    it('should handle disabled state during zoom', async () => {
+    it('should handle disabled state during zoom mode', async () => {
       const { result, rerender } = renderHook(
         ({ enabled }) => useTVCameraNavigation({ isEnabled: enabled }),
         {
@@ -363,7 +437,7 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
         }
       );
 
-      // Start zoom while enabled
+      // Enter zoom mode while enabled
       act(() => {
         const keydownEvent = new KeyboardEvent('keydown', {
           key: TV_CAMERA_KEYS.SELECT,
@@ -376,8 +450,8 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
         await new Promise(resolve => setTimeout(resolve, 50));
       });
 
-      // Should be zooming
-      expect(result.current.isZooming).toBe(true);
+      // Should be in zoom mode
+      expect(result.current.isInZoomMode).toBe(true);
 
       // Disable the hook
       rerender({ enabled: false });
@@ -386,8 +460,9 @@ describe('useTVCameraNavigation - Zoom Functionality', () => {
         await new Promise(resolve => setTimeout(resolve, 100));
       });
 
-      // Should stop zooming when disabled
-      expect(result.current.isZooming).toBe(false);
+      // Should exit zoom mode when disabled
+      expect(result.current.isInZoomMode).toBe(false);
+      expect(result.current.activeZoomDirection).toBeNull();
     });
   });
 });

@@ -65,8 +65,8 @@ describe('useTVCameraNavigation', () => {
         right: false,
       });
       expect(result.current.activeDirection).toBeNull();
-      expect(result.current.isZooming).toBe(false);
-      expect(result.current.zoomMode).toBe('in');
+      expect(result.current.isInZoomMode).toBe(false);
+      expect(result.current.activeZoomDirection).toBeNull();
     });
 
     it('should be enabled in TV mode with manual camera mode', async () => {
@@ -138,8 +138,8 @@ describe('useTVCameraNavigation', () => {
       });
 
       // Zoom functionality should be available
-      expect(result.current.isZooming).toBe(false);
-      expect(result.current.zoomMode).toBeDefined();
+      expect(result.current.isInZoomMode).toBe(false);
+      expect(result.current.activeZoomDirection).toBeNull();
     });
 
     it('should provide zoom mode state', () => {
@@ -147,7 +147,7 @@ describe('useTVCameraNavigation', () => {
         wrapper: TestWrapper,
       });
 
-      expect(['in', 'out']).toContain(result.current.zoomMode);
+      expect([null, 'in', 'out']).toContain(result.current.activeZoomDirection);
     });
   });
 
@@ -215,8 +215,8 @@ describe('useTVCameraNavigation', () => {
       });
 
       // Should reflect UI context state
-      expect(typeof result.current.isZooming).toBe('boolean');
-      expect(typeof result.current.zoomMode).toBe('string');
+      expect(typeof result.current.isInZoomMode).toBe('boolean');
+      expect(result.current.activeZoomDirection === null || typeof result.current.activeZoomDirection === 'string').toBe(true);
     });
 
     it('should respect device context for TV mode', () => {
