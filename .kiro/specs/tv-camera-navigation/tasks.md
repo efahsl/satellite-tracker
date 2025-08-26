@@ -48,7 +48,16 @@
   - Implement rotation speed and acceleration based on key hold duration
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-- [ ] 7. Implement dedicated zoom mode functionality
+- [ ] 7. Update existing implementation for zoom mode toggle architecture
+
+  - Refactor UIContext state management to use isInZoomMode boolean instead of hold-to-zoom state
+  - Update useTVCameraNavigation hook to handle zoom mode toggle with SELECT key instead of hold behavior
+  - Modify TVCameraControls component to support mode-aware text display and disabled arrow states
+  - Remove existing hold-to-zoom logic and replace with toggle-based zoom mode state management
+  - Update keyboard event handling to distinguish between navigation mode and zoom mode inputs
+  - _Requirements: 3.1, 3.2, 3.7, 3.8_
+
+- [ ] 8. Implement dedicated zoom mode functionality
 
   - Create zoom mode toggle logic triggered by SELECT (Enter) key press
   - Implement zoom control using Up arrow (zoom in) and Down arrow (zoom out) in zoom mode
@@ -58,7 +67,7 @@
   - Add smooth zoom animation with requestAnimationFrame for responsive zooming
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9_
 
-- [x] 9. Integrate camera controls with existing TV interface
+- [x] 10. Integrate camera controls with existing TV interface
 
   - Connect TVCameraControls component to main layout when in TV mode
   - Ensure controls hide when hamburger menu opens (back button pressed)
@@ -66,7 +75,7 @@
   - Integrate with existing TV focus management system
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 8. Add mode-specific visual feedback for inputs
+- [ ] 9. Add mode-specific visual feedback for inputs
 
   - Implement active state styling for directional arrows based on current mode
   - Add disabled state styling for Left/Right arrows when in zoom mode
@@ -75,7 +84,7 @@
   - Ensure visual feedback works with mode-aware keyboard input detection
   - _Requirements: 2.5, 2.6, 3.4_
 
-- [ ] 10. Implement manual mode requirement enforcement
+- [ ] 11. Implement manual mode requirement enforcement
 
   - Add logic to disable camera controls when not in manual camera mode
   - Hide or disable controls when in ISS follow mode or Earth rotate mode
@@ -83,7 +92,7 @@
   - Add visual indicators or messaging when controls are disabled
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 11. Add comprehensive testing and polish
+- [ ] 12. Add comprehensive testing and polish
   - Write end-to-end tests for complete TV camera navigation user flows including zoom mode
   - Add performance tests for smooth camera movement and animations in both modes
   - Implement accessibility tests for keyboard navigation and mode transitions
