@@ -2,11 +2,11 @@
 
 - [x] 1. Extend UIContext with TV camera controls state management
 
-  - Add tvCameraControlsVisible, zoomMode, and isZooming properties to UIState interface
-  - Implement SET_TV_CAMERA_CONTROLS_VISIBLE, SET_ZOOM_MODE, and SET_ZOOMING actions
+  - Add tvCameraControlsVisible, isInZoomMode, and activeZoomDirection properties to UIState interface
+  - Implement SET_TV_CAMERA_CONTROLS_VISIBLE, SET_ZOOM_MODE, and SET_ACTIVE_ZOOM_DIRECTION actions
   - Create action creators for camera controls state management
   - Write unit tests for new state management functionality
-  - _Requirements: 1.1, 1.4, 3.1, 3.3_
+  - _Requirements: 1.1, 1.4, 3.1, 3.2_
 
 - [x] 2. Create TV camera configuration constants
 
@@ -34,11 +34,11 @@
 
 - [x] 5. Create useTVCameraNavigation hook for input handling
 
-  - Implement custom hook for managing directional input state
-  - Add keyboard event listeners for arrow keys (up, down, left, right)
-  - Create hold-to-zoom logic for Enter key press and release events
+  - Implement custom hook for managing directional input state and zoom mode
+  - Add keyboard event listeners for arrow keys with mode-aware behavior
+  - Create zoom mode toggle logic for Enter key press events
   - Implement input debouncing and acceleration for smooth camera movement
-  - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.2, 3.4_
+  - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.2, 3.7_
 
 - [x] 6. Implement directional camera rotation logic
 
@@ -48,17 +48,17 @@
   - Implement rotation speed and acceleration based on key hold duration
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-- [x] 7. Add zoom control functionality with dynamic text
+- [ ] 7. Implement dedicated zoom mode functionality
 
-  - ✅ Implement zoom in/out logic with hold-to-zoom behavior using Enter key
-  - ✅ Create zoom mode state management (in/out) with automatic switching
-  - ✅ Add dynamic text updates: "Hold SELECT to Zoom IN" / "Hold SELECT to Zoom OUT"
-  - ✅ Integrate zoom controls with existing camera distance constraints
-  - ✅ Add continuous zoom animation with requestAnimationFrame for smooth zooming
-  - ✅ Implement zoom acceleration for longer holds
-  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
+  - Create zoom mode toggle logic triggered by SELECT (Enter) key press
+  - Implement zoom control using Up arrow (zoom in) and Down arrow (zoom out) in zoom mode
+  - Add dynamic text updates: "Press SELECT for Zoom Mode" / "Zoom Mode: UP=In, DOWN=Out, SELECT=Exit"
+  - Disable Left/Right arrow functionality when in zoom mode
+  - Integrate zoom controls with existing camera distance constraints
+  - Add smooth zoom animation with requestAnimationFrame for responsive zooming
+  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9_
 
-- [x] 8. Integrate camera controls with existing TV interface
+- [x] 9. Integrate camera controls with existing TV interface
 
   - Connect TVCameraControls component to main layout when in TV mode
   - Ensure controls hide when hamburger menu opens (back button pressed)
@@ -66,13 +66,14 @@
   - Integrate with existing TV focus management system
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [x] 9. Add visual feedback for active directional inputs
+- [ ] 8. Add mode-specific visual feedback for inputs
 
-  - Implement active state styling for directional arrows when keys are pressed
+  - Implement active state styling for directional arrows based on current mode
+  - Add disabled state styling for Left/Right arrows when in zoom mode
   - Add scale and opacity animations for visual feedback
-  - Create smooth transitions between active and inactive arrow states
-  - Ensure visual feedback works with keyboard input detection
-  - _Requirements: 2.5, 2.6_
+  - Create smooth transitions between active, inactive, and disabled arrow states
+  - Ensure visual feedback works with mode-aware keyboard input detection
+  - _Requirements: 2.5, 2.6, 3.4_
 
 - [ ] 10. Implement manual mode requirement enforcement
 
@@ -83,10 +84,11 @@
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
 - [ ] 11. Add comprehensive testing and polish
-  - Write end-to-end tests for complete TV camera navigation user flows
-  - Add performance tests for smooth camera movement and animations
-  - Implement accessibility tests for keyboard navigation
-  - Create visual regression tests for control positioning and styling
+  - Write end-to-end tests for complete TV camera navigation user flows including zoom mode
+  - Add performance tests for smooth camera movement and animations in both modes
+  - Implement accessibility tests for keyboard navigation and mode transitions
+  - Create visual regression tests for control positioning and styling in both modes
   - Add error handling tests for edge cases and invalid states
+  - Test zoom mode entry/exit behavior and disabled arrow states
   - Perform manual testing with actual TV remote control simulation
   - _Requirements: All requirements - comprehensive validation_
