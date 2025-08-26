@@ -67,7 +67,7 @@ describe('TVCameraControls Zoom Text', () => {
     expect(zoomText?.textContent).toBe('Press SELECT for Zoom Mode');
   });
 
-  it('should show "Zoom Mode: UP=In, DOWN=Out, SELECT=Exit" when in zoom mode', () => {
+  it('should show "SELECT=Exit" when in zoom mode', () => {
     const { container } = render(
       <TestWrapper>
         <TVCameraControls 
@@ -79,10 +79,10 @@ describe('TVCameraControls Zoom Text', () => {
     );
 
     const zoomText = container.querySelector('.tv-camera-controls .zoomInstruction, [class*="zoomInstruction"]');
-    expect(zoomText?.textContent).toBe('Zoom Mode: UP=In, DOWN=Out, SELECT=Exit');
+    expect(zoomText?.textContent).toBe('SELECT=Exit');
   });
 
-  it('should show "Zooming IN..." when actively zooming in', () => {
+  it('should show "SELECT=Exit" when actively zooming in', () => {
     const { container } = render(
       <TestWrapper>
         <TVCameraControls 
@@ -94,10 +94,10 @@ describe('TVCameraControls Zoom Text', () => {
     );
 
     const zoomText = container.querySelector('.tv-camera-controls .zoomInstruction, [class*="zoomInstruction"]');
-    expect(zoomText?.textContent).toBe('Zooming IN...');
+    expect(zoomText?.textContent).toBe('SELECT=Exit');
   });
 
-  it('should show "Zooming OUT..." when actively zooming out', () => {
+  it('should show "SELECT=Exit" when actively zooming out', () => {
     const { container } = render(
       <TestWrapper>
         <TVCameraControls 
@@ -109,7 +109,7 @@ describe('TVCameraControls Zoom Text', () => {
     );
 
     const zoomText = container.querySelector('.tv-camera-controls .zoomInstruction, [class*="zoomInstruction"]');
-    expect(zoomText?.textContent).toBe('Zooming OUT...');
+    expect(zoomText?.textContent).toBe('SELECT=Exit');
   });
 
   it('should apply active styling when actively zooming', () => {

@@ -76,12 +76,12 @@ const ZoomInstructionText: React.FC<ZoomInstructionTextProps> = ({
   const getZoomText = () => {
     if (isInZoomMode) {
       // In zoom mode: show zoom instructions
-      if (activeZoomDirection) {
-        return activeZoomDirection === 'in' 
-          ? 'Zooming IN...' 
-          : 'Zooming OUT...';
-      }
-      return 'Zoom Mode: UP=In, DOWN=Out, SELECT=Exit';
+      // if (activeZoomDirection) {
+      //   return activeZoomDirection === 'in' 
+      //     ? 'Zooming IN...' 
+      //     : 'Zooming OUT...';
+      // }
+      return 'SELECT=Exit';
     }
     
     // In navigation mode: show how to enter zoom mode
