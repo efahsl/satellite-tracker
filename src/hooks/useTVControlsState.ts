@@ -49,10 +49,10 @@ export const useTVControlsState = ({
       followISS: issState.followISS,
       earthRotateMode: issState.earthRotateMode,
       isControlsEnabled,
-      zoomMode: uiState.zoomMode,
-      isZooming: uiState.isZooming
+      isInZoomMode: uiState.isInZoomMode,
+      activeZoomDirection: uiState.activeZoomDirection
     });
-  }, [isTVProfile, uiState.hamburgerMenuVisible, manualMode, isControlsEnabled, issState.followISS, issState.earthRotateMode, uiState.zoomMode, uiState.isZooming]);
+  }, [isTVProfile, uiState.hamburgerMenuVisible, manualMode, isControlsEnabled, issState.followISS, issState.earthRotateMode, uiState.isInZoomMode, uiState.activeZoomDirection]);
 
   return {
     isControlsEnabled

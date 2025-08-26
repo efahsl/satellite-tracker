@@ -8,8 +8,8 @@ interface UIState {
   hamburgerMenuFocusIndex: number;
   lastActiveButtonIndex: number; // Track the last active button for focus restoration
   tvCameraControlsVisible: boolean;
-  zoomMode: 'in' | 'out';
-  isZooming: boolean;
+  isInZoomMode: boolean;
+  activeZoomDirection: 'in' | 'out' | null;
 }
 
 type UIAction = 
@@ -22,8 +22,8 @@ type UIAction =
   | { type: 'SET_LAST_ACTIVE_BUTTON'; payload: number }
   | { type: 'CLOSE_HAMBURGER_MENU_FOR_MANUAL' }
   | { type: 'SET_TV_CAMERA_CONTROLS_VISIBLE'; payload: boolean }
-  | { type: 'SET_ZOOM_MODE'; payload: 'in' | 'out' }
-  | { type: 'SET_ZOOMING'; payload: boolean };
+  | { type: 'SET_ZOOM_MODE'; payload: boolean }
+  | { type: 'SET_ACTIVE_ZOOM_DIRECTION'; payload: 'in' | 'out' | null };
 
 interface UIContextType {
   state: UIState;
@@ -37,8 +37,8 @@ interface UIContextType {
   setLastActiveButton: (index: number) => void;
   closeHamburgerMenuForManual: () => void;
   setTVCameraControlsVisible: (visible: boolean) => void;
-  setZoomMode: (mode: 'in' | 'out') => void;
-  setZooming: (zooming: boolean) => void;
+  setZoomMode: (isInZoomMode: boolean) => void;
+  setActiveZoomDirection: (direction: 'in' | 'out' | null) => void;
 }
 
 // Initial state
@@ -49,8 +49,8 @@ const initialState: UIState = {
   hamburgerMenuFocusIndex: 0, // Start focus on first item
   lastActiveButtonIndex: 0, // Track last active button for focus restoration
   tvCameraControlsVisible: false, // Hidden by default, shown when conditions are met
-  zoomMode: 'in', // Default to zoom in mode
-  isZooming: false, // Not zooming by default
+  isInZoomMode: false, // Not in zoom mode by default
+  activeZoomDirection: null, // No active zoom direction by default
 };
 
 // Create context
@@ -109,12 +109,12 @@ const uiReducer = (state: UIState, action: UIAction): UIState => {
     case 'SET_ZOOM_MODE':
       return {
         ...state,
-        zoomMode: action.payload,
+        isInZoomMode: action.payload,
       };
-    case 'SET_ZOOMING':
+    case 'SET_ACTIVE_ZOOM_DIRECTION':
       return {
         ...state,
-        isZooming: action.payload,
+        activeZoomDirection: action.payload,
       };
     default:
       return state;
@@ -162,12 +162,12 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     dispatch({ type: 'SET_TV_CAMERA_CONTROLS_VISIBLE', payload: visible });
   }, []);
 
-  const setZoomMode = useMemo(() => (mode: 'in' | 'out') => {
-    dispatch({ type: 'SET_ZOOM_MODE', payload: mode });
+  const setZoomMode = useMemo(() => (isInZoomMode: boolean) => {
+    dispatch({ type: 'SET_ZOOM_MODE', payload: isInZoomMode });
   }, []);
 
-  const setZooming = useMemo(() => (zooming: boolean) => {
-    dispatch({ type: 'SET_ZOOMING', payload: zooming });
+  const setActiveZoomDirection = useMemo(() => (direction: 'in' | 'out' | null) => {
+    dispatch({ type: 'SET_ACTIVE_ZOOM_DIRECTION', payload: direction });
   }, []);
 
   // Memoize the context value to prevent unnecessary re-renders
@@ -184,8 +184,8 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     closeHamburgerMenuForManual,
     setTVCameraControlsVisible,
     setZoomMode,
-    setZooming,
-  }), [state, toggleFPSMonitor, toggleInfoPanel, setFPSMonitorVisible, setInfoPanelVisible, setHamburgerMenuVisible, setHamburgerMenuFocus, setLastActiveButton, closeHamburgerMenuForManual, setTVCameraControlsVisible, setZoomMode, setZooming]);
+    setActiveZoomDirection,
+  }), [state, toggleFPSMonitor, toggleInfoPanel, setFPSMonitorVisible, setInfoPanelVisible, setHamburgerMenuVisible, setHamburgerMenuFocus, setLastActiveButton, closeHamburgerMenuForManual, setTVCameraControlsVisible, setZoomMode, setActiveZoomDirection]);
 
   return (
     <UIContext.Provider value={contextValue}>

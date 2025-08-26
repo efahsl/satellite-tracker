@@ -19,8 +19,8 @@ describe('UIContext', () => {
       expect(result.current.state.hamburgerMenuFocusIndex).toBe(0);
       expect(result.current.state.lastActiveButtonIndex).toBe(0);
       expect(result.current.state.tvCameraControlsVisible).toBe(false);
-      expect(result.current.state.zoomMode).toBe('in');
-      expect(result.current.state.isZooming).toBe(false);
+      expect(result.current.state.isInZoomMode).toBe(false);
+      expect(result.current.state.activeZoomDirection).toBe(null);
     });
   });
 
@@ -381,84 +381,83 @@ describe('UIContext', () => {
   });
 
   describe('Zoom Mode Management', () => {
-    it('should set zoom mode to "in"', () => {
+    it('should set zoom mode to true', () => {
       const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
 
       act(() => {
-        result.current.setZoomMode('in');
+        result.current.setZoomMode(true);
       });
 
-      expect(result.current.state.zoomMode).toBe('in');
+      expect(result.current.state.isInZoomMode).toBe(true);
     });
 
-    it('should set zoom mode to "out"', () => {
+    it('should set zoom mode to false', () => {
       const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
 
       act(() => {
-        result.current.setZoomMode('out');
+        result.current.setZoomMode(false);
       });
 
-      expect(result.current.state.zoomMode).toBe('out');
+      expect(result.current.state.isInZoomMode).toBe(false);
     });
 
     it('should switch between zoom modes correctly', () => {
       const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
 
-      // Start with 'in' (default)
-      expect(result.current.state.zoomMode).toBe('in');
+      // Start with false (default)
+      expect(result.current.state.isInZoomMode).toBe(false);
 
       act(() => {
-        result.current.setZoomMode('out');
+        result.current.setZoomMode(true);
       });
 
-      expect(result.current.state.zoomMode).toBe('out');
+      expect(result.current.state.isInZoomMode).toBe(true);
 
       act(() => {
-        result.current.setZoomMode('in');
+        result.current.setZoomMode(false);
       });
 
-      expect(result.current.state.zoomMode).toBe('in');
+      expect(result.current.state.isInZoomMode).toBe(false);
     });
   });
 
-  describe('Zooming State Management', () => {
-    it('should set zooming state to true', () => {
+  describe('Active Zoom Direction Management', () => {
+    it('should set active zoom direction to "in"', () => {
       const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
 
       act(() => {
-        result.current.setZooming(true);
+        result.current.setActiveZoomDirection('in');
       });
 
-      expect(result.current.state.isZooming).toBe(true);
+      expect(result.current.state.activeZoomDirection).toBe('in');
     });
 
-    it('should set zooming state to false', () => {
+    it('should set active zoom direction to "out"', () => {
       const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
 
       act(() => {
-        result.current.setZooming(false);
+        result.current.setActiveZoomDirection('out');
       });
 
-      expect(result.current.state.isZooming).toBe(false);
+      expect(result.current.state.activeZoomDirection).toBe('out');
     });
 
-    it('should toggle zooming state correctly', () => {
+    it('should set active zoom direction to null', () => {
       const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
 
-      // Start with false (default)
-      expect(result.current.state.isZooming).toBe(false);
-
+      // First set to a direction
       act(() => {
-        result.current.setZooming(true);
+        result.current.setActiveZoomDirection('in');
       });
 
-      expect(result.current.state.isZooming).toBe(true);
+      expect(result.current.state.activeZoomDirection).toBe('in');
 
+      // Then set to null
       act(() => {
-        result.current.setZooming(false);
+        result.current.setActiveZoomDirection(null);
       });
 
-      expect(result.current.state.isZooming).toBe(false);
+      expect(result.current.state.activeZoomDirection).toBe(null);
     });
   });
 
@@ -469,13 +468,13 @@ describe('UIContext', () => {
       // Set all TV camera controls state
       act(() => {
         result.current.setTVCameraControlsVisible(true);
-        result.current.setZoomMode('out');
-        result.current.setZooming(true);
+        result.current.setZoomMode(true);
+        result.current.setActiveZoomDirection('out');
       });
 
       expect(result.current.state.tvCameraControlsVisible).toBe(true);
-      expect(result.current.state.zoomMode).toBe('out');
-      expect(result.current.state.isZooming).toBe(true);
+      expect(result.current.state.isInZoomMode).toBe(true);
+      expect(result.current.state.activeZoomDirection).toBe('out');
 
       // Other state should remain unchanged
       expect(result.current.state.hamburgerMenuVisible).toBe(true);
@@ -496,8 +495,8 @@ describe('UIContext', () => {
       // Change TV camera controls state
       act(() => {
         result.current.setTVCameraControlsVisible(true);
-        result.current.setZoomMode('out');
-        result.current.setZooming(true);
+        result.current.setZoomMode(true);
+        result.current.setActiveZoomDirection('out');
       });
 
       // Existing state should remain unchanged
@@ -507,8 +506,8 @@ describe('UIContext', () => {
 
       // TV camera controls state should be updated
       expect(result.current.state.tvCameraControlsVisible).toBe(true);
-      expect(result.current.state.zoomMode).toBe('out');
-      expect(result.current.state.isZooming).toBe(true);
+      expect(result.current.state.isInZoomMode).toBe(true);
+      expect(result.current.state.activeZoomDirection).toBe('out');
     });
   });
 
@@ -518,7 +517,7 @@ describe('UIContext', () => {
 
       const initialSetTVCameraControlsVisible = result.current.setTVCameraControlsVisible;
       const initialSetZoomMode = result.current.setZoomMode;
-      const initialSetZooming = result.current.setZooming;
+      const initialSetActiveZoomDirection = result.current.setActiveZoomDirection;
 
       // Trigger a state change
       act(() => {
@@ -530,7 +529,7 @@ describe('UIContext', () => {
 
       expect(result.current.setTVCameraControlsVisible).toBe(initialSetTVCameraControlsVisible);
       expect(result.current.setZoomMode).toBe(initialSetZoomMode);
-      expect(result.current.setZooming).toBe(initialSetZooming);
+      expect(result.current.setActiveZoomDirection).toBe(initialSetActiveZoomDirection);
     });
   });
 
@@ -586,20 +585,20 @@ describe('UIContext', () => {
       const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
 
       act(() => {
-        result.current.dispatch({ type: 'SET_ZOOM_MODE', payload: 'out' });
+        result.current.dispatch({ type: 'SET_ZOOM_MODE', payload: true });
       });
 
-      expect(result.current.state.zoomMode).toBe('out');
+      expect(result.current.state.isInZoomMode).toBe(true);
     });
 
-    it('should support direct dispatch for SET_ZOOMING', () => {
+    it('should support direct dispatch for SET_ACTIVE_ZOOM_DIRECTION', () => {
       const { result } = renderHook(() => useUI(), { wrapper: TestWrapper });
 
       act(() => {
-        result.current.dispatch({ type: 'SET_ZOOMING', payload: true });
+        result.current.dispatch({ type: 'SET_ACTIVE_ZOOM_DIRECTION', payload: 'in' });
       });
 
-      expect(result.current.state.isZooming).toBe(true);
+      expect(result.current.state.activeZoomDirection).toBe('in');
     });
 
     it('should support direct dispatch for SET_LAST_ACTIVE_BUTTON', () => {

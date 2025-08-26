@@ -145,6 +145,29 @@
     box-shadow 80ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55));
 }
 
+/* Disabled state for arrows (used in zoom mode for left/right arrows) */
+.arrow--disabled {
+  opacity: 0.3; /* Much lower opacity to indicate disabled state */
+  background: rgba(255, 255, 255, 0.05); /* Very subtle background */
+  border-color: rgba(255, 255, 255, 0.1); /* Subtle border */
+  cursor: not-allowed;
+  
+  /* Remove hover effects when disabled */
+  pointer-events: none;
+  
+  /* Smooth transition to disabled state */
+  transition: 
+    opacity 200ms var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    background-color 200ms var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    border-color 200ms var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Disabled arrow symbol styling */
+.arrow--disabled .arrowSymbol {
+  color: rgba(255, 255, 255, 0.3);
+  text-shadow: none;
+}
+
 /* Active state hover enhancement */
 .arrow--active:hover {
   opacity: 1.0;

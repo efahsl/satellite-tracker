@@ -1,10 +1,8 @@
-import React from 'react';
 import { useCameraControls } from '../state/CameraControlsContext';
 import { useTVKeyboardInput } from './useTVKeyboardInput';
 import { useTVDirectionalInput } from './useTVDirectionalInput';
 import { useTVZoomControl } from './useTVZoomControl';
 import { useTVControlsState } from './useTVControlsState';
-import { TV_CAMERA_CONFIG } from '../utils/tvConstants';
 
 /**
  * Directional input state for camera navigation
@@ -42,10 +40,10 @@ interface UseTVCameraNavigationReturn {
   activeDirection: string | null;
   /** Currently pressed direction for immediate visual feedback */
   pressedDirection: string | null;
-  /** Whether zoom is currently active */
-  isZooming: boolean;
-  /** Current zoom mode */
-  zoomMode: 'in' | 'out';
+  /** Whether in zoom mode */
+  isInZoomMode: boolean;
+  /** Currently active zoom direction */
+  activeZoomDirection: 'in' | 'out' | null;
   /** Whether controls are currently enabled */
   isControlsEnabled: boolean;
 }
@@ -88,8 +86,10 @@ export const useTVCameraNavigation = ({
   });
 
   const {
-    isZooming,
-    zoomMode,
+    isInZoomMode,
+    activeZoomDirection,
+    handleZoomModeToggle,
+    handleZoomInput,
     handleZoomKeyDown,
     handleZoomKeyUp
   } = useTVZoomControl({
@@ -98,11 +98,14 @@ export const useTVCameraNavigation = ({
     onZoomEnd
   });
 
-  // Set up keyboard input handling
+  // Set up keyboard input handling with mode awareness
   useTVKeyboardInput({
     isEnabled: isControlsEnabled,
+    isInZoomMode,
     onDirectionalKeyDown: handleDirectionalKeyDown,
     onDirectionalKeyUp: handleDirectionalKeyUp,
+    onZoomModeToggle: handleZoomModeToggle,
+    onZoomInput: handleZoomInput,
     onZoomKeyDown: handleZoomKeyDown,
     onZoomKeyUp: handleZoomKeyUp
   });
@@ -111,8 +114,8 @@ export const useTVCameraNavigation = ({
     directionalInput,
     activeDirection,
     pressedDirection,
-    isZooming,
-    zoomMode,
+    isInZoomMode,
+    activeZoomDirection,
     isControlsEnabled
   };
 };

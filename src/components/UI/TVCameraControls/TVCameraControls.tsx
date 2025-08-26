@@ -4,12 +4,12 @@ import { useDevice } from '../../../state/DeviceContext';
 import { useUI } from '../../../state/UIContext';
 import { useISS } from '../../../state/ISSContext';
 import { useTVCameraNavigation } from '../../../hooks/useTVCameraNavigation';
-import { TV_CAMERA_DIRECTIONS, TV_CAMERA_ZOOM_MODES } from '../../../utils/tvConstants';
+import { TV_CAMERA_DIRECTIONS } from '../../../utils/tvConstants';
 
 export interface TVCameraControlsProps {
   visible?: boolean;
-  zoomMode?: 'in' | 'out';
-  isZooming?: boolean;
+  isInZoomMode?: boolean;
+  activeZoomDirection?: 'in' | 'out' | null;
   activeDirection?: string | null;
   pressedDirection?: string | null;
   onDirectionalInput?: (direction: 'up' | 'down' | 'left' | 'right') => void;
@@ -21,6 +21,7 @@ interface DirectionalArrowProps {
   direction: 'up' | 'down' | 'left' | 'right';
   isActive?: boolean;
   isPressed?: boolean;
+  isDisabled?: boolean;
   className?: string;
 }
 
@@ -28,6 +29,7 @@ const DirectionalArrow: React.FC<DirectionalArrowProps> = ({
   direction, 
   isActive = false,
   isPressed = false,
+  isDisabled = false,
   className = ''
 }) => {
   const arrowSymbols = {
@@ -42,6 +44,7 @@ const DirectionalArrow: React.FC<DirectionalArrowProps> = ({
     styles[`arrow--${direction}`],
     isActive ? styles['arrow--active'] : '',
     isPressed ? styles['arrow--pressed'] : '',
+    isDisabled ? styles['arrow--disabled'] : '',
     className
   ].filter(Boolean).join(' ');
 
@@ -52,6 +55,7 @@ const DirectionalArrow: React.FC<DirectionalArrowProps> = ({
       tabIndex={-1}
       aria-label={`Navigate ${direction}`}
       aria-pressed={isActive}
+      aria-disabled={isDisabled}
     >
       <span className={styles.arrowSymbol}>
         {arrowSymbols[direction]}
@@ -61,32 +65,32 @@ const DirectionalArrow: React.FC<DirectionalArrowProps> = ({
 };
 
 interface ZoomInstructionTextProps {
-  zoomMode: 'in' | 'out';
-  isZooming: boolean;
+  isInZoomMode: boolean;
+  activeZoomDirection: 'in' | 'out' | null;
 }
 
 const ZoomInstructionText: React.FC<ZoomInstructionTextProps> = ({ 
-  zoomMode, 
-  isZooming 
+  isInZoomMode, 
+  activeZoomDirection 
 }) => {
   const getZoomText = () => {
-    if (isZooming) {
-      // When actively zooming, show what's currently happening
-      // Since the mode gets toggled when zoom starts, we need to show the opposite of current mode
-      return zoomMode === TV_CAMERA_ZOOM_MODES.IN 
-        ? 'Zooming OUT...' 
-        : 'Zooming IN...';
+    if (isInZoomMode) {
+      // In zoom mode: show zoom instructions
+      if (activeZoomDirection) {
+        return activeZoomDirection === 'in' 
+          ? 'Zooming IN...' 
+          : 'Zooming OUT...';
+      }
+      return 'Zoom Mode: UP=In, DOWN=Out, SELECT=Exit';
     }
     
-    // When not zooming, show what will happen when SELECT is pressed
-    return zoomMode === TV_CAMERA_ZOOM_MODES.IN 
-      ? 'Hold SELECT to Zoom IN' 
-      : 'Hold SELECT to Zoom OUT';
+    // In navigation mode: show how to enter zoom mode
+    return 'Press SELECT for Zoom Mode';
   };
 
   const textClasses = [
     styles.zoomInstruction,
-    isZooming ? styles.zoomInstructionActive : ''
+    activeZoomDirection ? styles.zoomInstructionActive : ''
   ].filter(Boolean).join(' ');
 
   return (
@@ -100,8 +104,8 @@ const ZoomInstructionText: React.FC<ZoomInstructionTextProps> = ({
 
 export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
   visible = true,
-  zoomMode: propZoomMode,
-  isZooming: propIsZooming,
+  isInZoomMode: propIsInZoomMode,
+  activeZoomDirection: propActiveZoomDirection,
   activeDirection: propActiveDirection,
   pressedDirection: propPressedDirection,
   onDirectionalInput,
@@ -116,8 +120,8 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
   const {
     activeDirection: hookActiveDirection,
     pressedDirection: hookPressedDirection,
-    isZooming: hookIsZooming,
-    zoomMode: hookZoomMode
+    isInZoomMode: hookIsInZoomMode,
+    activeZoomDirection: hookActiveZoomDirection
   } = useTVCameraNavigation({
     isEnabled: true,
     onDirectionalInput,
@@ -137,8 +141,8 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
   // Use hook values if props are not provided (hook takes precedence for state management)
   const activeDirection = propActiveDirection !== undefined ? propActiveDirection : hookActiveDirection;
   const pressedDirection = propPressedDirection !== undefined ? propPressedDirection : hookPressedDirection;
-  const isZooming = propIsZooming !== undefined ? propIsZooming : hookIsZooming;
-  const zoomMode = propZoomMode !== undefined ? propZoomMode : hookZoomMode;
+  const isInZoomMode = propIsInZoomMode !== undefined ? propIsInZoomMode : hookIsInZoomMode;
+  const activeZoomDirection = propActiveZoomDirection !== undefined ? propActiveZoomDirection : hookActiveZoomDirection;
 
   // Always render the component but control visibility with CSS classes for smooth animations
   const containerClasses = [
@@ -159,8 +163,9 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
         {/* Top arrow */}
         <DirectionalArrow 
           direction={TV_CAMERA_DIRECTIONS.UP}
-          isActive={activeDirection === TV_CAMERA_DIRECTIONS.UP}
-          isPressed={pressedDirection === TV_CAMERA_DIRECTIONS.UP}
+          isActive={!isInZoomMode && activeDirection === TV_CAMERA_DIRECTIONS.UP}
+          isPressed={!isInZoomMode && pressedDirection === TV_CAMERA_DIRECTIONS.UP}
+          isDisabled={false} // UP arrow works in both modes
           className={styles.arrowTop}
         />
         
@@ -168,8 +173,9 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
         <div className={styles.arrowsMiddleRow}>
           <DirectionalArrow 
             direction={TV_CAMERA_DIRECTIONS.LEFT}
-            isActive={activeDirection === TV_CAMERA_DIRECTIONS.LEFT}
-            isPressed={pressedDirection === TV_CAMERA_DIRECTIONS.LEFT}
+            isActive={!isInZoomMode && activeDirection === TV_CAMERA_DIRECTIONS.LEFT}
+            isPressed={!isInZoomMode && pressedDirection === TV_CAMERA_DIRECTIONS.LEFT}
+            isDisabled={isInZoomMode} // LEFT arrow disabled in zoom mode
             className={styles.arrowLeft}
           />
           
@@ -178,8 +184,9 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
           
           <DirectionalArrow 
             direction={TV_CAMERA_DIRECTIONS.RIGHT}
-            isActive={activeDirection === TV_CAMERA_DIRECTIONS.RIGHT}
-            isPressed={pressedDirection === TV_CAMERA_DIRECTIONS.RIGHT}
+            isActive={!isInZoomMode && activeDirection === TV_CAMERA_DIRECTIONS.RIGHT}
+            isPressed={!isInZoomMode && pressedDirection === TV_CAMERA_DIRECTIONS.RIGHT}
+            isDisabled={isInZoomMode} // RIGHT arrow disabled in zoom mode
             className={styles.arrowRight}
           />
         </div>
@@ -187,16 +194,17 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
         {/* Bottom arrow */}
         <DirectionalArrow 
           direction={TV_CAMERA_DIRECTIONS.DOWN}
-          isActive={activeDirection === TV_CAMERA_DIRECTIONS.DOWN}
-          isPressed={pressedDirection === TV_CAMERA_DIRECTIONS.DOWN}
+          isActive={!isInZoomMode && activeDirection === TV_CAMERA_DIRECTIONS.DOWN}
+          isPressed={!isInZoomMode && pressedDirection === TV_CAMERA_DIRECTIONS.DOWN}
+          isDisabled={false} // DOWN arrow works in both modes
           className={styles.arrowBottom}
         />
       </div>
 
       {/* Zoom instruction text */}
       <ZoomInstructionText 
-        zoomMode={zoomMode}
-        isZooming={isZooming}
+        isInZoomMode={isInZoomMode}
+        activeZoomDirection={activeZoomDirection}
       />
     </div>
   );
