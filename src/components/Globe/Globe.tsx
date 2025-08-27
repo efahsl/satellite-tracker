@@ -19,6 +19,7 @@ import {
   SUN_DISTANCE,
   SUN_INTENSITY
 } from '../../utils/constants';
+import { getEarthQualitySettings, getStarFieldSettings } from '../../utils/earthQualitySettings';
 import { calculateSunPosition } from '../../utils/sunPosition';
 
 interface GlobeProps {
@@ -52,6 +53,9 @@ const Globe = memo(forwardRef<GlobeRef, GlobeProps>(({
   
   // Controls ref for TV camera navigation
   const controlsRef = useRef<ControlsRef>(null);
+  
+  // Get star field settings based on performance tier
+  const starSettings = getStarFieldSettings(getEarthQualitySettings(performanceState.tier));
 
   // Update sun position periodically
   useEffect(() => {
@@ -137,13 +141,13 @@ const Globe = memo(forwardRef<GlobeRef, GlobeProps>(({
             onZoomChange={onZoomChange}
           />
           
-          {/* Enhanced star field with conditional rendering based on performance tier */}
+          {/* Enhanced star field with quality-based settings */}
           <Stars 
-            radius={200} 
-            depth={100} 
-            count={performanceState.tier === 'low' ? 2000 : performanceState.tier === 'medium' ? 4000 : 8000} 
-            factor={6} 
-            saturation={0.1} 
+            radius={starSettings.radius} 
+            depth={starSettings.depth} 
+            count={starSettings.count} 
+            factor={starSettings.factor} 
+            saturation={starSettings.saturation} 
             fade={true}
             speed={0.5}
           />

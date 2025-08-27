@@ -30,8 +30,8 @@ const QUALITY_PRESETS: Record<PerformanceTier, EarthQualitySettings> = {
     starCount: 8000, // Keep same count as medium
     starRadius: 200,
     starDepth: 100,
-    starFactor: 10, // Much brighter/larger stars
-    starSaturation: 0.8, // High saturation for vivid colors
+    starFactor: 15, // Much brighter/larger stars
+    starSaturation: 0.9, // High saturation for vivid colors
   },
   medium: {
     geometrySegments: 48,
@@ -45,8 +45,8 @@ const QUALITY_PRESETS: Record<PerformanceTier, EarthQualitySettings> = {
     starCount: 8000, // Current star count
     starRadius: 200,
     starDepth: 100,
-    starFactor: 6, // Current brightness
-    starSaturation: 0.1, // Current saturation
+    starFactor: 10, // Increased brightness
+    starSaturation: 0.4, // Increased saturation for better visibility
   },
   low: {
     geometrySegments: 32,
@@ -60,8 +60,8 @@ const QUALITY_PRESETS: Record<PerformanceTier, EarthQualitySettings> = {
     starCount: 4000, // Fewer stars for low performance
     starRadius: 150,
     starDepth: 80,
-    starFactor: 3, // Dimmer stars
-    starSaturation: 0.05, // Very low saturation
+    starFactor: 6, // Brighter stars even on low quality
+    starSaturation: 0.2, // Better visibility on low quality
   },
 };
 
