@@ -1,0 +1,1 @@
+I want to establish a “TV” mode that gets toggled on at exactly 1920px. When this happens I want to establish a TV UX, which means the menu should be fixed on the left side of the menu, adjust the font sizes for TV, and add focus management on selectable buttons. Refer to tv_ux_guidelines.md for additional details.
