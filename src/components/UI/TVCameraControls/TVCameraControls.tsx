@@ -174,10 +174,14 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
         <DirectionalArrow
           direction={TV_CAMERA_DIRECTIONS.UP}
           isActive={
-            !isInZoomMode && activeDirection === TV_CAMERA_DIRECTIONS.UP
+            isInZoomMode
+              ? activeZoomDirection === "in"
+              : activeDirection === TV_CAMERA_DIRECTIONS.UP
           }
           isPressed={
-            !isInZoomMode && pressedDirection === TV_CAMERA_DIRECTIONS.UP
+            isInZoomMode
+              ? activeZoomDirection === "in"
+              : pressedDirection === TV_CAMERA_DIRECTIONS.UP
           }
           isDisabled={false} // UP arrow works in both modes
           className={styles.arrowTop}
@@ -217,10 +221,14 @@ export const TVCameraControls: React.FC<TVCameraControlsProps> = ({
         <DirectionalArrow
           direction={TV_CAMERA_DIRECTIONS.DOWN}
           isActive={
-            !isInZoomMode && activeDirection === TV_CAMERA_DIRECTIONS.DOWN
+            isInZoomMode
+              ? activeZoomDirection === "out"
+              : activeDirection === TV_CAMERA_DIRECTIONS.DOWN
           }
           isPressed={
-            !isInZoomMode && pressedDirection === TV_CAMERA_DIRECTIONS.DOWN
+            isInZoomMode
+              ? activeZoomDirection === "out"
+              : pressedDirection === TV_CAMERA_DIRECTIONS.DOWN
           }
           isDisabled={false} // DOWN arrow works in both modes
           className={styles.arrowBottom}

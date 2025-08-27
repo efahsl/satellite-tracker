@@ -125,9 +125,9 @@ export const isTVWidth = (): boolean => {
 // TV Camera Navigation Configuration
 export const TV_CAMERA_CONFIG = {
   // Directional rotation settings
-  ROTATION_SPEED: 0.02, // Radians per frame for smooth rotation
+  ROTATION_SPEED: 0.04, // Radians per frame for smooth rotation
   ROTATION_ACCELERATION: 1.5, // Speed multiplier when holding key
-  MAX_ROTATION_SPEED: 0.05, // Maximum rotation speed
+  MAX_ROTATION_SPEED: 0.07, // Maximum rotation speed
   ROTATION_DAMPING: 0.95, // Damping factor for smooth deceleration
   
   // Camera rotation limits (in radians)
