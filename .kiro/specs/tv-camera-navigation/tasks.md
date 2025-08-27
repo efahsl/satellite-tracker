@@ -2,11 +2,11 @@
 
 - [x] 1. Extend UIContext with TV camera controls state management
 
-  - Add tvCameraControlsVisible, zoomMode, and isZooming properties to UIState interface
-  - Implement SET_TV_CAMERA_CONTROLS_VISIBLE, SET_ZOOM_MODE, and SET_ZOOMING actions
+  - Add tvCameraControlsVisible and isInZoomMode properties to UIState interface
+  - Implement SET_TV_CAMERA_CONTROLS_VISIBLE and SET_ZOOM_MODE actions
   - Create action creators for camera controls state management
   - Write unit tests for new state management functionality
-  - _Requirements: 1.1, 1.4, 3.1, 3.3_
+  - _Requirements: 1.1, 1.4, 3.1, 3.2_
 
 - [x] 2. Create TV camera configuration constants
 
@@ -36,9 +36,9 @@
 
   - Implement custom hook for managing directional input state
   - Add keyboard event listeners for arrow keys (up, down, left, right)
-  - Create hold-to-zoom logic for Enter key press and release events
+  - Create zoom mode toggle logic for Enter key press events
   - Implement input debouncing and acceleration for smooth camera movement
-  - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.2, 3.4_
+  - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.2, 3.7_
 
 - [x] 6. Implement directional camera rotation logic
 
@@ -50,13 +50,13 @@
 
 - [x] 7. Add zoom control functionality with dynamic text
 
-  - ✅ Implement zoom in/out logic with hold-to-zoom behavior using Enter key
-  - ✅ Create zoom mode state management (in/out) with automatic switching
-  - ✅ Add dynamic text updates: "Hold SELECT to Zoom IN" / "Hold SELECT to Zoom OUT"
-  - ✅ Integrate zoom controls with existing camera distance constraints
-  - ✅ Add continuous zoom animation with requestAnimationFrame for smooth zooming
-  - ✅ Implement zoom acceleration for longer holds
-  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
+  - Implement zoom mode toggle functionality with Enter key
+  - Create zoom mode state management with mode-specific behavior
+  - Add dynamic text updates: "Press SELECT for Zoom Mode" / "UP: Zoom In, DOWN: Zoom Out, SELECT: Exit"
+  - Integrate zoom controls with existing camera distance constraints
+  - Add zoom in/out functionality using Up/Down arrows in zoom mode
+  - Disable Left/Right arrows when in zoom mode
+  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8_
 
 - [x] 8. Integrate camera controls with existing TV interface
 
@@ -74,7 +74,16 @@
   - Ensure visual feedback works with keyboard input detection
   - _Requirements: 2.5, 2.6_
 
-- [ ] 10. Implement manual mode requirement enforcement
+- [ ] 10. Refactor zoom behavior from hold-to-zoom to zoom mode toggle
+
+  - Update UIContext: replace zoomMode/isZooming with isInZoomMode boolean and SET_ZOOM_MODE action
+  - Modify useTVCameraNavigation hook: replace hold-to-zoom with SELECT key toggle, add mode-aware input handling
+  - Update TVCameraControls component: change instruction text and add disabled state for Left/Right arrows in zoom mode
+  - Refactor zoom functionality to use Up/Down arrows for zoom in/out when in zoom mode
+  - Update all related tests to reflect new zoom mode toggle behavior
+  - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8_
+
+- [ ] 11. Implement manual mode requirement enforcement
 
   - Add logic to disable camera controls when not in manual camera mode
   - Hide or disable controls when in ISS follow mode or Earth rotate mode
@@ -82,8 +91,8 @@
   - Add visual indicators or messaging when controls are disabled
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 11. Add comprehensive testing and polish
-  - Write end-to-end tests for complete TV camera navigation user flows
+- [ ] 12. Add comprehensive testing and polish
+  - Write end-to-end tests for complete TV camera navigation user flows with new zoom mode
   - Add performance tests for smooth camera movement and animations
   - Implement accessibility tests for keyboard navigation
   - Create visual regression tests for control positioning and styling

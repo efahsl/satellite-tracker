@@ -24,25 +24,27 @@ This feature adds directional camera navigation controls and zoom functionality 
 
 #### Acceptance Criteria
 
-1. WHEN the user presses the Up arrow key THEN the camera SHALL rotate the Earth view toward the north
-2. WHEN the user presses the Down arrow key THEN the camera SHALL rotate the Earth view toward the south
-3. WHEN the user presses the Right arrow key THEN the camera SHALL rotate the Earth view toward the east
-4. WHEN the user presses the Left arrow key THEN the camera SHALL rotate the Earth view toward the west
-5. WHEN directional navigation is active THEN the camera rotation SHALL be smooth and responsive
-6. WHEN the user holds down an arrow key THEN the camera SHALL continue rotating in that direction
+1. WHEN NOT in zoom mode AND the user presses the Up arrow key THEN the camera SHALL rotate the Earth view toward the north
+2. WHEN NOT in zoom mode AND the user presses the Down arrow key THEN the camera SHALL rotate the Earth view toward the south
+3. WHEN NOT in zoom mode AND the user presses the Right arrow key THEN the camera SHALL rotate the Earth view toward the east
+4. WHEN NOT in zoom mode AND the user presses the Left arrow key THEN the camera SHALL rotate the Earth view toward the west
+5. WHEN directional navigation is active AND NOT in zoom mode THEN the camera rotation SHALL be smooth and responsive
+6. WHEN NOT in zoom mode AND the user holds down an arrow key THEN the camera SHALL continue rotating in that direction
 
 ### Requirement 3
 
-**User Story:** As a TV user, I want change the zoom of the Earth view by holding the SELECT button, so that I can get a closer look at specific regions.
+**User Story:** As a TV user, I want to enter a zoom mode by pressing SELECT and then use Up/Down arrows to zoom in and out, so that I can precisely control the zoom level of the Earth view.
 
 #### Acceptance Criteria
 
-1. WHEN the directional controls are visible THEN the system SHALL display "Hold SELECT to Zoom IN" text
-2. WHEN the user presses and holds the Enter key (SELECT) THEN the camera SHALL zoom in toward the Earth
-3. WHEN the user is holding SELECT and zooming in THEN the text SHALL change to "Hold SELECT to Zoom OUT"
-4. WHEN the user releases the Enter key after zooming in THEN the zoom action SHALL stop
-5. WHEN the user presses and holds Enter again after zooming in THEN the camera SHALL zoom out
-6. WHEN the user releases Enter after zooming out THEN the text SHALL return to "Hold SELECT to Zoom IN"
+1. WHEN the directional controls are visible THEN the system SHALL display "Press SELECT for Zoom Mode" text
+2. WHEN the user presses the Enter key (SELECT) THEN the system SHALL enter zoom mode
+3. WHEN in zoom mode THEN the system SHALL display "UP: Zoom In, DOWN: Zoom Out, SELECT: Exit" text
+4. WHEN in zoom mode AND the user presses the Up arrow THEN the camera SHALL zoom in toward the Earth
+5. WHEN in zoom mode AND the user presses the Down arrow THEN the camera SHALL zoom out from the Earth
+6. WHEN in zoom mode THEN the Left and Right arrow keys SHALL be disabled and not respond
+7. WHEN in zoom mode AND the user presses SELECT again THEN the system SHALL exit zoom mode
+8. WHEN exiting zoom mode THEN the text SHALL return to "Press SELECT for Zoom Mode" and all directional arrows SHALL be re-enabled
 
 ### Requirement 4
 

@@ -29,34 +29,33 @@ The design integrates with the existing Three.js camera system, OrbitControls, a
 interface UIState {
   // Existing properties...
   tvCameraControlsVisible: boolean;
-  zoomMode: 'in' | 'out';
-  isZooming: boolean;
+  isInZoomMode: boolean;
 }
 
 type UIAction = 
   // Existing actions...
   | { type: 'SET_TV_CAMERA_CONTROLS_VISIBLE'; payload: boolean }
-  | { type: 'SET_ZOOM_MODE'; payload: 'in' | 'out' }
-  | { type: 'SET_ZOOMING'; payload: boolean };
+  | { type: 'SET_ZOOM_MODE'; payload: boolean };
 ```
 
 **Camera Control State:**
 - Camera rotation state managed through Three.js OrbitControls
-- Zoom level tracking for dynamic instruction text
-- Directional input handling through keyboard events
+- Zoom mode state for toggling between navigation and zoom modes
+- Directional input handling with mode-specific behavior
 
 ### Component Design
 
 **TVCameraControls Component:**
 - Positioned on the left side of the screen when visible
 - Displays directional arrows in a cross/circular pattern
-- Shows dynamic zoom instruction text
+- Shows dynamic instruction text based on current mode (navigation vs zoom)
 - Only visible in TV mode when menu is closed and manual mode is active
-- Handles visual feedback for active directional inputs
+- Handles visual feedback for active directional inputs and disabled states
 
 **Enhanced Controls Component:**
-- Extended to handle directional camera rotation
-- Integrated zoom control with hold-to-zoom functionality
+- Extended to handle directional camera rotation in navigation mode
+- Integrated zoom control with Up/Down arrows in zoom mode
+- Mode-aware input handling (navigation vs zoom mode)
 - Smooth camera transitions and animations
 - Respects existing camera constraints (min/max distance)
 
@@ -67,16 +66,15 @@ type UIAction =
 ```typescript
 interface TVCameraControlsProps {
   visible: boolean;
-  zoomMode: 'in' | 'out';
-  isZooming: boolean;
+  isInZoomMode: boolean;
   onDirectionalInput?: (direction: 'up' | 'down' | 'left' | 'right') => void;
-  onZoomStart?: () => void;
-  onZoomEnd?: () => void;
+  onToggleZoomMode?: () => void;
 }
 
 interface DirectionalArrowProps {
   direction: 'up' | 'down' | 'left' | 'right';
   isActive?: boolean;
+  isDisabled?: boolean;
 }
 ```
 
@@ -97,14 +95,14 @@ interface ControlsProps {
 interface UseTVCameraNavigationProps {
   isEnabled: boolean;
   controlsRef: React.RefObject<OrbitControls>;
-  onZoomModeChange: (mode: 'in' | 'out') => void;
+  isInZoomMode: boolean;
+  onToggleZoomMode: () => void;
 }
 
 interface UseTVCameraNavigationReturn {
   handleDirectionalInput: (direction: string) => void;
-  handleZoomStart: () => void;
-  handleZoomEnd: () => void;
-  isZooming: boolean;
+  handleSelectPress: () => void;
+  isInZoomMode: boolean;
 }
 ```
 
@@ -120,7 +118,7 @@ const TV_CAMERA_CONFIG = {
   MAX_ROTATION_SPEED: 0.05, // Maximum rotation speed
   
   // Zoom settings
-  ZOOM_SPEED: 0.02, // Zoom speed per frame
+  ZOOM_SPEED: 0.02, // Zoom speed per frame when in zoom mode
   ZOOM_ACCELERATION: 1.3, // Speed multiplier for continuous zoom
   MIN_ZOOM_DISTANCE: 6, // Minimum camera distance (closer than default)
   MAX_ZOOM_DISTANCE: 20, // Maximum camera distance (further than default)
@@ -129,10 +127,11 @@ const TV_CAMERA_CONFIG = {
   ARROW_ACTIVE_SCALE: 1.1, // Scale factor for active arrow
   ARROW_ACTIVE_OPACITY: 1.0, // Opacity for active arrow
   ARROW_INACTIVE_OPACITY: 0.7, // Opacity for inactive arrow
+  ARROW_DISABLED_OPACITY: 0.3, // Opacity for disabled arrows in zoom mode
   
   // Animation durations
   TRANSITION_DURATION: 200, // Smooth transitions between states
-  ZOOM_TEXT_FADE_DURATION: 150, // Text change animation
+  MODE_CHANGE_DURATION: 150, // Mode transition animation
   
   // Positioning
   CONTROLS_LEFT_OFFSET: '80px', // Distance from left edge
@@ -150,10 +149,11 @@ interface DirectionalInputState {
   down: boolean;
   left: boolean;
   right: boolean;
-  select: boolean; // For zoom
+  select: boolean; // For toggling zoom mode
 }
 
-interface CameraRotationState {
+interface CameraNavigationState {
+  isInZoomMode: boolean;
   azimuth: number; // Horizontal rotation
   polar: number; // Vertical rotation
   distance: number; // Zoom level
@@ -169,11 +169,13 @@ interface CameraRotationState {
 
 ### Input Handling Errors
 - **Rapid Key Events:** Debounce directional inputs to prevent jitter
-- **Conflicting Inputs:** Handle simultaneous directional inputs appropriately
+- **Mode Conflicts:** Handle mode transitions gracefully when inputs occur during mode changes
+- **Disabled Input Handling:** Properly ignore Left/Right inputs when in zoom mode
 - **Focus Loss:** Maintain camera control even if focus is lost
 
 ### State Synchronization Errors
 - **Mode Conflicts:** Ensure camera controls are disabled when not in manual mode
+- **Zoom Mode Persistence:** Reset zoom mode when controls are hidden or disabled
 - **Menu State Desync:** Properly hide/show controls based on menu visibility
 - **Device Profile Changes:** Handle transitions between TV and non-TV modes
 
@@ -183,23 +185,24 @@ interface CameraRotationState {
 
 **TVCameraControls Component:**
 - Visibility based on TV mode, menu state, and manual mode
-- Directional arrow rendering and active states
-- Zoom instruction text updates
-- Keyboard event handling
+- Directional arrow rendering with active and disabled states
+- Mode-specific instruction text updates
+- Keyboard event handling for both navigation and zoom modes
 
 **Camera Navigation Hook:**
-- Directional input processing
-- Zoom state management
-- Camera rotation calculations
+- Mode-aware directional input processing
+- Zoom mode toggle functionality
+- Camera rotation calculations for navigation mode
+- Zoom in/out calculations for zoom mode
 - Input debouncing and acceleration
 
 ### Integration Tests
 
 **Camera Control Integration:**
-- OrbitControls integration with directional inputs
-- Smooth camera transitions during rotation
-- Zoom functionality with hold-to-zoom behavior
-- State synchronization between UI and camera
+- OrbitControls integration with mode-aware directional inputs
+- Smooth camera transitions during rotation and zoom
+- Zoom mode functionality with Up/Down arrow controls
+- State synchronization between UI and camera across mode changes
 
 **TV Mode Integration:**
 - Controls visibility based on device profile
@@ -210,14 +213,15 @@ interface CameraRotationState {
 ### User Experience Tests
 
 **Navigation Responsiveness:**
-- Smooth directional rotation
+- Smooth directional rotation in navigation mode
 - Appropriate rotation speed and acceleration
-- Zoom in/out functionality
-- Visual feedback for active inputs
+- Zoom in/out functionality using Up/Down arrows in zoom mode
+- Visual feedback for active inputs and disabled states
 
 **State Transitions:**
 - Menu open/close behavior
 - Mode switching (ISS follow to manual)
+- Zoom mode entry and exit transitions
 - Device profile changes
 - Focus management during transitions
 
@@ -225,37 +229,38 @@ interface CameraRotationState {
 
 ### Phase 1: UI State Extensions
 - Extend UIContext with TV camera controls state
-- Add actions for controls visibility and zoom mode
-- Implement state management for camera navigation
+- Add actions for controls visibility and zoom mode toggle
+- Implement state management for navigation and zoom modes
 
 ### Phase 2: TVCameraControls Component
 - Create component with directional arrows layout
-- Implement dynamic zoom instruction text
+- Implement mode-specific instruction text (navigation vs zoom)
+- Add disabled state styling for arrows in zoom mode
 - Add positioning and styling for TV mode
 - Integrate with device and UI contexts
 
 ### Phase 3: Camera Navigation Hook
 - Implement useTVCameraNavigation hook
-- Add directional input processing
-- Create zoom control logic with hold-to-zoom
-- Handle input acceleration and debouncing
+- Add mode-aware directional input processing
+- Create zoom mode toggle logic with SELECT key
+- Handle input acceleration and debouncing for both modes
 
 ### Phase 4: Controls Integration
 - Extend existing Controls component
-- Integrate directional rotation with OrbitControls
-- Add zoom functionality respecting existing constraints
-- Ensure smooth camera transitions
+- Integrate mode-aware directional input with OrbitControls
+- Add zoom functionality using Up/Down arrows in zoom mode
+- Ensure smooth camera transitions between modes
 
 ### Phase 5: Keyboard Event Handling
 - Add global keyboard listeners for directional inputs
-- Implement hold-to-zoom with Enter key
-- Handle key press/release events appropriately
+- Implement zoom mode toggle with Enter key
+- Handle mode-specific key press/release events
 - Integrate with existing TV focus management
 
 ### Phase 6: Visual Polish and Testing
-- Add visual feedback for active directional inputs
-- Implement smooth animations and transitions
-- Add comprehensive test coverage
+- Add visual feedback for active directional inputs and disabled states
+- Implement smooth animations and mode transitions
+- Add comprehensive test coverage for both navigation and zoom modes
 - Performance optimization for smooth camera movement
 
 ## Visual Design
@@ -278,10 +283,11 @@ interface CameraRotationState {
 - Active (key pressed): 100% opacity, 110% scale
 - Smooth transitions between states
 
-### Zoom Instructions
+### Mode Instructions
 - Positioned below directional arrows
-- Dynamic text: "Hold SELECT to Zoom IN" / "Hold SELECT to Zoom OUT"
-- Smooth fade transition when text changes
+- Navigation mode: "Press SELECT for Zoom Mode"
+- Zoom mode: "UP: Zoom In, DOWN: Zoom Out, SELECT: Exit"
+- Smooth fade transition when mode changes
 - TV-appropriate font size and contrast
 
 ### Integration with Existing UI
