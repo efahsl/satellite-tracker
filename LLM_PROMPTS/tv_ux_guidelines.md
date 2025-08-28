@@ -18,7 +18,7 @@ These are best practices for designing applications for TV platforms. Follow the
 - Avoid ambiguous focus: ensure **only one item is focusable at a time**.
 - Use a **predictable and spatial layout**: left/right and up/down movement should map naturally to UI arrangement.
 - **Navigation Patterns:**
-  - Support **circular navigation** in grids and lists where appropriate
+  - Do NOT use **circular navigation** in grids and lists. Stay within the existing row (or column if appropriate)
   - Implement **fast scrolling** for long lists (hold direction for acceleration)
   - Use **focus memory** - return to previously focused item when navigating back
 - **Remote Control Support:**
