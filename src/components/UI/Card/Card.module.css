@@ -1,0 +1,195 @@
+/* Card Component CSS Module */
+.card {
+  background: var(--color-space-black80);
+  border: 1px solid var(--color-white10);
+  border-radius: var(--border-radius-lg);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-normal);
+  overflow: hidden;
+}
+
+.card:hover {
+  border-color: var(--color-white20);
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
+}
+
+/* Card Variants */
+.card--elevated {
+  background: var(--color-space-black90);
+  box-shadow: var(--shadow-2xl);
+}
+
+.card--transparent {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.card--transparent:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--color-white10);
+}
+
+/* Card Header */
+.card__header {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-white10);
+}
+
+.card__title {
+  margin: 0;
+  font-family: var(--font-family-orbitron);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-iss-white);
+  letter-spacing: 0.5px;
+}
+
+.card__subtitle {
+  margin: var(--spacing-xs) 0 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-400);
+  font-family: var(--font-family-exo);
+}
+
+/* Card Body */
+.card__body {
+  padding: var(--spacing-md);
+}
+
+.card__content {
+  color: var(--color-iss-white);
+  line-height: 1.6;
+}
+
+/* Card Footer */
+.card__footer {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-white10);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Card Actions */
+.card__actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Card with Image */
+.card--with-image .card__image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--color-white10);
+}
+
+/* Card Sizes */
+.card--sm .card__header,
+.card--sm .card__body,
+.card--sm .card__footer {
+  padding: var(--spacing-sm);
+}
+
+.card--lg .card__header,
+.card--lg .card__body,
+.card--lg .card__footer {
+  padding: var(--spacing-lg);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .card {
+    border-radius: var(--border-radius-md);
+  }
+  
+  .card__header,
+  .card__body,
+  .card__footer {
+    padding: var(--spacing-sm);
+  }
+  
+  .card__title {
+    font-size: var(--font-size-base);
+  }
+  
+  .card__actions {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .card__actions > * {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .card--lg .card__header,
+  .card--lg .card__body,
+  .card--lg .card__footer {
+    padding: var(--spacing-xl);
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .card {
+    border-width: 2px;
+  }
+  
+  .card__header,
+  .card__footer {
+    border-width: 2px;
+  }
+}
+
+/* TV-specific styles - applied via global classes */
+:global(.tv-typography) .card__title {
+  font-size: calc(var(--font-size-lg) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+:global(.tv-typography) .card__subtitle {
+  font-size: calc(var(--font-size-sm) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+:global(.tv-typography) .card__body {
+  font-size: calc(var(--font-size-base) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+  padding: calc(var(--spacing-md) * 1.5);
+}
+
+:global(.tv-typography) .card__header {
+  padding: calc(var(--spacing-md) * 1.5);
+}
+
+:global(.tv-typography) .card__footer {
+  padding: calc(var(--spacing-md) * 1.5);
+}
+
+:global(.tv-focus-indicator) .card[role="button"]:focus {
+  outline: none;
+  border-color: var(--tv-focus-border-color);
+  border-width: var(--tv-focus-border-width);
+  box-shadow: 0 0 0 2px var(--tv-focus-border-color);
+  transform: scale(1.02);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+  
+  .card:hover {
+    transform: none;
+  }
+  
+  :global(.tv-focus-indicator) .card[role="button"]:focus {
+    transform: none;
+  }
+}

@@ -1,4 +1,4 @@
-import React, { Suspense, memo, useState, useEffect } from 'react';
+import React, { Suspense, memo, useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Stars } from '@react-three/drei';
 import { Vector3 } from 'three';
@@ -6,8 +6,10 @@ import Earth from './Earth';
 import ISS from './ISS';
 import EnhancedISS from './ISS-Enhanced';
 import Sun from './Sun';
-import Controls from './Controls';
-import FPSMonitor from './FPSMonitor';
+import Controls, { ControlsRef } from './Controls';
+import { useISS } from '../../state/ISSContext';
+import { usePerformance } from '../../state/PerformanceContext';
+import { useDevice } from '../../state/DeviceContext';
 import { 
   EARTH_DAY_MAP, 
   EARTH_NIGHT_MAP, 
@@ -17,19 +19,43 @@ import {
   SUN_DISTANCE,
   SUN_INTENSITY
 } from '../../utils/constants';
+import { getEarthQualitySettings, getStarFieldSettings } from '../../utils/earthQualitySettings';
 import { calculateSunPosition } from '../../utils/sunPosition';
 
 interface GlobeProps {
   width?: string;
   height?: string;
+  onCameraRotate?: (direction: string, delta: number) => void;
+  onZoomChange?: (zoomIn: boolean, delta: number) => void;
 }
 
-const Globe: React.FC<GlobeProps> = memo(({ 
+export interface GlobeRef {
+  getControlsRef: () => ControlsRef | null;
+}
+
+const Globe = memo(forwardRef<GlobeRef, GlobeProps>(({ 
   width = '100%', 
-  height = '100%' 
-}) => {
+  height = '100%',
+  onCameraRotate,
+  onZoomChange
+}, ref) => {
+  // Add ISS context hook to access earthRotateMode state
+  const { state } = useISS();
+  
+  // Add performance context hook to access performance tier
+  const { state: performanceState } = usePerformance();
+  
+  // Add device context hook to check TV profile
+  const { isTVProfile } = useDevice();
+  
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
+  
+  // Controls ref for TV camera navigation
+  const controlsRef = useRef<ControlsRef>(null);
+  
+  // Get star field settings based on performance tier
+  const starSettings = getStarFieldSettings(getEarthQualitySettings(performanceState.tier));
 
   // Update sun position periodically
   useEffect(() => {
@@ -44,11 +70,13 @@ const Globe: React.FC<GlobeProps> = memo(({
     return () => clearInterval(interval);
   }, []);
 
+  // Expose controls ref for external access
+  useImperativeHandle(ref, () => ({
+    getControlsRef: () => controlsRef.current,
+  }), []);
+
   return (
     <div style={{ width, height, position: 'relative' }}>
-      {/* FPS Monitor - Outside Canvas */}
-      <FPSMonitor position="top-right" />
-      
       <Canvas
         camera={{ position: [0, 0, 12], fov: 45 }}
         style={{ background: '#000000' }}
@@ -62,9 +90,9 @@ const Globe: React.FC<GlobeProps> = memo(({
             position={sunPosition}
             intensity={2.0} 
             color="#fff8dc"
-            castShadow={true}
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
+            castShadow={performanceState.settings.shadowEnabled}
+            shadow-mapSize-width={performanceState.settings.shadowEnabled ? 2048 : 0}
+            shadow-mapSize-height={performanceState.settings.shadowEnabled ? 2048 : 0}
           />
           
           {/* Additional rim lighting for atmosphere effect */}
@@ -83,33 +111,43 @@ const Globe: React.FC<GlobeProps> = memo(({
             specularMapPath={EARTH_SPECULAR_MAP}
           />
           
-          {/* ISS with enhanced trajectory */}
-          {/* <ISS showTrajectory={true} trajectoryLength={300} /> */}
-          <EnhancedISS showTrajectory={true} trajectoryLength={300} />
+          {/* ISS with conditional rendering based on performance tier */}
+          {performanceState.tier === 'low' ? (
+            <ISS showTrajectory={true} trajectoryLength={performanceState.settings.trailLength} />
+          ) : (
+            <EnhancedISS showTrajectory={true} trajectoryLength={performanceState.settings.trailLength} />
+          )}
           
-          {/* Sun with realistic appearance and positioning */}
-          <Sun 
-            sunPosition={sunPosition}
-            size={SUN_SIZE}
-            distance={SUN_DISTANCE}
-            intensity={SUN_INTENSITY}
-            visible={true}
-          />
+          {/* Sun with conditional rendering based on performance tier */}
+          {performanceState.settings.sunEnabled && (
+            <Sun 
+              sunPosition={sunPosition}
+              size={SUN_SIZE}
+              distance={SUN_DISTANCE}
+              intensity={SUN_INTENSITY}
+              visible={true}
+            />
+          )}
           
           {/* Enhanced camera controls */}
           <Controls 
+            ref={controlsRef}
             enableZoom={true} 
             enablePan={true}
             dampingFactor={0.05}
+            earthRotateMode={state.earthRotateMode}
+            tvCameraNavigation={isTVProfile}
+            onCameraRotate={onCameraRotate}
+            onZoomChange={onZoomChange}
           />
           
-          {/* Enhanced star field with more realistic appearance */}
+          {/* Enhanced star field with quality-based settings */}
           <Stars 
-            radius={200} 
-            depth={100} 
-            count={8000} 
-            factor={6} 
-            saturation={0.1} 
+            radius={starSettings.radius} 
+            depth={starSettings.depth} 
+            count={starSettings.count} 
+            factor={starSettings.factor} 
+            saturation={starSettings.saturation} 
             fade={true}
             speed={0.5}
           />
@@ -141,6 +179,8 @@ const Globe: React.FC<GlobeProps> = memo(({
       </div>
     </div>
   );
-});
+}));
+
+Globe.displayName = 'Globe';
 
 export default Globe;

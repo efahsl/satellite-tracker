@@ -36,5 +36,15 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.js'],
+    // Force exit after tests complete
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: true
+      }
+    },
+    // Add timeout and force exit
+    testTimeout: 30000,
+    hookTimeout: 10000,
   },
 })

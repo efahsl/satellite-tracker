@@ -1,0 +1,54 @@
+/* Main CSS Entry Point */
+@import './global.css';
+
+/* Import component-specific styles here if needed */
+/* @import './components/Button.css'; */
+/* @import './components/Card.css'; */
+
+/* Legacy utility classes that will be gradually migrated to CSS Modules */
+/* These are kept temporarily during the migration process */
+
+/* Layout utilities - will be replaced with CSS Modules */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* Mobile-specific utilities - will be replaced with CSS Modules */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(30, 58, 138, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.8);
+}

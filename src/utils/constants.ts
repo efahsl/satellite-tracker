@@ -59,6 +59,68 @@ export const CITY_GLOW_INTENSITY = 0.4; // Glow effect strength around cities
 // Sun settings
 export const SUN_SIZE = 8; // Size of the sun sphere
 export const SUN_DISTANCE = 150; // Distance of sun from Earth center
-export const SUN_INTENSITY = 1.2; // Brightness intensity of the sun
+export const SUN_INTENSITY = 2.2; // Enhanced brightness intensity of the sun
 export const SUN_COLOR = '#ffaa44'; // Base color of the sun
 export const SUN_CORONA_COLOR = '#ff6b35'; // Color of the sun's corona
+
+// Enhanced solar lighting settings
+export const SOLAR_COLOR_TEMPERATURE = 5778; // Realistic solar color temperature in Kelvin
+export const SOLAR_ACTIVITY_MIN = 0.8; // Minimum solar activity multiplier
+export const SOLAR_ACTIVITY_MAX = 1.2; // Maximum solar activity multiplier
+export const SHADOW_MAP_SIZE = 2048; // Shadow map resolution
+export const SHADOW_CAMERA_SIZE = 20; // Shadow camera frustum size
+
+// Earth rotate camera settings
+export const EARTH_ROTATE_DISTANCE = EARTH_RADIUS + 12; // Camera distance for Earth rotate mode (closer zoom)
+export const EARTH_ROTATE_SPEED = 0.1047; // Radians per second (360° in 15 seconds - faster)
+export const EARTH_ROTATE_TRANSITION_SPEED = 0.05; // Lerp factor for smooth transitions
+
+// TV Interface Configuration
+export const TV_CONFIG = {
+  // Device detection
+  DETECTION_WIDTH: 1920,
+  
+  // Layout and spacing
+  SAFE_ZONE_PADDING: '5%',
+  MENU_WIDTH: '320px',
+  
+  // Typography
+  MIN_FONT_SIZE: '32px', // Following TV UX guidelines for 10-foot viewing
+  FONT_SCALE_FACTOR: 1.5, // 50% larger fonts for TV
+  LINE_HEIGHT_FACTOR: 1.2, // Increased line height for readability
+  
+  // Button dimensions
+  BUTTON_MIN_HEIGHT: '48px',
+  BUTTON_MIN_WIDTH: '200px',
+  
+  // Focus state styling
+  FOCUS_BORDER_WIDTH: '3px',
+  FOCUS_BORDER_COLOR: '#4A90E2',
+  FOCUS_BORDER_RADIUS: '8px',
+  FOCUS_SHADOW: '0 0 0 3px rgba(74, 144, 226, 0.3)',
+  FOCUS_SCALE: 1.05,
+  FOCUS_TRANSITION: 'all 150ms ease-in-out',
+  
+  // Animation durations
+  ANIMATION_DURATION: 300,
+  SLIDE_IN_DURATION: 300,
+  SLIDE_OUT_DURATION: 300,
+  FADE_DURATION: 200,
+  SCALE_DURATION: 150,
+  
+  // Animation easing functions
+  EASING_SMOOTH: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  EASING_BOUNCE: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+  
+  // High contrast colors for TV visibility
+  HIGH_CONTRAST_TEXT: '#ffffff',
+  HIGH_CONTRAST_BACKGROUND: '#000000',
+  HIGH_CONTRAST_BORDER: '#ffffff',
+  HIGH_CONTRAST_ACCENT: '#4A90E2',
+  
+  // Safe zone measurements
+  SAFE_ZONE_TOP: '5vh',
+  SAFE_ZONE_BOTTOM: '5vh',
+  SAFE_ZONE_LEFT: '5vw',
+  SAFE_ZONE_RIGHT: '5vw',
+} as const;

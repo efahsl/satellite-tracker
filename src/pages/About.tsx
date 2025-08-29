@@ -1,20 +1,14 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
 
 const About: React.FC = () => {
   return (
     <>
-      <Helmet>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet" />
-      </Helmet>
       <div className="container mx-auto px-8 py-12 max-w-4xl text-iss-white" style={{fontFamily: "'Exo 2', sans-serif", paddingLeft: "2rem"}}>
         <h1 className="text-4xl font-bold mb-10" style={{fontFamily: "'Orbitron', sans-serif", letterSpacing: "1px"}}>
           About the ISS Live Tracker
         </h1>
       
-      <div className="bg-space-blue/30 backdrop-blur-sm rounded-lg p-8 mb-12" style={{borderLeft: "4px solid var(--iss-highlight)", padding:"1rem"}}>
+      <div className="backdrop-blur-sm rounded-lg p-8 mb-12" style={{borderLeft: "4px solid var(--iss-highlight)", padding:"1rem"}}>
         <h2 className="text-2xl font-semibold mb-6 pl-4" style={{fontFamily: "'Orbitron', sans-serif"}}>The International Space Station</h2>
         <p className="mb-6 pl-4" style={{lineHeight: "1.8", fontSize: "1.05rem"}}>
           The International Space Station (ISS) is a modular space station in low Earth orbit. 
@@ -52,7 +46,7 @@ const About: React.FC = () => {
         </div>
       </div>
       
-      <div className="bg-space-blue/30 backdrop-blur-sm rounded-lg p-8 mb-12" style={{borderLeft: "4px solid var(--iss-highlight)", padding:"1rem"}}>
+      <div className="backdrop-blur-sm rounded-lg p-8 mb-12" style={{borderLeft: "4px solid var(--iss-highlight)", padding:"1rem"}}>
         <h2 className="text-2xl font-semibold mb-6 pl-4" style={{fontFamily: "'Orbitron', sans-serif"}}>About This Application</h2>
         <p className="mb-6 pl-4" style={{lineHeight: "1.8", fontSize: "1.05rem"}}>
           The ISS Live Tracker is a web application that provides real-time tracking of the 

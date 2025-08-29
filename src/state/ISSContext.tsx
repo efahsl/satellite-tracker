@@ -21,6 +21,7 @@ interface ISSState {
   loading: boolean;
   error: string | null;
   followISS: boolean;
+  earthRotateMode: boolean;
 }
 
 type ISSAction =
@@ -29,7 +30,9 @@ type ISSAction =
   | { type: 'FETCH_POSITION_ERROR'; payload: string }
   | { type: 'FETCH_CREW_SUCCESS'; payload: ISSCrew[] }
   | { type: 'FETCH_CREW_ERROR'; payload: string }
-  | { type: 'TOGGLE_FOLLOW_ISS' };
+  | { type: 'TOGGLE_FOLLOW_ISS' }
+  | { type: 'TOGGLE_EARTH_ROTATE' }
+  | { type: 'SET_MANUAL_MODE' };
 
 // Initial state
 const initialState: ISSState = {
@@ -38,6 +41,7 @@ const initialState: ISSState = {
   loading: false,
   error: null,
   followISS: true,
+  earthRotateMode: false,
 };
 
 // Create context
@@ -85,6 +89,19 @@ const issReducer = (state: ISSState, action: ISSAction): ISSState => {
       return {
         ...state,
         followISS: !state.followISS,
+        earthRotateMode: !state.followISS ? false : state.earthRotateMode,
+      };
+    case 'TOGGLE_EARTH_ROTATE':
+      return {
+        ...state,
+        earthRotateMode: !state.earthRotateMode,
+        followISS: !state.earthRotateMode ? false : state.followISS,
+      };
+    case 'SET_MANUAL_MODE':
+      return {
+        ...state,
+        followISS: false,
+        earthRotateMode: false,
       };
     default:
       return state;
@@ -149,9 +166,9 @@ export const ISSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, [fetchISSPosition]);
 
   // Fetch ISS crew data (enabled now)
-  useEffect(() => {
-    fetchISSCrew();
-  }, [fetchISSCrew]);
+  // useEffect(() => {
+  //   fetchISSCrew();
+  // }, [fetchISSCrew]);
 
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({

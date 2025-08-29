@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Auto Test Runner",
+  "description": "Automatically runs unit tests whenever source files are saved to ensure tests are still passing",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "src/**/*.ts",
+      "src/**/*.tsx",
+      "src/**/*.js",
+      "src/**/*.jsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A file has been saved in the source directory. Please run the unit tests to ensure they are still passing. Use the appropriate test command (likely npm test or npm run test) and report back on the test results. If any tests fail, provide details about which tests failed and why."
+  }
+}

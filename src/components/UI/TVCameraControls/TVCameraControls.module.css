@@ -1,0 +1,450 @@
+/* TV Camera Controls CSS Module */
+
+.container {
+  position: fixed;
+  left: var(--tv-safe-zone-left, 5vw);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  
+  /* Container sizing based on TV camera config */
+  width: 140px; /* TV_CAMERA_CONFIG.CONTROLS_CONTAINER_WIDTH */
+  min-height: 200px; /* Accommodate arrows + text */
+  
+  /* Visual styling */
+  background: rgba(0, 0, 0, 0.1); /* TV_CAMERA_CONFIG.CONTROLS_BACKGROUND_OPACITY */
+  backdrop-filter: blur(4px); /* TV_CAMERA_CONFIG.CONTROLS_BACKDROP_BLUR */
+  border-radius: 12px;
+  padding: var(--spacing-md);
+  
+  /* Animation - coordinated with menu transitions */
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+  transition: 
+    opacity var(--tv-fade-duration, 200ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    transform var(--tv-slide-in-duration, 300ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    visibility var(--tv-fade-duration, 200ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+  
+  /* Ensure visibility in TV mode */
+  pointer-events: none; /* Don't interfere with camera controls */
+}
+
+/* Hidden state - coordinated with menu open state */
+.container.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-50%) translateX(-20px);
+  transition: 
+    opacity var(--tv-fade-duration, 200ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    transform var(--tv-slide-out-duration, 300ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    visibility var(--tv-fade-duration, 200ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Visible state - coordinated with menu close state */
+.container.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+  transition: 
+    opacity var(--tv-fade-duration, 200ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    transform var(--tv-slide-in-duration, 300ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    visibility var(--tv-fade-duration, 200ms) var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.container:not(:global(.tv-camera-controls)) {
+  display: none;
+}
+
+/* Directional arrows container */
+.arrowsContainer {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  grid-template-columns: 1fr;
+  gap: 20px; /* TV_CAMERA_CONFIG.ARROW_SPACING */
+  align-items: center;
+  justify-items: center;
+  margin-bottom: 32px; /* Space before zoom text */
+}
+
+/* Middle row for left-center-right layout */
+.arrowsMiddleRow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 20px; /* TV_CAMERA_CONFIG.ARROW_SPACING */
+  align-items: center;
+  width: 100%;
+}
+
+/* Center space for visual balance */
+.arrowsCenter {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Individual arrow styling */
+.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px; /* TV_CAMERA_CONFIG.ARROW_SIZE */
+  height: 60px; /* TV_CAMERA_CONFIG.ARROW_SIZE */
+  
+  /* Visual styling */
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px; /* TV_CAMERA_CONFIG.ARROW_BORDER_RADIUS */
+  
+  /* Default state */
+  opacity: 0.7; /* TV_CAMERA_CONFIG.ARROW_INACTIVE_OPACITY */
+  transform: scale(1);
+  
+  /* Enhanced animation for smooth visual feedback */
+  transition: 
+    opacity 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    transform 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    background-color 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    border-color 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    box-shadow 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55));
+  
+  /* Accessibility */
+  cursor: pointer;
+  user-select: none;
+  
+  /* Ensure smooth transitions from any state */
+  will-change: transform, opacity, background-color, border-color, box-shadow;
+}
+
+.arrow:hover {
+  opacity: 0.9;
+  transform: scale(1.05); /* TV_CAMERA_CONFIG.ARROW_HOVER_SCALE */
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Enhanced active state for arrows with improved visual feedback */
+.arrow--active {
+  opacity: 1.0; /* TV_CAMERA_CONFIG.ARROW_ACTIVE_OPACITY */
+  transform: scale(1.1); /* TV_CAMERA_CONFIG.ARROW_ACTIVE_SCALE */
+  background: rgba(74, 144, 226, 0.4); /* Enhanced visibility with higher opacity */
+  border-color: var(--tv-focus-border-color, #4A90E2);
+  box-shadow: 
+    0 0 0 2px rgba(74, 144, 226, 0.4),
+    0 0 8px rgba(74, 144, 226, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  
+  /* Enhanced transition for active state */
+  transition: 
+    opacity 80ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    transform 80ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    background-color 80ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    border-color 80ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    box-shadow 80ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55));
+}
+
+/* Disabled state for arrows (used in zoom mode for left/right arrows) */
+.arrow--disabled {
+  opacity: 0.3; /* Much lower opacity to indicate disabled state */
+  background: rgba(255, 255, 255, 0.05); /* Very subtle background */
+  border-color: rgba(255, 255, 255, 0.1); /* Subtle border */
+  cursor: not-allowed;
+  
+  /* Remove hover effects when disabled */
+  pointer-events: none;
+  
+  /* Smooth transition to disabled state */
+  transition: 
+    opacity 200ms var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    background-color 200ms var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    border-color 200ms var(--tv-easing-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Disabled arrow symbol styling */
+.arrow--disabled .arrowSymbol {
+  color: rgba(255, 255, 255, 0.3);
+  text-shadow: none;
+}
+
+/* Active state hover enhancement */
+.arrow--active:hover {
+  opacity: 1.0;
+  transform: scale(1.15); /* Slightly larger when active and hovered */
+  background: rgba(74, 144, 226, 0.5);
+  border-color: var(--tv-focus-border-color, #4A90E2);
+  box-shadow: 
+    0 0 0 3px rgba(74, 144, 226, 0.5),
+    0 0 12px rgba(74, 144, 226, 0.4),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+/* Arrow symbol styling with enhanced visual feedback */
+.arrowSymbol {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--color-iss-white, #ffffff);
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  
+  /* Smooth transitions for symbol changes */
+  transition: 
+    color 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    text-shadow 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55)),
+    transform 100ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55));
+  
+  /* Ensure crisp rendering */
+  will-change: color, text-shadow, transform;
+}
+
+/* Enhanced arrow symbol when parent is active */
+.arrow--active .arrowSymbol {
+  color: var(--color-iss-white, #ffffff);
+  text-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.7),
+    0 0 4px rgba(74, 144, 226, 0.6),
+    0 0 8px rgba(74, 144, 226, 0.3);
+  transform: scale(1.05); /* Slightly larger symbol when active */
+}
+
+/* Arrow symbol hover state */
+.arrow:hover .arrowSymbol {
+  color: var(--color-iss-white, #ffffff);
+  text-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.6),
+    0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+/* Directional positioning classes */
+.arrowTop {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.arrowLeft {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.arrowRight {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.arrowBottom {
+  grid-column: 1;
+  grid-row: 3;
+}
+
+/* Zoom instruction text */
+.zoomText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 16px; /* TV_CAMERA_CONFIG.ZOOM_TEXT_OFFSET_TOP adjusted for layout */
+}
+
+.zoomInstruction {
+  font-size: calc(var(--font-size-sm) * var(--tv-font-scale-factor, 1.5));
+  font-weight: 500;
+  color: var(--color-iss-white, #ffffff);
+  line-height: var(--tv-line-height-factor, 1.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  
+  /* Responsive text sizing */
+  max-width: 200px; /* TV_CAMERA_CONFIG.ZOOM_TEXT_MAX_WIDTH */
+  word-wrap: break-word;
+  
+  /* Animation for text changes */
+  transition: all 150ms var(--tv-easing-fade, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Active zoom instruction styling */
+.zoomInstructionActive {
+  color: var(--tv-focus-border-color, #4A90E2);
+  text-shadow: 0 0 4px rgba(74, 144, 226, 0.5), 0 1px 2px rgba(0, 0, 0, 0.7);
+  transform: scale(1.05);
+}
+
+/* TV-specific enhancements */
+@media (width: 1920px) {
+  .container {
+    left: 80px; /* TV_CAMERA_CONFIG.CONTROLS_LEFT_OFFSET */
+  }
+  
+  .arrow {
+    /* Enhanced visibility for TV */
+    border-width: 3px;
+  }
+  
+  .arrowSymbol {
+    font-size: 28px; /* Larger for 10-foot viewing */
+  }
+  
+  .zoomInstruction {
+    font-size: calc(16px * 1.5); /* TV_TYPOGRAPHY.MIN_FONT_SIZE scaled */
+    letter-spacing: 0.025em; /* TV_TYPOGRAPHY.LETTER_SPACING */
+  }
+  
+  .zoomInstructionActive {
+    color: var(--tv-focus-border-color, #4A90E2);
+    text-shadow: 0 0 4px rgba(74, 144, 226, 0.5);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .arrow {
+    border-width: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--color-iss-white, #ffffff);
+  }
+  
+  .arrow--active {
+    background: var(--tv-focus-border-color, #4A90E2);
+    border-color: var(--color-iss-white, #ffffff);
+  }
+  
+  .arrowsCenter {
+    border-width: 3px;
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .arrow,
+  .zoomInstruction {
+    transition: none;
+  }
+  
+  .arrow:hover,
+  .arrow--active {
+    transform: none;
+  }
+}
+
+/* Animation keyframes for enhanced visual feedback */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-20px);
+  }
+}
+
+/* Pulse animation for active arrows */
+@keyframes arrowPulse {
+  0% {
+    box-shadow: 
+      0 0 0 2px rgba(74, 144, 226, 0.4),
+      0 0 8px rgba(74, 144, 226, 0.3),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 0 3px rgba(74, 144, 226, 0.6),
+      0 0 12px rgba(74, 144, 226, 0.5),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    box-shadow: 
+      0 0 0 2px rgba(74, 144, 226, 0.4),
+      0 0 8px rgba(74, 144, 226, 0.3),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Subtle glow animation for active arrow symbols */
+@keyframes symbolGlow {
+  0% {
+    text-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.7),
+      0 0 4px rgba(74, 144, 226, 0.6),
+      0 0 8px rgba(74, 144, 226, 0.3);
+  }
+  50% {
+    text-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.7),
+      0 0 6px rgba(74, 144, 226, 0.8),
+      0 0 12px rgba(74, 144, 226, 0.5);
+  }
+  100% {
+    text-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.7),
+      0 0 4px rgba(74, 144, 226, 0.6),
+      0 0 8px rgba(74, 144, 226, 0.3);
+  }
+}
+
+/* Apply pulse animation to active arrows */
+.arrow--active {
+  animation: arrowPulse 1.5s ease-in-out infinite;
+}
+
+/* Apply glow animation to active arrow symbols */
+.arrow--active .arrowSymbol {
+  animation: symbolGlow 1.5s ease-in-out infinite;
+}
+
+/* Immediate press feedback animation */
+@keyframes arrowPress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+/* Class for immediate key press feedback */
+.arrow--pressed {
+  animation: arrowPress 150ms var(--tv-easing-ui-feedback, cubic-bezier(0.68, -0.55, 0.265, 1.55));
+}
+
+/* Enhanced visual feedback for different arrow directions */
+.arrow--up.arrow--active {
+  background: linear-gradient(180deg, rgba(74, 144, 226, 0.5) 0%, rgba(74, 144, 226, 0.3) 100%);
+}
+
+.arrow--down.arrow--active {
+  background: linear-gradient(0deg, rgba(74, 144, 226, 0.5) 0%, rgba(74, 144, 226, 0.3) 100%);
+}
+
+.arrow--left.arrow--active {
+  background: linear-gradient(90deg, rgba(74, 144, 226, 0.5) 0%, rgba(74, 144, 226, 0.3) 100%);
+}
+
+.arrow--right.arrow--active {
+  background: linear-gradient(270deg, rgba(74, 144, 226, 0.5) 0%, rgba(74, 144, 226, 0.3) 100%);
+}
+
+/* Hide controls when not in TV mode or when menu is open */
+.container:not(:global(.tv-camera-controls)) {
+  display: none;
+}
+
+/* Ensure proper stacking order */
+.container {
+  z-index: 50; /* Below menu (z-index: 1000) but above other UI elements */
+}

@@ -7,7 +7,7 @@ const Crew: React.FC = memo(() => {
 
   if (error) {
     return (
-      <div className="bg-space-blue/30 backdrop-blur-sm rounded-lg p-4 mb-4">
+      <div className="backdrop-blur-sm rounded-lg p-4 mb-4">
         <h3 className="text-lg font-semibold mb-2">Current Crew</h3>
         <p className="text-red-400">Error loading crew data</p>
       </div>
@@ -16,7 +16,7 @@ const Crew: React.FC = memo(() => {
 
   if (!crew || crew.length === 0) {
     return (
-      <div className="bg-space-blue/30 backdrop-blur-sm rounded-lg p-4 mb-4">
+      <div className="backdrop-blur-sm rounded-lg p-4 mb-4">
         <h3 className="text-lg font-semibold mb-2">Current Crew</h3>
         <p className="text-gray-300">Loading crew data...</p>
       </div>
@@ -24,7 +24,7 @@ const Crew: React.FC = memo(() => {
   }
 
   return (
-    <div className="bg-space-blue/30 backdrop-blur-sm rounded-lg p-4 mb-4">
+    <div className="backdrop-blur-sm rounded-lg p-4 mb-4">
       <h3 className="text-lg font-semibold mb-2">Current Crew</h3>
       <p className="text-gray-300 mb-2">
         {crew.length} astronauts currently aboard the ISS

@@ -1,8 +1,10 @@
 import React, { memo, useMemo } from 'react';
 import { useISS } from '../../state/ISSContext';
+import { useDevice } from '../../state/DeviceContext';
 
 const Altitude: React.FC = memo(() => {
   const { state } = useISS();
+  const { isTVProfile } = useDevice();
   const { position } = state;
 
   // Memoize formatted altitude and velocity data
@@ -25,41 +27,41 @@ const Altitude: React.FC = memo(() => {
 
   if (!position) {
     return (
-      <div className="bg-space-blue/30 backdrop-blur-sm rounded-lg p-4 mb-4">
-        <h3 className="text-lg font-semibold mb-2">Altitude & Velocity</h3>
-        <p className="text-gray-300">Loading data...</p>
+      <div className={`backdrop-blur-sm rounded-lg ${isTVProfile ? 'p-5 mb-5' : 'p-3 mb-3'} ${isTVProfile ? 'tv-typography' : ''}`}>
+        <h3 className={`${isTVProfile ? 'text-lg' : 'text-sm'} font-semibold mb-1 mt-1`}>Altitude & Velocity</h3>
+        <p className={`text-gray-300 ${isTVProfile ? 'text-base' : 'text-xs'}`}>Loading data...</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-space-blue/30 backdrop-blur-sm rounded-lg p-4 mb-4">
-      <h3 className="text-lg font-semibold mb-2">Altitude & Velocity</h3>
-      <div className="grid grid-cols-2 gap-2">
+    <div className={`backdrop-blur-sm rounded-lg ${isTVProfile ? 'p-5 mb-5' : 'p-3 mb-3'} ${isTVProfile ? 'tv-typography' : ''}`}>
+      <h3 className={`${isTVProfile ? 'text-lg' : 'text-sm'} font-semibold mb-1 mt-1`}>Altitude & Velocity</h3>
+      <div className={`grid grid-cols-2 ${isTVProfile ? 'gap-4' : 'gap-2'}`}>
         <div>
-          <p className="text-gray-300 text-sm">Altitude</p>
-          <p className="text-iss-white font-mono text-lg">
-            {formattedData?.altitude.km} <span className="text-sm">km</span>
+          <p className={`text-gray-300 ${isTVProfile ? 'text-base' : 'text-xs'}`}>Altitude</p>
+          <p className={`text-iss-white font-mono ${isTVProfile ? 'text-lg' : 'text-sm'}`}>
+            {formattedData?.altitude.km} <span className={isTVProfile ? 'text-base' : 'text-xs'}>km</span>
           </p>
-          <p className="text-gray-400 text-xs">
+          <p className={`text-gray-400 ${isTVProfile ? 'text-sm' : 'text-xs'} imperial-unit`}>
             {formattedData?.altitude.miles} miles
           </p>
         </div>
         <div>
-          <p className="text-gray-300 text-sm">Velocity</p>
-          <p className="text-iss-white font-mono text-lg">
-            {formattedData?.velocity.kmh} <span className="text-sm">km/h</span>
+          <p className={`text-gray-300 ${isTVProfile ? 'text-base' : 'text-xs'}`}>Velocity</p>
+          <p className={`text-iss-white font-mono ${isTVProfile ? 'text-lg' : 'text-sm'}`}>
+            {formattedData?.velocity.kmh} <span className={isTVProfile ? 'text-base' : 'text-xs'}>km/h</span>
           </p>
-          <p className="text-gray-400 text-xs">
+          <p className={`text-gray-400 ${isTVProfile ? 'text-sm' : 'text-xs'} imperial-unit`}>
             {formattedData?.velocity.mph} mph
           </p>
         </div>
       </div>
       
       {/* Orbit time calculation */}
-      <div className="mt-3 pt-3 border-t border-gray-700">
-        <p className="text-gray-300 text-sm">Orbital Period</p>
-        <p className="text-iss-white">
+      <div className={`${isTVProfile ? 'mt-4 pt-4' : 'mt-2 pt-2'} border-t border-gray-700 orbital-period`}>
+        <p className={`text-gray-300 ${isTVProfile ? 'text-base' : 'text-xs'}`}>Orbital Period</p>
+        <p className={`text-iss-white ${isTVProfile ? 'text-sm' : 'text-xs'}`}>
           {/* ISS orbits Earth approximately every 90 minutes */}
           ~90 minutes per orbit
         </p>

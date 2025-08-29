@@ -1,0 +1,496 @@
+/* HamburgerMenu Component CSS Module */
+.hamburgerMenu {
+  position: relative;
+  z-index: 9999;
+  margin: 0.25rem; /* Add default margin */
+}
+
+@media (max-width: 767px) {
+  .hamburgerMenu {
+    margin: 0.5rem; /* More margin on mobile */
+  }
+}
+
+/* Hamburger Button */
+.button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  /* Improve touch interaction */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button:hover {
+  background: rgba(0, 0, 0, 0.9);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.button:focus {
+  outline: 2px solid rgba(74, 144, 226, 0.8);
+  outline-offset: 2px;
+}
+
+.buttonActive {
+  background: rgba(74, 144, 226, 0.2);
+  border-color: rgba(74, 144, 226, 0.5);
+}
+
+/* Hamburger Icon */
+.icon {
+  position: relative;
+  width: 20px;
+  height: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.line {
+  width: 100%;
+  height: 2px;
+  background: var(--iss-white);
+  border-radius: 1px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.buttonActive .line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.buttonActive .line:nth-child(2) {
+  opacity: 0;
+}
+
+.buttonActive .line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Menu Content - Dropdown from header */
+.content {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: 400px; /* Increased from 320px to 400px */
+  height: auto;
+  max-height: 600px;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transform: translateY(-10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 9999;
+  overflow-y: auto;
+  padding: 1.5rem;
+  /* Improve mobile scrolling */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.contentOpen {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Controls Container */
+.controls {
+  display: flex;
+  flex-direction: column;
+  /* gap: var(--spacing-lg); */
+}
+
+/* TV mode controls styling */
+@media (width: 1920px) {
+  .contentTV .controls {
+    gap: 1.5rem;
+    padding-top: 2rem;
+  }
+  
+  /* Force all button containers to stack vertically in TV mode */
+  .contentTV .controls > * {
+    width: 100%;
+  }
+  
+  /* Target all button containers within controls and force vertical stacking */
+  .contentTV .controls div[class*="buttonContainer"],
+  .contentTV .controls div[class*="buttons"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+  }
+  
+  /* Apply TV typography and spacing to all controls in TV mode */
+  .contentTV .controls * {
+    font-size: var(--tv-min-font-size);
+    line-height: calc(var(--tv-min-font-size) * var(--tv-line-height-factor));
+  }
+  
+  /* TV-specific button styling within menu */
+  .contentTV .controls button {
+    min-height: var(--tv-button-min-height);
+    min-width: var(--tv-button-min-width);
+    width: 100% !important;
+    flex: none !important;
+    padding: 12px 24px;
+    font-size: var(--tv-min-font-size);
+    border-radius: var(--tv-focus-border-radius);
+    transition: var(--tv-focus-transition);
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+  }
+  
+  .contentTV .controls button:focus {
+    outline: none;
+    border: var(--tv-focus-border-width) solid var(--tv-focus-border-color);
+    box-shadow: var(--tv-focus-shadow);
+    transform: scale(var(--tv-focus-scale));
+    background: rgba(74, 144, 226, 0.2);
+    z-index: 1;
+  }
+  
+  .contentTV .controls button:focus::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border: 2px solid var(--tv-focus-border-color);
+    border-radius: calc(var(--tv-focus-border-radius) + 2px);
+    pointer-events: none;
+    animation: tvFocusPulse 2s infinite;
+  }
+  
+  @keyframes tvFocusPulse {
+    0%, 100% {
+      opacity: 0.6;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.02);
+    }
+  }
+  
+  /* Ensure control components have proper width in TV mode */
+  .contentTV .controls > div {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Enhanced focus styling for all focusable elements in TV mode */
+  .contentTV .controls *:focus-visible {
+    outline: none;
+    border: var(--tv-focus-border-width) solid var(--tv-focus-border-color);
+    box-shadow: var(--tv-focus-shadow);
+    transform: scale(var(--tv-focus-scale));
+    background: rgba(74, 144, 226, 0.2);
+    border-radius: var(--tv-focus-border-radius);
+    transition: var(--tv-focus-transition);
+  }
+  
+  /* Specific styling for input elements in TV mode */
+  .contentTV .controls input:focus,
+  .contentTV .controls select:focus,
+  .contentTV .controls textarea:focus {
+    outline: none;
+    border: var(--tv-focus-border-width) solid var(--tv-focus-border-color);
+    box-shadow: var(--tv-focus-shadow);
+    background: rgba(74, 144, 226, 0.1);
+  }
+  
+  /* High contrast focus indicators for better TV visibility */
+  .contentTV .controls button:focus,
+  .contentTV .controls input:focus,
+  .contentTV .controls select:focus {
+    box-shadow: 
+      var(--tv-focus-shadow),
+      0 0 0 1px rgba(255, 255, 255, 0.8),
+      inset 0 0 0 1px rgba(74, 144, 226, 0.5);
+  }
+  
+  /* Enhanced styling for active/selected buttons in TV mode */
+  .contentTV .controls button[class*="buttonActive"],
+  .contentTV .controls button[class*="Active"] {
+    background: linear-gradient(135deg, #4A90E2, #60a5fa) !important;
+    border-color: #4A90E2 !important;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4) !important;
+    color: white !important;
+  }
+  
+  .contentTV .controls button[class*="buttonActive"]:focus,
+  .contentTV .controls button[class*="Active"]:focus {
+    background: linear-gradient(135deg, #60a5fa, #4A90E2) !important;
+    border: var(--tv-focus-border-width) solid var(--tv-focus-border-color) !important;
+    box-shadow: 
+      var(--tv-focus-shadow),
+      0 4px 16px rgba(74, 144, 226, 0.6),
+      0 0 0 1px rgba(255, 255, 255, 0.8) !important;
+    transform: scale(var(--tv-focus-scale));
+  }
+  
+  .contentTV .controls button[class*="buttonActive"]:hover,
+  .contentTV .controls button[class*="Active"]:hover {
+    background: linear-gradient(135deg, #60a5fa, #4A90E2) !important;
+    transform: translateY(-1px);
+  }
+  
+  /* More specific selectors for different active button types */
+  .contentTV .controls button[class*="buttonActiveEarthRotate"],
+  .contentTV .controls button[class*="buttonActiveManual"] {
+    background: linear-gradient(135deg, #4A90E2, #60a5fa) !important;
+    border-color: #4A90E2 !important;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4) !important;
+    color: white !important;
+  }
+}
+
+/* Backdrop */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: calc(var(--z-dropdown) - 1);
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+/* Mobile-specific styles */
+.contentMobile {
+  top: 100%;
+  max-height: calc(100vh - 120px);
+  max-width: calc(100vw - 2rem);
+  left: 0;
+  right: auto;
+}
+
+/* TV-specific styles */
+.contentTV {
+  /* Full-height sidebar positioned on left side */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--tv-menu-width);
+  height: 100vh;
+  max-height: none;
+  transform: translateX(-100%); /* Start hidden off-screen */
+  opacity: 1;
+  visibility: visible;
+  border-radius: 0;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(15px);
+  z-index: 10000;
+  overflow-y: auto;
+  /* Reduced TV safe zone padding - only apply minimal padding */
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  /* Smooth transitions for slide animations */
+  transition: transform var(--tv-slide-in-duration) var(--tv-easing-smooth);
+}
+
+/* TV mode - menu slides in from left when open */
+.contentTV.contentOpen {
+  transform: translateX(0);
+  transition: transform var(--tv-slide-in-duration) var(--tv-easing-smooth);
+}
+
+/* TV mode - menu slides out to left when closed */
+.contentTV:not(.contentOpen) {
+  transform: translateX(-100%);
+  transition: transform var(--tv-slide-out-duration) var(--tv-easing-smooth);
+}
+
+/* Animation state class to prevent interactions during transitions */
+.animating {
+  pointer-events: none;
+}
+
+.contentTV.animating {
+  pointer-events: none;
+}
+
+/* Initial state handling for TV mode */
+.contentTV:not(.contentOpen):not(.animating) {
+  /* When not animating and not open, keep hidden */
+  transform: translateX(-100%);
+}
+
+/* Override for TV mode when menu should be visible by default */
+@media (width: 1920px) {
+  .contentTV {
+    /* Start visible in TV mode by default */
+    transform: translateX(0);
+  }
+  
+  .contentTV:not(.contentOpen) {
+    /* Only hide when explicitly closed */
+    transform: translateX(-100%);
+  }
+}
+
+/* TV mode - hamburger button is hidden, so no positioning needed */
+@media (width: 1920px) {
+  .hamburgerMenu {
+    /* No positioning needed since button is hidden in TV mode */
+  }
+  
+  .buttonActive {
+    background: rgba(74, 144, 226, 0.3);
+    border-color: var(--tv-focus-border-color);
+  }
+  
+  .icon {
+    width: 24px;
+    height: 20px;
+  }
+  
+  .line {
+    height: 3px;
+    background: var(--tv-high-contrast-text);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 767px) {
+  .button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .content {
+    width: calc(100vw - 2rem);
+    max-width: 320px;
+    padding: 1rem;
+    top: 100%;
+    max-height: calc(100vh - 120px);
+    left: 0;
+    right: auto;
+  }
+
+  .controls {
+    gap: 1rem;
+  }
+
+  .icon {
+    width: 22px;
+    height: 18px;
+  }
+
+  .line {
+    height: 2.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    width: calc(100vw - 1.5rem);
+    left: 0;
+    right: auto;
+    padding: 0.5rem;
+  }
+
+  .controls {
+    gap: 0.5rem;
+  }
+}
+
+/* Custom scrollbar for menu content */
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .button {
+    border-width: 2px;
+  }
+  
+  .line {
+    height: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .content,
+  .line,
+  .backdrop {
+    transition: none;
+  }
+  
+  .contentTV,
+  .contentTV.contentOpen,
+  .contentTV:not(.contentOpen) {
+    transition: none;
+  }
+  
+  /* For reduced motion, use instant positioning instead of animations */
+  .contentTV.contentOpen {
+    transform: translateX(0);
+  }
+  
+  .contentTV:not(.contentOpen) {
+    transform: translateX(-100%);
+  }
+}
+
+/* TV-specific high contrast support */
+@media (width: 1920px) and (prefers-contrast: high) {
+  .button {
+    border-width: var(--tv-focus-border-width);
+    background: var(--tv-high-contrast-background);
+    border-color: var(--tv-high-contrast-border);
+  }
+  
+  .line {
+    height: 4px;
+    background: var(--tv-high-contrast-text);
+  }
+  
+  .contentTV {
+    background: var(--tv-high-contrast-background);
+    border-right-color: var(--tv-high-contrast-border);
+  }
+}

@@ -1,0 +1,315 @@
+/* Global CSS Reset and Base Styles */
+@import './mixins.css';
+
+  /* CSS Custom Properties (Variables) */
+:root {
+  /* Import design tokens as CSS variables */
+  --color-space-black: #121212;
+  --color-space-black80: rgba(18, 18, 18, 0.8);
+  --color-space-blue: #1e3a8a;
+  --color-iss-white: #f8fafc;
+  --color-iss-highlight: #3b82f6;
+  
+  --color-primary: #3b82f6;
+  --color-secondary: #1e3a8a;
+  --color-primary-dark: #1e40af;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  
+  /* Opacity Variants */
+  --color-space-black80: rgba(18, 18, 18, 0.8);
+  --color-space-black90: rgba(18, 18, 18, 0.9);
+  --color-space-black95: rgba(18, 18, 18, 0.95);
+  --color-white10: rgba(255, 255, 255, 0.1);
+  --color-white15: rgba(255, 255, 255, 0.15);
+  --color-white20: rgba(255, 255, 255, 0.2);
+  --color-white30: rgba(255, 255, 255, 0.3);
+  --color-white50: rgba(255, 255, 255, 0.5);
+  --color-white80: rgba(255, 255, 255, 0.8);
+  --color-white90: rgba(255, 255, 255, 0.9);
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  
+  /* Typography */
+  --font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-family-mono: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  --font-family-orbitron: 'Orbitron', sans-serif;
+  --font-family-exo: 'Exo 2', sans-serif;
+  
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  
+  /* Breakpoints */
+  --breakpoint-mobile: 480px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-wide: 1280px;
+  --breakpoint-ultra: 1536px;
+  
+  /* Border Radius */
+  --border-radius-none: 0;
+  --border-radius-sm: 0.25rem;
+  --border-radius-md: 0.5rem;
+  --border-radius-lg: 0.75rem;
+  --border-radius-xl: 1rem;
+  --border-radius-full: 9999px;
+  
+  /* Z-Index */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal: 1040;
+  --z-popover: 1050;
+  --z-tooltip: 1060;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* TV-specific variables */
+  --tv-safe-zone-padding: 5%;
+  --tv-menu-width: 320px;
+  --tv-animation-duration: 300ms;
+  --tv-focus-border-width: 3px;
+  --tv-focus-border-color: #4A90E2;
+  --tv-min-font-size: 32px;
+  --tv-button-min-height: 48px;
+  --tv-button-min-width: 200px;
+  --tv-font-scale-factor: 1.5;
+  --tv-line-height-factor: 1.2;
+  --tv-high-contrast-text: #ffffff;
+  --tv-high-contrast-background: #000000;
+  --tv-high-contrast-border: #ffffff;
+  --tv-safe-zone-top: 5vh;
+  --tv-safe-zone-bottom: 5vh;
+  --tv-safe-zone-left: 5vw;
+  --tv-safe-zone-right: 5vw;
+}
+
+/* Base Reset */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-space-black);
+  color: var(--color-iss-white);
+  line-height: 1.5;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Form Elements */
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Lists */
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Code */
+code {
+  font-family: var(--font-family-mono);
+}
+
+/* Focus Management */
+:focus {
+  outline: 2px solid var(--color-iss-highlight);
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  :focus {
+    outline-width: 3px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* TV-specific styles */
+.tv-safe-zone {
+  padding: var(--tv-safe-zone-top) var(--tv-safe-zone-right) var(--tv-safe-zone-bottom) var(--tv-safe-zone-left);
+}
+
+.tv-typography {
+  font-size: calc(var(--font-size-base) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+  color: var(--tv-high-contrast-text);
+}
+
+.tv-typography h1 {
+  font-size: calc(var(--font-size-4xl) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography h2 {
+  font-size: calc(var(--font-size-3xl) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography h3 {
+  font-size: calc(var(--font-size-2xl) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography h4 {
+  font-size: calc(var(--font-size-xl) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography h5 {
+  font-size: calc(var(--font-size-lg) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography h6 {
+  font-size: calc(var(--font-size-base) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography p,
+.tv-typography span,
+.tv-typography div {
+  font-size: calc(var(--font-size-base) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+.tv-typography small {
+  font-size: calc(var(--font-size-sm) * var(--tv-font-scale-factor));
+  line-height: var(--tv-line-height-factor);
+}
+
+/* Ensure minimum font size for TV viewing */
+.tv-typography * {
+  font-size: max(calc(var(--font-size-base) * var(--tv-font-scale-factor)), var(--tv-min-font-size));
+}
+
+.tv-button {
+  min-height: var(--tv-button-min-height);
+  min-width: var(--tv-button-min-width);
+  font-size: calc(var(--font-size-base) * var(--tv-font-scale-factor));
+  padding: calc(var(--spacing-md) * 1.2) calc(var(--spacing-lg) * 1.2);
+  border: 2px solid transparent;
+  transition: all var(--tv-animation-duration) ease;
+}
+
+.tv-button:focus {
+  outline: none;
+  border-color: var(--tv-focus-border-color);
+  border-width: var(--tv-focus-border-width);
+  box-shadow: 0 0 0 2px var(--tv-focus-border-color);
+  transform: scale(1.05);
+}
+
+.tv-high-contrast {
+  color: var(--tv-high-contrast-text) !important;
+  background-color: var(--tv-high-contrast-background);
+  border-color: var(--tv-high-contrast-border);
+}
+
+.tv-focus-indicator {
+  position: relative;
+}
+
+.tv-focus-indicator:focus::after {
+  content: '';
+  position: absolute;
+  top: -var(--tv-focus-border-width);
+  left: -var(--tv-focus-border-width);
+  right: -var(--tv-focus-border-width);
+  bottom: -var(--tv-focus-border-width);
+  border: var(--tv-focus-border-width) solid var(--tv-focus-border-color);
+  border-radius: var(--border-radius-md);
+  pointer-events: none;
+}
+
+/* Print Styles */
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}
