@@ -237,4 +237,134 @@ describe('useAdaptivePerformance', () => {
     // Should not trigger adjustment due to high variance
     expect(result.current.state.isInCooldown).toBe(false);
   });
+
+  it('should implement hysteresis logic for tier lowering', () => {
+    const { result } = renderHook(() => useAdaptivePerformance(), {
+      wrapper: TestWrapper,
+    });
+
+    // Create FPS history where only 60% of samples are below threshold (should not trigger)
+    const inconsistentLowFPSHistory = [
+      ...Array(15).fill(10), // 60% below threshold
+      ...Array(10).fill(30), // 40% above threshold
+    ];
+    
+    act(() => {
+      result.current.handleFPSUpdate(18, 18, inconsistentLowFPSHistory);
+    });
+
+    // Should not trigger adjustment due to insufficient consistency
+    expect(result.current.state.isInCooldown).toBe(false);
+
+    // Now test with 80% of samples below threshold (should trigger)
+    const consistentLowFPSHistory = [
+      ...Array(20).fill(10), // 80% below threshold
+      ...Array(5).fill(30),  // 20% above threshold
+    ];
+    
+    act(() => {
+      result.current.handleFPSUpdate(14, 14, consistentLowFPSHistory);
+    });
+
+    // Should trigger adjustment due to sufficient consistency
+    expect(result.current.state.isInCooldown).toBe(true);
+  });
+
+  it('should implement hysteresis logic for tier raising', () => {
+    const { result } = renderHook(() => useAdaptivePerformance(), {
+      wrapper: TestWrapper,
+    });
+
+    // First lower the tier from high to medium
+    const lowFPSHistory = Array(25).fill(10);
+    act(() => {
+      result.current.handleFPSUpdate(10, 10, lowFPSHistory);
+    });
+
+    // Wait for cooldown
+    act(() => {
+      vi.advanceTimersByTime(10000);
+    });
+
+    // Now test with consistent high FPS that should trigger tier raising
+    // Use values well above the 55 FPS threshold with low variance
+    const consistentHighFPSHistory = Array(25).fill(60); // All samples above threshold
+    
+    act(() => {
+      result.current.handleFPSUpdate(60, 60, consistentHighFPSHistory);
+    });
+
+    // Should trigger adjustment from medium back to high
+    expect(result.current.state.isInCooldown).toBe(true);
+  });
+
+  it('should prevent tier adjustment beyond boundaries', () => {
+    const { result } = renderHook(() => useAdaptivePerformance(), {
+      wrapper: TestWrapper,
+    });
+
+    // Start at high tier, try to raise further
+    const veryHighFPSHistory = Array(25).fill(100);
+    
+    act(() => {
+      result.current.handleFPSUpdate(100, 100, veryHighFPSHistory);
+    });
+
+    // Should not trigger adjustment as we're already at max tier
+    expect(result.current.state.isInCooldown).toBe(false);
+
+    // Lower to minimum tier first
+    const lowFPSHistory1 = Array(25).fill(10);
+    act(() => {
+      result.current.handleFPSUpdate(10, 10, lowFPSHistory1);
+    });
+
+    // Wait for cooldown
+    act(() => {
+      vi.advanceTimersByTime(10000);
+    });
+
+    // Lower again
+    const lowFPSHistory2 = Array(25).fill(10);
+    act(() => {
+      result.current.handleFPSUpdate(10, 10, lowFPSHistory2);
+    });
+
+    // Wait for cooldown
+    act(() => {
+      vi.advanceTimersByTime(10000);
+    });
+
+    // Try to lower further when already at minimum
+    const veryLowFPSHistory = Array(25).fill(5);
+    const lastAdjustmentTime = result.current.state.lastAdjustmentTime;
+    
+    act(() => {
+      result.current.handleFPSUpdate(5, 5, veryLowFPSHistory);
+    });
+
+    // Should not trigger adjustment as we're already at min tier
+    expect(result.current.state.lastAdjustmentTime).toBe(lastAdjustmentTime);
+  });
+
+  it('should handle standard deviation-based stability checking', () => {
+    const { result } = renderHook(() => useAdaptivePerformance(), {
+      wrapper: TestWrapper,
+    });
+
+    // Create FPS history with high standard deviation (alternating between very low and moderate values)
+    const highStdDevHistory = [
+      5, 25, 5, 25, 5, 25, 5, 25, 5, 25,  // High variance pattern
+      5, 25, 5, 25, 5, 25, 5, 25, 5, 25,  // Continues pattern
+      5, 25, 5, 25, 5  // Complete the 25 samples
+    ];
+    
+    // Average will be 15, but standard deviation will be high due to alternating pattern
+    act(() => {
+      result.current.handleFPSUpdate(15, 15, highStdDevHistory);
+    });
+
+    // Should not trigger adjustment due to high standard deviation (instability)
+    expect(result.current.state.isInCooldown).toBe(false);
+  });
 });
