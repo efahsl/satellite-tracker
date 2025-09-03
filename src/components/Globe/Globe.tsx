@@ -6,10 +6,13 @@ import Earth from './Earth';
 import ISS from './ISS';
 import EnhancedISS from './ISS-Enhanced';
 import Sun from './Sun';
+import FPSMonitor from './FPSMonitor';
 import Controls, { ControlsRef } from './Controls';
 import { useISS } from '../../state/ISSContext';
 import { usePerformance } from '../../state/PerformanceContext';
 import { useDevice } from '../../state/DeviceContext';
+import { useUI } from '../../state/UIContext';
+import { useAdaptivePerformance } from '../../hooks/useAdaptivePerformance';
 import { 
   EARTH_DAY_MAP, 
   EARTH_NIGHT_MAP, 
@@ -48,6 +51,18 @@ const Globe = memo(forwardRef<GlobeRef, GlobeProps>(({
   // Add device context hook to check TV profile
   const { isTVProfile } = useDevice();
   
+  // Add UI context hook to check FPS monitor visibility
+  const { state: uiState } = useUI();
+  
+  // Initialize adaptive performance system with more responsive thresholds
+  const adaptivePerformance = useAdaptivePerformance({
+    enabled: true, // Enable by default
+    lowerThreshold: 25, // More responsive - lower from 30 FPS
+    upperThreshold: 50, // More responsive - raise above 50 FPS
+    cooldownPeriod: 3000, // Shorter cooldown for testing (3 seconds)
+    analysisWindow: 2000, // Shorter analysis window (2 seconds)
+  });
+  
   // Sun position state for dynamic lighting
   const [sunPosition, setSunPosition] = useState<Vector3>(new Vector3(1, 0, 0));
   
@@ -69,6 +84,27 @@ const Globe = memo(forwardRef<GlobeRef, GlobeProps>(({
 
     return () => clearInterval(interval);
   }, []);
+
+  // Track previous tier to only log actual changes
+  const prevTierRef = useRef<string>(performanceState.tier);
+  
+  // Monitor performance tier changes for logging (only log actual tier changes)
+  useEffect(() => {
+    if (prevTierRef.current !== performanceState.tier) {
+      console.log(`[Globe] Performance tier changed: ${prevTierRef.current} → ${performanceState.tier}`);
+      prevTierRef.current = performanceState.tier;
+    }
+  }, [performanceState.tier]);
+
+  // Cleanup adaptive performance system on unmount
+  useEffect(() => {
+    return () => {
+      // Only log cleanup in development mode - don't call resetCooldown as it causes setState during unmount
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Globe] Adaptive performance system cleaned up');
+      }
+    };
+  }, []); // Empty dependency array to avoid re-creating the cleanup function
 
   // Expose controls ref for external access
   useImperativeHandle(ref, () => ({
@@ -177,6 +213,17 @@ const Globe = memo(forwardRef<GlobeRef, GlobeProps>(({
           Initializing day/night cycle
         </div>
       </div>
+
+      {/* FPS Monitor with Adaptive Performance Integration */}
+      {uiState.fpsMonitorVisible && (
+        <FPSMonitor
+          position="top-right"
+          warningThreshold={30}
+          criticalThreshold={20}
+          enableDataExport={true}
+          onFPSUpdate={adaptivePerformance.handleFPSUpdate}
+        />
+      )}
     </div>
   );
 }));

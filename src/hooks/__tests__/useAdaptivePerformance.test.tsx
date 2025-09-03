@@ -204,18 +204,18 @@ describe('useAdaptivePerformance', () => {
       wrapper: TestWrapper,
     });
 
-    // Create history with invalid values (negative and extremely high)
+    // Create history with invalid values (negative and extremely high) and insufficient valid data
     const invalidFPSHistory = [
       ...Array(10).fill(-5), // Invalid negative values
       ...Array(10).fill(300), // Invalid extremely high values
-      ...Array(10).fill(10), // Valid low values
+      ...Array(5).fill(10), // Only 5 valid low values (less than required 6)
     ];
     
     act(() => {
       result.current.handleFPSUpdate(10, 10, invalidFPSHistory);
     });
 
-    // Should not trigger adjustment due to insufficient valid data
+    // Should not trigger adjustment due to insufficient valid data (5 < 6 required)
     expect(result.current.state.isInCooldown).toBe(false);
   });
 
@@ -256,10 +256,12 @@ describe('useAdaptivePerformance', () => {
     // Should not trigger adjustment due to insufficient consistency
     expect(result.current.state.isInCooldown).toBe(false);
 
-    // Now test with 80% of samples below threshold (should trigger)
+    // Now test with 80% of samples below threshold in the rolling window (should trigger)
+    // Create 25 samples, but only the last 20 will be analyzed
     const consistentLowFPSHistory = [
-      ...Array(20).fill(10), // 80% below threshold
-      ...Array(5).fill(30),  // 20% above threshold
+      ...Array(5).fill(60),  // These will be outside the rolling window
+      ...Array(16).fill(10), // 80% of the rolling window (16/20)
+      ...Array(4).fill(30),  // 20% of the rolling window (4/20)
     ];
     
     act(() => {

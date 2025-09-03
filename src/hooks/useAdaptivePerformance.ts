@@ -107,59 +107,51 @@ export function useAdaptivePerformance(
   }, [state.isInCooldown, state.lastAdjustmentTime, config.cooldownPeriod]);
 
   const analyzeFPSData = useCallback((fpsHistory: number[]): 'lower' | 'raise' | 'maintain' => {
-    // Need at least 20 data points (5 seconds at 250ms intervals)
-    if (fpsHistory.length < 20) {
+    // Need at least 8 data points (2 seconds at 250ms intervals)
+    if (fpsHistory.length < 8) {
       return 'maintain';
     }
 
+    // Use only the last 5 seconds of data (20 samples at 250ms intervals)
+    const maxSamples = 20; // 5 seconds * 4 samples per second
+    const recentFPS = fpsHistory.slice(-maxSamples);
+    
     // Filter out invalid FPS values (negative or extremely high)
-    const validFPS = fpsHistory.filter(fps => fps > 0 && fps <= 200);
-    if (validFPS.length < 15) {
-      // Insufficient valid data points
+    const validFPS = recentFPS.filter(fps => fps > 0 && fps <= 200);
+    if (validFPS.length < 6) {
       return 'maintain';
     }
 
     const avgFPS = validFPS.reduce((a, b) => a + b, 0) / validFPS.length;
-    const minFPS = Math.min(...validFPS);
-    const maxFPS = Math.max(...validFPS);
-    const variance = maxFPS - minFPS;
-
-    // Calculate standard deviation for more precise stability checking
-    const mean = avgFPS;
-    const squaredDiffs = validFPS.map(fps => Math.pow(fps - mean, 2));
-    const avgSquaredDiff = squaredDiffs.reduce((a, b) => a + b, 0) / validFPS.length;
-    const standardDeviation = Math.sqrt(avgSquaredDiff);
-
-    // High variance or standard deviation indicates instability - be conservative
-    // Use both range-based variance and statistical standard deviation
-    if (variance > 20 || standardDeviation > 8) {
-      return 'maintain';
-    }
 
     // Implement hysteresis logic - different thresholds based on current tier
     const currentTierIndex = TIER_ORDER.indexOf(performanceState.tier);
     
     // For lowering tier: be more aggressive when performance is poor
     if (avgFPS < config.lowerThreshold) {
-      // Additional check: ensure consistently low performance
+      // Additional check: ensure consistently low performance in recent window
       const lowFPSCount = validFPS.filter(fps => fps < config.lowerThreshold).length;
       const lowFPSRatio = lowFPSCount / validFPS.length;
       
-      // At least 70% of samples should be below threshold for stability
-      if (lowFPSRatio >= 0.7 && currentTierIndex > 0) {
+
+      
+      // At least 60% of recent samples should be below threshold
+      if (lowFPSRatio >= 0.6 && currentTierIndex > 0) {
         return 'lower';
       }
     }
     
     // For raising tier: be more conservative, require higher performance
     if (avgFPS > config.upperThreshold) {
-      // Additional check: ensure consistently high performance
+      // Additional check: ensure consistently high performance in recent window
       const highFPSCount = validFPS.filter(fps => fps > config.upperThreshold).length;
       const highFPSRatio = highFPSCount / validFPS.length;
       
-      // At least 80% of samples should be above threshold for stability
+
+      
+      // At least 70% of recent samples should be above threshold
       // Also ensure we're not at the highest tier already
-      if (highFPSRatio >= 0.8 && currentTierIndex < TIER_ORDER.length - 1) {
+      if (highFPSRatio >= 0.7 && currentTierIndex < TIER_ORDER.length - 1) {
         return 'raise';
       }
     }
@@ -180,12 +172,18 @@ export function useAdaptivePerformance(
     
     // Boundary checking - prevent adjusting beyond min/max tiers
     if (decision === 'lower' && currentTierIndex <= 0) {
-      console.log(`[AdaptivePerformance] Cannot lower tier - already at minimum (${performanceState.tier})`);
+      // Only log in development mode for boundary conditions
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[AdaptivePerformance] Already at minimum tier (${performanceState.tier})`);
+      }
       return;
     }
     
     if (decision === 'raise' && currentTierIndex >= TIER_ORDER.length - 1) {
-      console.log(`[AdaptivePerformance] Cannot raise tier - already at maximum (${performanceState.tier})`);
+      // Only log in development mode for boundary conditions
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[AdaptivePerformance] Already at maximum tier (${performanceState.tier})`);
+      }
       return;
     }
 
@@ -214,8 +212,8 @@ export function useAdaptivePerformance(
         lastAdjustmentTime: adjustmentTime,
       }));
 
-      // Enhanced logging for tier adjustment decisions
-      console.log(`[AdaptivePerformance] Tier adjusted: ${performanceState.tier} → ${newTier} (${decision}) at ${new Date(adjustmentTime).toISOString()}`);
+      // Log tier adjustments (always important to know)
+      console.log(`[AdaptivePerformance] ${performanceState.tier} → ${newTier} (${decision})`);
     } catch (error) {
       console.error('[AdaptivePerformance] Failed to adjust tier:', error);
       // Reset state on error to prevent inconsistent state
@@ -241,12 +239,16 @@ export function useAdaptivePerformance(
 
     // Analyze the FPS data to determine if tier adjustment is needed
     const decision = analyzeFPSData(fpsHistory);
+    
+    // Only log when a tier adjustment decision is made
+    if (decision !== 'maintain' && process.env.NODE_ENV === 'development') {
+      console.log(`[AdaptivePerformance] ${decision} tier (avg FPS: ${avgFps})`);
+    }
+    
     if (decision !== 'maintain') {
-      // Log the decision context for debugging
-      console.log(`[AdaptivePerformance] FPS Analysis - Current: ${fps}, Average: ${avgFps}, Decision: ${decision}`);
       handleTierAdjustment(decision);
     }
-  }, [shouldAdjustTier, analyzeFPSData, handleTierAdjustment]);
+  }, [shouldAdjustTier, analyzeFPSData, handleTierAdjustment, state.isEnabled, state.isInCooldown, state.isManualOverride, config.lowerThreshold, config.upperThreshold]);
 
   const updateConfig = useCallback((newConfig: Partial<AdaptivePerformanceConfig>) => {
     setConfig(prev => ({ ...prev, ...newConfig }));
