@@ -8,6 +8,8 @@ interface FPSMonitorProps {
   graphWidth?: number;
   graphHeight?: number;
   historySize?: number;
+  onFPSUpdate?: (fps: number, avgFps: number, fpsHistory: number[]) => void;
+  enableDataExport?: boolean;
 }
 
 const FPSMonitor: React.FC<FPSMonitorProps> = memo(
@@ -18,6 +20,8 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
     graphWidth = 140,
     graphHeight = 60,
     historySize = 80,
+    onFPSUpdate,
+    enableDataExport = false,
   }) => {
     const { isMobile } = useDevice();
     const [fps, setFps] = useState(60);
@@ -81,6 +85,11 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
           setMinFps(min);
           setMaxFps(max);
 
+          // Export data if callback provided
+          if (onFPSUpdate && enableDataExport) {
+            onFPSUpdate(currentFps, avg, [...fpsHistory.current]);
+          }
+
           // Reset counters
           frameCount.current = 0;
           lastTime.current = currentTime;
@@ -99,7 +108,7 @@ const FPSMonitor: React.FC<FPSMonitorProps> = memo(
           cancelAnimationFrame(animationId.current);
         }
       };
-    }, [historySize, isMobile]);
+    }, [historySize, isMobile, onFPSUpdate, enableDataExport]);
 
     // Draw the FPS history graph on the canvas
     const drawGraph = () => {

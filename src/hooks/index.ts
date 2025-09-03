@@ -2,3 +2,4 @@ export { useTVFocusManager, findFocusableElements, isElementFocusable } from './
 export type { default as UseTVFocusManager } from './useTVFocusManager';
 export { useTVCameraNavigation } from './useTVCameraNavigation';
 export type { default as UseTVCameraNavigation } from './useTVCameraNavigation';
+export { useAdaptivePerformance } from './useAdaptivePerformance';
